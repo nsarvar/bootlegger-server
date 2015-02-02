@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/linker/favicon.png">
+
+    <title><%- title %></title>
+
+    <script src="/linker/js/jquery-2.0.3.min.js"></script>
+    <script src="/linker/js/modernizr.js"></script>
+
+    <!--STYLES-->
+    <link rel="stylesheet" href="/styles/bootstrap-switch.css">
+    <link rel="stylesheet" href="/styles/bootstrap-tokenfield.css">
+    <link rel="stylesheet" href="/styles/carousel.css">
+    <link rel="stylesheet" href="/styles/datepicker.css">
+    <link rel="stylesheet" href="/styles/ekko-lightbox.min.css">
+    <link rel="stylesheet" href="/styles/paper-bootstrap.css">
+    <link rel="stylesheet" href="/styles/x_app.css">
+    <!--STYLES END-->
+
+    <style>
+
+    .footer
+    {
+        border-top:1px solid rgb(221, 221, 221);
+        margin-top:40px;
+        padding-top:10px;
+        text-align:right;
+    }
+
+    .header
+    {
+      background:url(/linker/images/logo.png) no-repeat left top;
+      background-size: 100% auto;
+      height:90px;
+      width:100%;
+      border-bottom:1px solid rgb(221, 221, 221);
+      margin-top:10px;
+      margin-left:0px;
+      clear:both;
+    }
+    .header blockquote
+    {
+      float:right;
+      border:none;
+      
+      font-size: 14pt;
+      margin-top:20px;
+      color:silver;
+    }
+    .header .well
+    {
+      float:right;
+    }
+    .myalert
+    {
+      list-style: none;
+      margin:0;
+      padding:15px;
+    }
+
+    .mynav
+    {
+      width:100%;
+      margin-top:-10px;
+      padding:0;
+      clear:both;
+    }
+
+    .mynav li
+    {
+      /*float:left;
+      margin-top:10px;
+      
+      display:inline-block;
+      width:25%;
+      text-align:center;*/
+    }
+    .mynav li a
+    {
+      /*border:3px solid #3e444c;
+      border-radius:15px;
+      display:inline-block;*/
+      color:white;
+      width:100%;
+      height:95px;
+      font-size:13pt;
+      padding-top:65px;
+      background-position:center 5px;
+    }
+
+    .mynav li.active a
+    {
+      /*border-color:white;*/
+    }
+
+    .mynav li a:hover
+    {
+      text-decoration:none;
+    }
+
+    .pre a
+    {
+      background:url(/linker/images/pre.png) no-repeat center top;
+    }
+    .shoot a
+    {
+      background:url(/linker/images/shoot.png) no-repeat center top;
+    }
+    .post a
+    {
+      background:url(/linker/images/post.png) no-repeat center top;
+    }
+    .delivery a
+    {
+      background:url(/linker/images/delivery.png) no-repeat center top;
+    }
+    .myradio
+    {
+      float:left;
+      clear:left;
+      width:40px;
+      height:40px;
+    }
+
+    #eventlog
+    {
+      max-height:37px;
+      overflow: auto;
+    }
+
+    #eventlog
+    {
+      list-style: none;
+      margin: 0;
+      padding:0;
+      margin-left:10px;
+      margin-top:3px;
+      margin-bottom: 3px;
+    }
+
+    #eventlog li
+    {
+      font-size: 8pt;
+      margin-top:2px;
+      margin-bottom: 2px;
+    }
+
+    #eventlog li .badge
+    {
+      font-size:8pt;
+    }
+    </style>
+  </head>
+
+  <body>
+    <!-- <div class="container">
+
+      <div class="masthead">
+        <div class="header row">
+        </div>     
+      </div>
+
+
+      </div>
+
+       -->
+
+      <img src="/linker/images/logo_mobile.svg" style="width:97%;margin:1%" />
+
+      <div class="container" style="padding-top:10px;">
+        <% if(flash && flash.msg) { %>
+        <ul class="myalert alert alert-info">
+          <li><%- flash.msg %></li>
+        </ul>
+        <% } %>
+
+        <% if(flash && flash.err) { %>
+        
+          <% if (flash.err instanceof Array) { %>
+          <ul class="myalert alert alert-danger">
+          <% Object.keys(flash.err).forEach(function(error){ %>
+            <li><%- JSON.stringify(flash.err[error]) %></li>
+          <% }); %>
+          </ul>
+          <% } else { %>
+          <div class="myalert alert alert-danger"><%- flash.err %></div>
+          <% }} %>
+
+        <div class="row">
+          <div class="col-md-12">
+          <%- body %>
+        </div>
+    </div>
+      </div>
+
+<!--  <div class="container">
+      
+      <div class="footer" style="min-height:100%;">
+        <p>&copy; Newcastle University 2013</p>
+      </div>
+    </div> -->
+
+    <script>
+        $(document).ready(function () {
+          if (!Modernizr.svg) {
+          $('img[src$=".svg"]').each(function() {
+          var $img = $(this);
+          $img.attr('src', $img.attr('src').replace(/svg$/, 'png'));
+          });
+          }
+          });
+    </script>
+  </body>
+</html>

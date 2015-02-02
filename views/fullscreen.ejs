@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bootlegger connects fans together in realtime to act as a coordinated camera crew.
+It produces high quality, content rich footage with no expense">
+    <meta name="author" content="Bootlegger.tv">
+    <meta name="google-site-verification" content="9VV37JlFo9nMYNnmxw_iMZ0uEeONLE59qc7m4rzDUQ4" />
+    <link rel="shortcut icon" href="/static/favicon.png">
+
+    <title>Bootlegger</title>
+ <!--<script src="/static/min/production.js"></script>-->
+
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+<!--SCRIPTS-->
+<script src="/js/dependencies/1sails.io.js"></script>
+<script src="/js/1jquery-2.0.3.min.js"></script>
+<script src="/js/angular.min.js"></script>
+<script src="/js/angularsanitize.min.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/bootstrap-datepicker.js"></script>
+<script src="/js/bootstrap-switch.min.js"></script>
+<script src="/js/bootstrap-tokenfield.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/controllers.js"></script>
+<script src="/js/handlebars-v1.1.2.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
+<script src="/js/jquery.knob.min.js"></script>
+<script src="/js/modernizr.js"></script>
+<script src="/js/moment.min.js"></script>
+<script src="/js/skrollr.menu.min.js"></script>
+<script src="/js/skrollr.min.js"></script>
+<script src="/js/videogular.min.js"></script>
+<!--SCRIPTS END-->
+
+<!--<link rel="stylesheet" href="/static/min/production.css">-->
+
+<!--STYLES-->
+<link rel="stylesheet" href="/styles/bootstrap-switch.css">
+<link rel="stylesheet" href="/styles/bootstrap-tokenfield.css">
+<link rel="stylesheet" href="/styles/carousel.css">
+<link rel="stylesheet" href="/styles/datepicker.css">
+<link rel="stylesheet" href="/styles/ekko-lightbox.min.css">
+<link rel="stylesheet" href="/styles/paper-bootstrap.css">
+<link rel="stylesheet" href="/styles/x_app.css">
+<!--STYLES END-->
+
+    
+    <script>
+    <% if (user) { %>
+    var localcode = '<%=user.localcode%>';
+    <% } else { %>
+      var localcode = '';
+      <%}%>
+    </script>
+
+    <script id="eventlist-template" type="text/x-handlebars-template">
+      {{#each myevents}}
+      <li>
+      {{#if this.default_event}}
+      <a href="{{this.server}}/event/view/{{this.id}}">{{this.name}} <i class="glyphicon glyphicon-star pull-right"></i></a>
+      {{else}}
+      <a href="{{this.server}}/event/view/{{this.id}}">{{this.name}}</a>
+      {{/if}}
+      </li>
+      {{else}}
+      <li><a href="#" ><span class="text-muted">no shoots owned</span></a></li>
+      {{/each}}
+      <li class="divider"></li>
+      {{#each codeevents}}
+      <li><a href="#"><span class="text-muted">{{this.name}}</span></a></li>
+      {{else}}
+      <li><a href="#" ><span class="text-muted">no shoots joined</span></a></li>
+      {{/each}}
+      <li>&nbsp;</li>
+      <li>
+      <div class="input-group" style="padding:3px 5px;">
+      <input type="text" id="mycode" class="form-control" placeholder="Event Code">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button" onclick="registercode()">Go!</button>
+      </span>
+      </li>
+      <li class="divider"></li>
+      <li><a href="/commission/new"><span class="glyphicon glyphicon-plus"></span> Start New Shoot </a></li>
+    </script>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="masthead hidden">
+        <div class="header row">
+          <% if (user) { %>
+          <div class="alert alert-info" style="display:inline-block;float:right;min-width:230px;">
+            <img style="border-radius:30px;float:left;width:60px;height:60px;margin-left:-5px;margin-top:-5px;margin-right:10px;margin-bottom:-10px;" src="https://s.gravatar.com/avatar/<%= user.emailhash %>?s=60" />
+            <!-- <i style="opacity:0.5;float:left;font-size:40pt;margin-left:-5px;margin-top:-3px;margin-right:10px;margin-bottom:-10px;" class="glyphicon glyphicon-user"></i> -->
+            <span class="lead">Hello <%= user.profile.name.givenName %>!</span><br>
+            <div class="dropdown" style="display:inline-block">
+              <a href="#" id="myeventsbtn" data-toggle="dropdown">my shoots <span class="caret"></span></a>
+              <ul class="dropdown-menu" style="z-index:3000" role="menu" id="eventlist">
+                <li class="loading"></li>
+              </ul>
+            </div>
+
+            <!-- | <a id="offlineaccess" data-container="body" data-toggle="popover" style="cursor:pointer" data-title="Offline Access" data-placement="bottom">offline access</a>
+ -->
+             | <a href="/auth/logout">logout</a>
+            <% if (user && user.admin) { %>
+            | <a href="/admin">Admin</a>
+            <% } %>
+          </div>
+          <% } %>
+
+          <blockquote>
+            
+          </blockquote>
+        </div>
+      <% if (user) { %>
+
+      <div style="margin-bottom:10px;">
+        <% if(event.name != "") { %>
+        <h2 id="title"><span><%= event.name %></span> <a style="font-size:10pt;padding-bottom:10px;vertical-align:middle" href="#" onclick="edittitle();"><i class="glyphicon glyphicon-pencil"></i></a></h2> 
+        <% } %>
+      </div>
+      <% } %>
+     
+      </div>
+      </div> <!-- /container -->
+
+      <div class="container-fluid" style="padding-top:10px;">
+        <% if(flash && flash.msg) { %>
+        <ul class="myalert alert alert-info">
+          <li><%- flash.msg %></li>
+        </ul>
+        <br>
+        <% } %>
+
+        <% if(flash && flash.err) { %>
+        
+          <% if (flash.err instanceof Array) { %>
+          <ul class="myalert alert alert-danger">
+          <% Object.keys(flash.err).forEach(function(error){ %>
+            <script>
+              $(function()
+              {
+                $('[name=<%= flash.err[error].name %>]').tooltip(
+                  {
+                    trigger:'manual',
+                    title:'<%= flash.err[error].msg %>'
+                  });
+                $('[name=<%= flash.err[error].name %>]').tooltip('show');
+              });
+            </script>
+            <li><%- flash.err[error].msg %></li>
+          <% }); %>
+          </ul>
+          <% } else { %>
+          <div class="myalert alert alert-danger"><%- flash.err.msg %></div>
+          <% }} %>
+
+        <div class="row">
+<div class="col-md-2" style="text-align:center;">
+  <div style="text-align:center;margin-bottom:10px;">
+  <img src="/static/images/logo.png" />
+</div>
+<div>
+<% if (event.name) { %>
+<div class="btn-group">
+  <a class="btn " href="/commission">
+      <i class="fa fa-fw fa-lightbulb-o fa-lg "></i>
+      
+  </a>
+  <a class="btn"  href="/event/view">
+      <i class="fa fa-fw fa-edit fa-lg "></i>
+      </a>
+  <a class="btn"  href="/shoot">
+      <i class="fa fa-fw fa-video-camera fa-lg "></i>
+      
+    </a>
+  <a class="btn"  href="/post">
+      <i class="fa fa-fw fa-file-video-o fa-lg "></i>
+      </a>
+  <a class="btn <% if (page=='watch') { %>active<%}%>" href="/watch">
+      <i class="fa fa-fw fa-film fa-lg"></i>
+    </a>
+</div>
+<%}%>
+
+<br><br>
+<% if (event.name) { %>
+<script>
+var mastereventname = "<%- event.name %>";
+var mastereventid = "<%- event.id %>";
+</script>
+<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
+<script src="/cast/playlist_sender.js"></script>
+  <div id="cast_wrapper" style="display:none;" class="panel panel-info" >
+    <div class="panel-heading">Chromecast</div>
+    <div class="panel-body">
+      <div style="width:100%;">
+        <img style="opacity:0.7;float:left;margin-left:-5px;margin-top:-5px;margin-right:10px;" src="/cast/images/cast_icon_idle.png" id="casticon" />
+        <span id="playerstate" style="margin-top:12px;float:right;" class="badge">IDLE</span>
+      </div>
+      <div style="clear:both;">
+          <a onclick="launchApp()" href="#">cast event</a> | <a onclick="stopApp()" href="#">stop cast</a>
+      </div> 
+        <button id="playpauseresume" onclick="playMedia()" style="display:none;">Play</button>
+      <div style="width:100%;position:absolute;left:0;bottom:0;background:rgba(255,255,255,0.4);">
+        <div id="progress" style="background:#428bca;opacity:0.6;transition: width 1s linear;height:5px;width:0;padding:0;margin:0;"></div>
+      </div>
+      <textarea rows="20" cols="70" id="debugmessage" style="display:none;">
+      </textarea>
+</div>
+</div>
+<% } %>
+
+</div>
+</div>
+
+          <div class="col-md-10">
+
+  <% if (notonthisserver) { %>
+            <div class="jumbotron">
+  <h1>Out for Lunch!</h1>
+  <p><div class="">This event is not hosted on this server, try connecting to the correct server (you should have been redirected)</div></p>
+</div>
+            
+            <% } else { %>
+            <div id="mainbody">
+          <%- body %>
+        </div>
+          <%}%>
+        </div>
+
+
+    </div>
+      </div>
+
+  </body>
+</html>

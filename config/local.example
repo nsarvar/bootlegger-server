@@ -1,0 +1,66 @@
+module.exports = {
+    port: process.env.PORT || 80,
+    db_host     : '',
+    db_port     :  27017,
+    db_user     : '',
+    db_password : '',
+    db_database : '',
+    dropbox_clientid:'',
+    dropbox_clientsecret:'',
+    google_clientid:'',
+    google_clientsecret:'',
+    multiserver:'',
+    master_url:'',
+    AWS_ACCESS_KEY_ID:'',
+    AWS_SECRET_ACCESS_KEY:'',
+    S3_BUCKET:'',
+    S3_URL:'',
+    connections:{
+        mongodb: {
+          module: 'sails-mongo',
+          schema: false,
+          host     : '',
+          port     : 27017,
+          user     : '',
+          password : '',
+          database : ''
+        },
+    session:{
+      secret: '7c854fcf008a888a5cba9b365fd02831',
+      adapter: 'redis',
+      host: 'localhost',
+      port: 6379,
+      db: 0,
+    },
+    sockets: {
+      transports: [
+      'websocket'
+      // 'htmlfile',
+      // 'xhr-polling',
+      // 'jsonp-polling'
+     ],
+        adapter: 'redis',
+        host: '127.0.0.1',
+        port: 6379,
+        authorization: true,
+        origins: '*:*',
+        heartbeats: true,
+        'close timeout': 20,
+        'heartbeat timeout': 16,
+        'heartbeat interval': 8,
+        'polling duration': 20,
+        'flash policy port': 10843,
+        'destroy buffer size': '10E7',
+        'destroy upgrade': true,
+        'browser client': true,
+        'browser client cache': true,
+        'browser client minification': false,
+        'browser client etag': false,
+        'browser client expires': 315360000,
+        'browser client gzip': false,
+        'browser client handler': false,
+        'match origin protocol': false,
+        resource: '/socket.io'
+      },
+    }
+}

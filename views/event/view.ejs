@@ -1,0 +1,767 @@
+
+
+<style>
+@media (max-width: 1199px) {
+  .popover {
+    display: none !important;
+  }
+
+  .col-md-8
+  {
+    float:none !important;
+  }
+}
+
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  background: red;
+  cursor: inherit;
+  display: block;
+}
+input[readonly] {
+  background-color: white !important;
+  cursor: text !important;
+}
+
+.draggable::before
+{
+  content: "";
+  width:4px;
+  height:4px;
+  display:inline-block;
+  background: white;
+  border-radius: 2px;
+  position:absolute;
+  top:-2px;
+  left:-2px;
+}
+</style>
+
+<div class="page-header">
+  <h1>Prepare Shoot
+<small>Adjust specific settings for your shoot.</small>
+  </h1>
+</div>
+<!-- <div class="alert alert-warning">
+This page will include phase editing and template updates. Stay tuned!
+</div> -->
+
+<br>
+		<div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Event Settings</h3>
+        <div class="popover-content">
+          <p>Basic information about your event that will help Bootlegger to keep track of the action.</p>
+        </div>
+    </div>
+
+
+<div class="form-horizontal col-sm-8"  style="float:left;">
+  <div class="form-group">
+    <div class="row">
+      <label for="inputEmail2" class="col-sm-4 control-label">Event Starts on</label>
+      <div class="col-sm-4">
+        <div class="input-group input-group-lg" id="dp3" >
+              <input name="starts" class="col-sm-4 form-control datepicker" size="16" type="text" data-date-format="dd-mm-yyyy" value="<%= event.starts %>">
+              <!-- <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
+            </div>
+      </div>
+      <div class="col-sm-1" style="width:50px;">
+        <h2 style="margin:0;padding:0;"> at </h2>
+      </div>
+      <div class="col-sm-2">
+            <input name="starts_time" class="input-lg col-sm-2 form-control" size="5" type="text" onblur="updatestarttime()" value="<%= event.starts_time %>">
+      </div>
+    </div>
+  </div>
+
+
+  <div class="form-group">
+    <div class="row">
+    <label for="inputEmail4" class="col-sm-4 control-label">Event Finishes on</label>
+    <div class="col-sm-4">
+      <div class="input-group input-group-lg" id="dp4" >
+            <input name="ends" class="col-sm-4 form-control datepicker" size="16" type="text" value="<%= event.ends %>" data-date-format="dd-mm-yyyy">
+            <!-- <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
+          </div>
+    </div>
+    <div class="col-sm-1" style="width:50px;">
+      <h2 style="margin:0;padding:0;"> at </h2>
+    </div>
+    <div class="col-sm-2">
+          <input name="ends_time" class="input-lg col-sm-2 form-control" size="5" type="text" onblur="updateendtime()" value="<%= event.ends_time %>">
+        </div>
+  </div>
+
+</div>
+  <% if (user.currentevent != event.id) { %>
+ <div class="form-group">
+    <label for="inputEmail5" class="col-sm-4 control-label">This event is not your default</label>
+    <button class="btn btn-link" id="makedefault" onclick="makedefault()">Make This Event My Default</button>
+   </div>
+<%} else { %>
+<div >
+<label for="inputEmail5" class="col-sm-4 col-sm-offset-4">This event is your default event</label>
+   </div>
+<% } %>
+
+<div class="text-muted col-sm-6 col-sm-offset-4" style="display:block;">This event is built on the <%- event.eventtype.name %> template.</div>
+
+</div>
+
+<div class="clearfix"></div>
+<div class="page-header">
+  <h1>Event Meta-Data</h1>
+</div>
+    <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Event Meta-Data</h3>
+        <div class="popover-content">
+          <p>Your event may have specific people, objects or targets that you need captured. Enter a indentifying description here so that your crew can find them during the shoot. The performers at this event will probably be arranged in a particular layout. Enter the best matching description of where the artists will be when looking at the stage to help guide your camera crew to the best shots.</p>
+        </div>
+        </div>
+
+
+
+ <div class="form-horizontal col-md-8" style="float:left;">
+<div id="coverage_classes" class="list-group loading">
+
+</div>
+</div>
+
+<div class="clearfix"></div>
+<div class="page-header">
+  <h1>Shoot Phases</h1>
+</div>
+    <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Phases</h3>
+        <div class="popover-content">
+          <p>Your shoot may include specific groups of shots, based on location, time or content (such as which band is one stage). Enter here phases that you want clips to be tagged with.<br> <span class="text-muted">Note: Its easier not to add specific meta-data if you are using this option.</span></p>
+        </div>
+        </div>
+
+
+
+ <div class="form-horizontal col-md-8" style="float:left;">
+<div id="phases" class="list-group loading">
+
+</div>
+</div>
+
+<% if (event.eventtype.roleimg) { %>
+<div class="clearfix"></div>
+<div class="page-header">
+  <h1>Location Map</h1>
+</div>
+    <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Locations</h3>
+        <div class="popover-content">
+          <p>Your shoot is setup to use location based roles. Select an image (e.g. abstract map) and place the roles in approximate positions.</p>
+        </div>
+        </div>
+
+ <div class="form-horizontal col-md-8" style="float:left;">
+<form action="/event/map/<%- event.id %>" method="post" enctype="multipart/form-data">
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <span class="btn btn-primary btn-file">
+                        Browse&hellip; <input type="file" name="map">
+                    </span>
+                </span>
+                <input type="text" class="form-control" readonly>
+                <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary">Upload</button>
+              </span>
+            </div>
+</form>
+<div class="panel" id="map" style="position:relative;">
+<img id="roleimg" src="<%- event.eventtype.roleimg %>" style="width:100%;opacity:0.6;"/>
+<% _.each(event.eventtype.roles,function(r) { %>
+<i class="draggable label label-primary" data-role="<%- r.id %>" data-x="<%- r.position[0] %>" data-y="<%- r.position[1] %>" style="cursor:move;"><%- r.name %></i>
+<% }); %>
+</div>
+</div>
+
+<div class="clearfix"></div>
+<% } %>
+
+<div class="page-header">
+<h1>Production Team</h1>
+</div>
+		<div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Choosing your Team</h3>
+        <div class="popover-content">
+          <p>Think carefully about who you want on your production team, is it better to have selected people, or as much footage as possible?</p>
+        </div>
+      	</div>
+
+      <div class="form-horizontal col-md-8" style="float:left;">
+      	<div class="form-group">
+      		<label class="col-sm-4 control-label" for="publicevent">Public Event</label>
+  			<div class="make-switch" id="publicevent">
+  				<input  name="publicevent" type="checkbox" <%= event.public ? "checked" : ""%>/>
+  			</div>
+      	</div>
+      	
+      	<ul id="eventcodes" class="list-group loading">
+
+      	</ul>
+
+      </div>
+<div class="clearfix"></div>
+      <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Administrators</h3>
+        <div class="popover-content">
+          <p>Is there anyone who needs access to this screen or who will be responsible for editing the content after the event?</p>
+        </div>
+        </div>
+
+      <div class="form-horizontal col-md-8" style="float:left;">
+        <ul id="admins" class="list-group loading">
+
+        </ul>
+
+      </div>
+
+<div class="clearfix"></div>
+<div class="col-sm-12">
+<button type="button" class="btn btn-danger" data-toggle="collapse" data-target="#dang">
+  <i class="glyphicon glyphicon-warning-sign"></i> Dangerous Advanced Options
+</button>
+</div>
+<div class="clearfix"></div>
+<div id="dang" class="collapse">
+
+
+<div class="page-header exclude" style="margin-top:15px;">
+<h1>Production Modules</h1>
+</div>
+        <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Production Modules</h3>
+        <div class="popover-content">
+          <p>Which production modules will you be using to support this event?</p>
+        </div>
+        </div>
+        <div class="col-md-8" style="float:left;">
+
+<div class="list-group">
+ <a href="#" class="list-group-item active">Shoot Phase Modules</a>
+  <% _.each(event.shoot_modules,function(v,k){ %>
+    <div class="list-group-item">
+<div class="form-group">
+          <label class="col-sm-4 control-label" for="publicevent"><%=k%></label>
+        <div class="make-switch multi" id="<%=k%>">
+          <input cat="shoot_modules" name="<%=k%>" value="1" type="checkbox" <%= v ? "checked" : ""%>/>
+        </div>
+        </div>
+  </div>
+   <% });%>
+</div>
+
+<div class="list-group">
+ <a href="#" class="list-group-item active">Post Production Modules</a>
+  <% _.each(event.post_modules,function(v,k){ %>
+    <div class="list-group-item">
+<div class="form-group">
+          <label class="col-sm-4 control-label" for="publicevent"><%=k%></label>
+        <div class="make-switch multi" id="<%=k%>">
+          <input cat="post_modules" name="<%=k%>" value="1" type="checkbox" <%= v ? "checked" : ""%>/>
+        </div>
+        </div>
+  </div>
+   <% });%>
+
+</div>
+
+</div>
+<!-- <div class="clearfix"></div> -->
+<!-- 
+<div>
+<div class="page-header">
+<h1>Offline Use</h1>
+</div>
+
+<div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Offline Server (Advanced)</h3>
+        <div class="popover-content">
+          <p>If there is no internet at your event, you can download and install your own bootlegger server locally on your own WiFi network. Once running, enter this code to sync your local copy with the online system and allow your crew to connect.</p>
+        </div>
+        </div>
+
+<div class="col-xs-8" style="float:left;">
+<div class="list-group">
+
+<h1 class="well" style="text-align:center"><%=event.offlinecode%></h1>
+</div>
+
+</div>
+</div> -->
+
+<div class="clearfix"></div>
+
+<a href="/event/remove/<%= event.id %>" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i> Delete This Event Forever</a>
+
+</div>
+
+<script id="codes-template" type="text/x-handlebars-template">
+  <a class="list-group-item active" href="#">Invited Team Members (for non-public events)</a>
+  {{#each codes}}
+  <li class="list-group-item"><span class="badge">{{this.status}}</span> {{this.number}}</li>
+  {{else}}
+  <li class="list-group-item"><span class="text-mute">no codes sent</span></li>
+  {{/each}}
+  <div class="list-group-item">
+  <label class="col-sm-4 control-label" for="number">A Mobile Number</label>
+<div class="input-group" style="width:250px;">
+  			<input type="telephone" id="number" class="form-control" placeholder="+443448957464" required="true"/>
+  			<span class="input-group-btn">
+  			<button class="btn" onclick="addcode();">Add</button>
+  			</span>
+ </div>
+  </div>
+</script>
+
+<script id="coverage-template" type="text/x-handlebars-template">
+  
+<a class="list-group-item active" href="#">Event Meta-Data</a>
+  {{#each coverage_classes}}
+  {{setIndex @key}}
+  <div class="list-group-item">
+    <div class="form-group" style="margin:0">
+    <label class="col-sm-2">{{this.name}}</label> 
+      <div class="col-sm-10">
+        
+        {{#each this.items}}
+        <div class="row">
+          <span class="col-sm-3">{{this.name}}</span>
+
+          <div class="btn-group" data-toggle="buttons" style="margin-left:20px;">
+            <label class="btn btn-primary btn-xs leadlocation {{checked this 'Left'}}">
+              <input type="radio" i1="{{../index}}" i2="{{@index}}" name="leadlocation" value="Left"> Left
+            </label>
+            <label class="btn btn-primary btn-xs leadlocation {{checked this 'Mid'}}">
+              <input type="radio" i1="{{../index}}" i2="{{@index}}" name="leadlocation" value="Mid"> Center
+            </label>
+            <label class="btn btn-primary btn-xs leadlocation {{checked this 'Right'}}">
+              <input type="radio" i1="{{../index}}" i2="{{@index}}" name="leadlocation" value="Right"> Right
+            </label>
+          </div>
+
+
+          <button class="btn btn-link" onclick="removecoverage({{../index}},{{@index}})"><i class="glyphicon glyphicon-minus"></i></button>
+        </div>
+        {{/each}}
+
+        <input class="form-control addcov" rel="{{@key}}" placeholder="enter new meta" />
+      </div>
+    </div>
+  </div>
+  {{else}}
+  <div class="list-group-item"><span class="text-mute">no meta-data needed for this event</span></div>
+  {{/each}}
+</script>
+
+<script id="phase-template" type="text/x-handlebars-template">
+<a class="list-group-item active" href="#">Event Phases</a>
+  {{#each phases}}
+  <div class="list-group-item">
+          {{this.name}} {{#unless roles}}<button class="btn btn-link" onclick="removephase({{@index}})"><i class="glyphicon glyphicon-minus"></i></button>{{else}}<span class="pull-right text-muted">assigned by the template</span>{{/unless}}
+  </div>
+  
+  {{else}}
+  <div class="list-group-item"><span class="text-mute">no phases needed for this event</span></div>
+  {{/each}}
+<div class="list-group-item">
+  <label class="col-sm-4 control-label" for="number">Add a New Phase</label>
+  <div class="input-group" style="width:250px;">
+        <input type="text" id="phasea" class="form-control" placeholder="phase" required="true"/>
+        <span class="input-group-btn">
+        <button class="btn" onclick="addphase();">Add</button>
+        </span>
+  </div>
+
+</script>
+
+<script id="admins-template" type="text/x-handlebars-template">
+<a class="list-group-item active" href="#">Event Administrators</a>
+  {{#each this}}
+  <div class="list-group-item">
+    {{this.name}}
+  </div>
+  {{else}}
+  <div class="list-group-item"><span class="text-mute">only you have access to this event</span></div>
+  {{/each}}
+    <div class="list-group-item">
+  <label class="col-sm-4 control-label" for="number">Add a New Admin</label>
+  <div class="input-group" style="width:250px;">
+        <input type="email" id="admina" class="form-control" placeholder="email" required="true"/>
+        <span class="input-group-btn">
+        <button class="btn" onclick="addadmin();">Add</button>
+        </span>
+  </div>
+        
+</script>
+
+<script>
+Handlebars.registerHelper('setIndex', function(value){
+    this.index = Number(value); //I needed human readable index, not zero based
+});
+
+Handlebars.registerHelper('checked', function(obj, direction) {
+  if (obj.direction==direction)
+    return "active";
+  else
+    return "";
+});
+
+$(document).on('change', '.btn-file :file', function() {
+  var input = $(this),
+      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+  input.trigger('fileselect', [numFiles, label]);
+});
+
+$(document).ready( function() {
+    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+        
+        var input = $(this).parents('.input-group').find(':text'),
+            log = numFiles > 1 ? numFiles + ' files selected' : label;
+        
+        if( input.length ) {
+            input.val(log);
+        } else {
+            if( log ) alert(log);
+        }
+        
+    });
+});
+
+$(function() {
+
+    $('#roleimg').one("load", function() {
+          var imgwidth = $('#roleimg').width();
+          var imgheight = $('#roleimg').height();
+
+          $('.draggable').each(function(e){
+            $(this).css('position','absolute');
+            $(this).css('left',$(this).data('x') * imgwidth);
+            $(this).css('top',$(this).data('y') * imgheight);
+          });
+
+          $( ".draggable" ).draggable({ 
+            containment: "parent",
+            scroll:false,
+            cursor: "move",
+            stop: function(ev, ui) { 
+              //dragging stopped -- calculate and update:
+              var token = $(ui.helper[0]);
+
+              console.log($(ui.helper[0]).data('role'));
+              io.socket.post('/event/updaterole/<%= event.id %>',{role: $(ui.helper[0]).data('role'), x:ui.position.left / imgwidth, y:ui.position.top / imgheight},function(response)
+              {
+                showok('Position Updated',$('#roleimg'));
+              });
+
+
+              //$('#roleimg').width
+            } 
+          });
+    }).each(function() {
+      if(this.complete) $(this).load();
+    });      
+});
+
+var codestemplate;
+var coveragetemplate;
+var adminstemplate;
+var phasetemplate;
+$(function(){
+
+    $('[name=starts]').datepicker().on('changeDate', function(ev){
+        updatestart(ev.date);
+      });
+
+    $('[name=ends]').datepicker().on('changeDate', function(ev){
+        updateend(ev.date);
+      });
+
+    $('#publicevent').on('switch-change', function (e, data) {
+        var value = data.value;
+        updatepublic(data.value);
+    });
+
+    $('.make-switch.multi').on('switch-change', function (e, data) {
+        var value = data.value;
+        var el = $(data.el);
+        updatemulti(el.attr('cat'),el.attr('name'),data.value);
+    });
+
+		var source = $("#codes-template").html();
+    codestemplate = Handlebars.compile(source);
+    
+    source = $("#coverage-template").html();
+    coveragetemplate = Handlebars.compile(source);
+
+    source = $("#admins-template").html();
+    adminstemplate = Handlebars.compile(source);
+
+    source = $("#phase-template").html();
+    phasetemplate = Handlebars.compile(source);
+
+	io.socket.on('connect',function()
+	{
+		  io.socket.get('/event/updates/<%= event.id%>', function(response){
+      		//console.log(response);
+    	});
+
+    	io.socket.get('/event/codes/<%= event.id%>', function(response){
+    		//console.log(response);
+      		$('#eventcodes').html(codestemplate(response));
+    	});
+
+      io.socket.get('/event/admins/<%= event.id%>', function(response){
+        //console.log(response);
+          $('#admins').html(adminstemplate(response));
+      });
+
+      io.socket.get('/event/coverage/<%= event.id%>', function(response){
+        //console.log(response);
+          $('#coverage_classes').html(coveragetemplate(response));
+
+          $('.addcov').keyup(function (e) {
+            var code = e.keyCode || e.which;
+            if (code === 13)
+            {
+              //alert($(this).attr('rel'));
+              addcoverage($(this).attr('rel'));
+            }
+          });
+
+          $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
+            //radio button changed (left, right, center)
+            //alert($(this).val());
+            var i1 = $(this).attr("i1");
+            var i2 = $(this).attr("i2");
+            io.socket.post('/event/updatedirection/<%= event.id %>',{parentindex:i1, index: i2, direction:$(this).val()},function(response)
+            {
+              showok('Lead Location Updated',$('[rel='+i1+']'));
+            });
+          });
+      });
+
+      io.socket.get('/event/phases/<%= event.id%>', function(response){
+        //console.log(response);
+          $('#phases').html(phasetemplate(response));
+
+          $('.addphase').keyup(function (e) {
+            var code = e.keyCode || e.which;
+            if (code === 13)
+            {
+              //alert($(this).attr('rel'));
+              addphase($(this).attr('rel'));
+            }
+          });
+      });
+	});
+
+});
+
+function addcode()
+{
+	if ($('#number').val()!='')
+	{
+  	io.socket.post('/event/addcode/',{id:'<%= event.id%>', number: $('#number').val()}, function (response) {
+
+  	  io.socket.get('/event/codes/<%= event.id%>', function(response){
+      		//console.log(response);
+        		$('#eventcodes').html(codestemplate(response));
+      	});
+  	});
+	}
+}
+
+function addadmin()
+{
+  if ($('#admina').val()!='')
+  {
+    io.socket.post('/event/addadmin/',{id:'<%= event.id%>', email: $('#admina').val()}, function (response) {
+      showok(response.msg,$('#admins'));
+      io.socket.get('/event/admins/<%= event.id%>', function(response){
+          //console.log(response);
+            $('#admins').html(adminstemplate(response));
+        });
+    });
+  }
+}
+
+function addphase()
+{
+  if ($('#phasea').val()!='')
+  {
+    io.socket.post('/event/addphase/',{id:'<%= event.id%>', phase: $('#phasea').val()}, function (response) {
+      showok(response.msg,$('#phases'));
+      io.socket.get('/event/phases/<%= event.id%>', function(response){
+          //console.log(response);
+            $('#phases').html(phasetemplate(response));
+        });
+    });
+  }
+}
+
+function removephase(index)
+{
+  io.socket.post('/event/removephase/<%= event.id %>',{index: index},function(response)
+  {
+    showok('Removed Phase',$('#phases'));
+    io.socket.get('/event/phases/<%= event.id%>', function(response){
+          //console.log(response);
+            $('#phases').html(phasetemplate(response));
+        });
+  });
+}
+
+function addcoverage(index)
+{
+  //alert($('[rel='+index+']').val());
+  io.socket.post('/event/addcoverage/<%= event.id %>',{index:index,item:$('[rel='+index+']').val()},function(response)
+  {
+    $('[rel='+index+']').val('');
+    showok('Updated Meta-Data',$('[rel='+index+']'));
+    io.socket.get('/event/coverage/<%= event.id%>', function(response){
+        //console.log(response);
+          $('#coverage_classes').html(coveragetemplate(response));
+
+          $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
+            //radio button changed (left, right, center)
+            //alert($(this).val());
+            var i1 = $(this).attr("i1");
+            var i2 = $(this).attr("i2");
+            io.socket.post('/event/updatedirection/<%= event.id %>',{parentindex:i1, index: i2, direction:$(this).val()},function(response)
+            {
+              showok('Lead Location Updated',$('[rel='+i1+']'));
+            });
+          });
+
+          $('.addcov').keyup(function (e) {
+            var code = e.keyCode || e.which;
+            if (code === 13)
+              addcoverage($(this).attr('rel'));
+          });
+      });
+  });
+}
+
+function removecoverage(index, index1)
+{
+  io.socket.post('/event/removecoverage/<%= event.id %>',{parentindex: index, index:index1},function(response)
+  {
+    showok('Updated Meta-Data',$('[rel='+index+']'));
+    io.socket.get('/event/coverage/<%= event.id%>', function(response){
+        //console.log(response);
+          $('#coverage_classes').html(coveragetemplate(response));
+
+          $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
+            //radio button changed (left, right, center)
+            //alert($(this).val());
+            var i1 = $(this).attr("i1");
+            var i2 = $(this).attr("i2");
+            io.socket.post('/event/updatedirection/<%= event.id %>',{parentindex:i1, index: i2, direction:$(this).val()},function(response)
+            {
+              showok('Lead Location Updated',$('[rel='+i1+']'));
+            });
+          });
+
+          $('.addcov').keyup(function (e) {
+            var code = e.keyCode || e.which;
+            if (code === 13)
+              addcoverage($(this).attr('rel'));
+          });
+      });
+  });
+}
+
+function updatestart(d)
+{
+  var td = moment(d).format("DD-MM-YYYY");
+  io.socket.post('/event/edit/<%= event.id %>',{starts:td},function(response)
+  {
+    showok('Event Start Date Updated',$('[name=starts]'));
+  });
+}
+
+function updateend(d)
+{
+  var td = moment(d).format("DD-MM-YYYY");
+  io.socket.post('/event/edit/<%= event.id %>',{ends:td},function(response)
+  {
+    showok('Event End Date Updated',$('[name=ends]'));
+  });
+}
+
+function updatestarttime()
+{
+  io.socket.post('/event/edit/<%= event.id %>',{starts_time:$('[name=starts_time]').val()},function(response)
+  {
+    showok('Event Start Time Updated',$('[name=starts_time]'));
+  });
+}
+
+function updateendtime()
+{
+  io.socket.post('/event/edit/<%= event.id %>',{ends_time:$('[name=ends_time]').val()},function(response)
+  {
+    showok('Event End Time Updated',$('[name=ends_time]'));
+  });
+}
+
+
+
+function updatepublic(val)
+{
+  io.socket.post('/event/edit/<%= event.id %>',{public:val},function(response)
+  {
+    showok('Updated public status',$('#publicevent'));
+  }); 
+}
+
+function updatemulti(cat,name,val)
+{
+   var obj = {};
+  obj[cat] = {};
+  $.each($('[cat='+cat+']'),function(){
+    //console.log($(this));
+    obj[cat][$(this).attr('name')] = this.checked;
+  });
+ 
+  io.socket.post('/event/edit/<%= event.id %>',obj,function(response)
+  {
+    showok('Updated '+name,$('#'+name));
+  }); 
+}
+
+function makedefault()
+{
+  io.socket.post('/event/makedefault/<%= event.id %>',{},function(response)
+  {
+    showok('Made this event the default',$('#makedefault'));
+  }); 
+}
+</script>

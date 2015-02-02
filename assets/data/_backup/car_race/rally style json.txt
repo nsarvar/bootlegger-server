@@ -1,0 +1,65 @@
+{
+    "name":"Standard Rally Style Template",
+    "description":"Live music event with mobile phone and line level audio",
+    "post_modules":{
+        "audio_sync":1,
+        "titles":1,
+        "mobile":1,
+        "song_list":1
+    },
+    "shoot_modules":{
+        "autodirector":1,
+        "manualdirector":0,
+        "shotquality":1
+    },
+    
+    "timeline": {
+        "overlay":[
+        
+        ],
+        "video":[
+
+        ],
+        "audio":[
+            {"in":0, "out":100000,"type":"linelevel"}
+        ]
+        },
+
+    "shot_types":
+    [
+        {"id":0, "name":"driveby_1", "image":"driveby_Standard_1.png", "icon":"driveby_Standard_1.png", "Keep the car in shot as it passes. Make it fill most of the screen."}
+	{"id":1, "name":"interviewInCar_1", "image":"interviewincar_Standard_1.png", "icon":"interviewincar_Standard_1.png", "Cover the driver and include some of the car."}
+	{"id":2, "name":"driver_1", "image":"driver_Standard_1.png", "icon":"driver_Standard_1.png", "Mount the camera on the dash and cover as much of the driver and codriver as possible."}
+      	{"id":3, "name":"interview_1", "image":"interview_Standard_1.png", "icon":"driver_Standard_1.png", "Cover the subject from head to waist and include some background interest behind him/her."}
+      	{"id":4, "name":"pits_1", "image":"pits_Standard_1.png", "icon":"pits_Standard_1.png", "Shoot some detail of mechanics in the pit area. Frame them from head to foot as they work."}
+	{"id":5, "name":"cutaway_1", "image":"cutaway_Standard_1.png", "icon":"cutaway_Standard_1.png", "Shoot some B-roll of cars in the pit area. Include at least one entire car in shot."}
+	{"id":6, "name":"cutaway_2", "image":"cutaway_Standard_2.png", "icon":"cutaway_Standard_2.png", "Shoot the start gantry. Include the entire structure."}
+	{"id":7, "name":"cutaway_3", "image":"cutaway_Standard_3.png", "icon":"cutaway_Standard_3.png", "Shoot some B-roll of the landscape around the stage. Frame a passing car through trees."}
+	{"id":8, "name":"cutaway_4", "image":"cutaway_Standard_4.png", "icon":"cutaway_Standard_4.png", "Shoot an establishing shot of part of the stage from high ground if possible."}
+	{"id":9, "name":"cutaway_5", "image":"cutaway_Standard_5.png", "icon":"cutaway_Standard_5.png", "Shoot an establishing shot of the pit area. Use high ground if possible."}	
+
+
+    ],
+
+    "coverage_classes"
+    {
+        "0":percentage:40,["car"],
+        "1":percentage:10,["driver"],
+        "2":percentage:10,["mechanic"],
+	"3":percentage:40,["stage"],	
+    },
+
+    "ruleset":
+    {
+        "preevent",
+        "postevent",
+        "duringevent"        
+    },
+
+    "roles": [
+        {"name":"Stage Camera","shot_ids":[0,8,7],"description":"Trackside out on the stage"},
+	{"name":"Pit Camera","shot_ids":[1,3,4,5],"description":"In or around the pit area"},
+	{"name":"Start Camera","shot_ids":[0,6],"description":"Near the start line"},
+	
+    ]
+}

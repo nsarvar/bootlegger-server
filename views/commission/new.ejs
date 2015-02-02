@@ -1,0 +1,105 @@
+<h1 >Bootlegger film shoots start with a template <br><small>Choose an existing one or create your own from one of ours</small></h1>
+<form class="form-horizontal" role="form" method="post" action="/event/addevent">
+<div class="well">
+<div class="list-group-item search"><input id="filter" type="text" class="form-control input-lg" placeholder="Search Templates..."></div>
+<ul class="list-group searchable" id="searchlist" style="overflow: scroll;overflow-x: hidden;height:270px;">
+
+<% for (i=0;i<types.length;i++){ %>
+    <li class="list-group-item">
+
+    <input type="radio" name="eventtype" id="eventtype<%= i %>" value="<%= types[i].id %>" class="myradio" style="margin-right:15px;" checked/>
+
+
+<a style="float:right;padding-right:4px;margin-top:-10px;height:65px;margin-right:-15px;width:130px;text-align:left;" class="btn btn-lg btn-info" href="/commissioning/create/<%- types[i].id %>"><i class="pull-right fa fa-chevron-right fa-2x" style="margin-top:6px;"></i> create<br>template </a>
+
+<div style="margin-right:10px;float:right;display:block;margin-top:3px;text-align:right;">
+    <% if (!types[i].user_id){ %>
+    <i class="badge" style="border:silver 1px solid;border-radius:3px;color:silver;padding:2px;background:none;font-weight:normal;"><i class="fa fa-users"></i> Community Contribution</i>
+    <% } else { %>
+    <!-- <a style="float:right;" href="/commissioning/edit/<%- types[i].id %>">edit this template</a> -->
+    <% } %>
+    <br>
+    <% if (types[i].updatedAt) { %>
+     <div class="text-muted" style="float:right;"><%= types[i].updatedAt %></div>
+     <% } %>
+</div>
+
+<h4 class="list-group-item-heading"><b><%= types[i].name %></b></h4>
+<%= types[i].description %>
+
+    </li>
+  <% }; %>
+</ul>
+
+<script>
+    $(document).ready(function () {
+
+      (function ($) {
+
+          $('#filter').keyup(function () {
+
+              var rex = new RegExp($(this).val(), 'i');
+              $('.searchable li').not('.search').hide();
+              $('.searchable li').not('.search').filter(function () {
+                  return rex.test($(this).text());
+              }).show();
+
+          })
+
+      }(jQuery));
+
+  });
+</script>
+
+
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">Event Name</label>
+    <div class="col-sm-10">
+      <input type="text" name="name" class="form-control input-lg" id="inputEmail3" placeholder="name">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="inputEmail2" class="col-sm-2 control-label">Event Starts on</label>
+    <div class="col-sm-3">
+      <div class="input-group input-group-lg" id="dp3" >
+            <input name="starts" class="col-sm-2 form-control datepicker" size="16" type="text" data-date-format="dd-mm-yyyy">
+           <!--  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
+          </div>
+
+    </div>
+
+    <div class="col-sm-1" style="width:50px;">
+      <h2 style="margin:0;padding:0;"> at </h2>
+    </div>
+    <div class="col-sm-2">
+          <input name="starts_time" class="input-lg col-sm-2 form-control" size="5" type="text" value="8pm">
+        </div>    
+</div>
+
+
+  <div class="form-group">
+    <label for="inputEmail4" class="col-sm-2 control-label">Event Finishes on</label>
+    <div class="col-sm-3">
+      <div class="input-group input-group-lg" id="dp4">
+            <input name="ends" class="col-sm-2 form-control datepicker" size="16" type="text" data-date-format="dd-mm-yyyy">
+            <!-- <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
+          </div>
+    </div>
+    <div class="col-sm-1" style="width:50px;">
+      <h2 style="margin:0;padding:0;"> at </h2>
+    </div>
+    <div class="col-sm-2">
+          <input name="ends_time" class="input-lg col-sm-2 form-control" size="5" type="text" value="11pm">
+        </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary btn-lg">Start Configuring this Event</button>
+    </div>
+  </div>
+
+
+</div>
+</form>

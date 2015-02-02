@@ -1,0 +1,242 @@
+<% 
+var showpost = false;
+_.each(event.post_modules,function(p,k) { 
+  	if (p==1)
+  		showpost = true;
+  	});
+  %>
+<%if (showpost) {%>
+<div class="page-header">
+	<h1>Post Production
+<small>Perform automated tasks</small>
+	</h1>
+</div>
+<div class="list-group">
+<a class="list-group-item active" href="#">Select an Action</a>
+  <% _.each(event.post_modules,function(p,k) { 
+  	if (p==1){
+  %>
+  <div class="list-group-item loading">
+    <div class="row">
+    <script>
+    $(function(){
+		$.get('/post/module/<%- k %>', function( data ) {
+			$('#<%- k %>').html(data);
+			$('#<%- k %>').parent().parent().parent().removeClass('loading');
+			$(document).on('change', '.btn-file :file', function() {
+			  var input = $(this),
+			      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+			      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+			  input.trigger('fileselect', [numFiles, label]);
+			});
+
+			
+			    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+			        
+			        var input = $(this).parents('.input-group').find(':text'),
+			            log = numFiles > 1 ? numFiles + ' files selected' : label;
+			        
+			        if( input.length ) {
+			            input.val(log);
+			        } else {
+			            if( log ) alert(log);
+			        }
+			        
+			    });
+			
+			//alert("done");
+		}).fail(function(err){
+			//alert(err);
+		});
+	});
+	</script>
+<div class="col-sm-12">
+	<p id="<%- k %>">
+	</p>
+</div>
+</div>
+  </div>
+  <% } %>
+  <% }); %>
+    </div>
+<% }%>
+<div class="clearfix"></div>
+<div class="page-header">
+<h1>Export
+<small>Export all your footage for editing</small></h1>
+</div>
+<h2>We have saved all the footage from your shoot in a safe place. <br>
+	<span class="text-muted">Here is a summary of what we have for this shoot:</span></h2>
+
+<div class="row">
+	<div class="col-sm-3">
+		<div class="alert alert-info" style="text-align:center;min-height:160px;">
+		  <h1 id="ok">-</h1>
+		  <p>Clips Available</p>
+		</div>
+	</div>
+
+	<div class="col-sm-3">
+		<div class="alert alert-info" style="text-align:center;min-height:160px;">
+			<h1 id="fail">-</h1>
+	  		<p>Clips Not Uploaded by Crew</p>
+	  		<p id="missingfrom"></p>
+		</div>
+	</div>
+
+	<div class="col-sm-3">
+		<div class="alert alert-info" style="text-align:center;min-height:160px;">
+		  <h1 id="crew">-</h1>
+		  <p>Crew Members</p>
+		</div>
+	</div>
+
+	<div class="col-sm-3">
+		<div class="alert alert-info" style="text-align:center;min-height:160px;">
+		  <h1 id="mins">-</h1>
+		  <p>Total Mins</p>
+		</div>
+	</div>
+
+
+
+</div>
+
+<hr>
+<h2>You can download the footage and meta-data to start editing.<br>
+	<span class="text-muted">We have a few options:</span>
+</h2>
+
+<div class="text-center" style="position:relative;">
+	<% if (user.dropbox) { %>
+	<div class="popover right" style="display:inline-block;top:30px;right:0;left:inherit;position:absolute;">
+	        <div class="arrow"></div>
+	        <h3 class="popover-title">Notification</h3>
+	        <div class="popover-content">
+	          <p>You do not need to stay on this page. We will send an email to <span class="text-muted"><%= user.profile.emails[0].value %></span> when the copy is finished.</p>
+	        </div>
+	</div>
+
+
+	<div class="alert alert-success" id="done" style="display:none;">
+	  <h1>Copy Finished, Enjoy!</h1>
+	</div>
+
+	<input type="text" class="dial" data-min="0" data-max="100" data-readOnly=true data-val="0" />
+		<div class="progresstext text-muted"></div>
+
+<div class="row" style="margin-bottom:1em;margin-top:1em;">
+	  <a href="#" onclick="doit()" id="transbtn" class="btn btn-success" style="display:none;">Start Copy to Dropbox</a>
+	  <a href="#" onclick="cancel();" id="cancelbtn" class="btn btn-danger" style="display:none;">Stop and Reset Copy</a>
+</div>
+<% } %>
+
+
+<div class="row">
+<% if (!user.dropbox) { %>
+<a class="btn-lg btn btn-primary" href="/auth/dropbox"><i class="glyphicon glyphicon-cloud-download"></i> Sync to My Dropbox</a>
+<% } %>
+
+
+<!-- Split button -->
+<div class="btn-group">
+  <a type="button" href="/post/document/<%-event.id %>" class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-th-list"></i> View Shot List</a>
+  <button type="button" class="btn btn-primary dropdown-toggle btn-lg" data-toggle="dropdown" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="/post/document/<%-event.id %>">HTML</a></li>
+    <li><a href="/media/nicejson/<%-event.id %>">JSON</a></li>
+    <li><a href="#">PDF <span class="text-muted">(coming soon)</span></a></li>
+    <li><a href="#">EDL <span class="text-muted">(coming soon)</span></a></li>
+  </ul>
+</div>
+
+<a class="btn-lg btn btn-primary" href="http://bootleggerstatic.s3.amazonaws.com/apps/s3/S3Downloader.application"><i class="glyphicon glyphicon glyphicon-download-alt"></i> Direct Download <small>(Windows Only)</small></a>
+
+</div>
+
+
+<script>
+function doit()
+{
+	io.socket.get('/post/downloadall/<%- event.id %>',function(data)
+	{
+		//$('#ok').text(data.ok);
+		//$('#transbtn').attr('disabled','disabled');
+		$('#cancelbtn').show();
+		$('#transbtn').hide();
+		//$('#fail').text(data.missing);
+	});
+}
+
+function cancel()
+{
+	io.socket.get('/post/canceldownload/',function(data)
+	{
+		//$('#transbtn').attr('disabled','disabled');
+		$('#cancelbtn').hide();
+		$('#transbtn').show();
+	});
+}
+
+function getprogress()
+{
+	io.socket.get('/post/downloadprogress/',function(data)
+	{
+		console.log(data);
+		if (data.msg)
+		{
+			$('.progresstext').text(data.msg);
+			///$('#progresstext').css('width','100%');
+			$('.dial').val(0).trigger('change');
+			$('#cancelbtn').hide();
+			$('#transbtn').show();
+		}
+		else
+		{
+			//console.log(data);
+			$('.progresstext').text(data.status);
+			$('.dial').val(data.value).trigger('change');
+			$('#cancelbtn').show();
+			$('#transbtn').hide();
+			if (data.value == 100)
+			{
+				//finished!! -- do something???
+				$('#done').show();
+				//$('#cancelbtn').hide();
+				//$('#transbtn').show();
+			}
+		}
+	});
+}
+
+var codestemplate;
+var coveragetemplate;
+$(function(){
+
+io.socket.on('connect',function()
+	{
+
+		setInterval(getprogress,1000);
+
+		io.socket.get('/post/getnumbers/<%- event.id %>',function(data)
+		{
+			$('#ok').text(data.ok);
+			$('#fail').text(data.missing);
+			$('#crew').text(data.crew);
+			$('#mins').html(data.mins + '<br><span class="text-muted small">' + Math.round(data.filesize/1024) + "MB</span>");
+			$('#missingfrom').text(data.missingfrom);
+		});
+
+	});
+});
+
+</script>
+<script>
+    $(function() {
+        $(".dial").knob();
+    });
+</script>
+	

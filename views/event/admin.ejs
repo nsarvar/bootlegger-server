@@ -1,0 +1,144 @@
+<style>
+.big
+{
+	font-size:25pt;
+	color:silver;
+	line-height: 14pt;
+	display: block;
+	float: left;
+	text-align: center;
+	margin-right: 5px;
+	width:20%;
+}
+
+.big small
+{
+	font-size: 10pt;
+	clear:both;
+	display:inline-block;
+
+}
+
+.status{
+	float:right;
+	width:50%;
+}
+</style>
+
+<h2>System Admin</h2>
+
+<div class="list-group">
+	<a class="list-group-item active" href="#">All Bootlegger Events</a>
+		<% _.each(events,function(e){ %>
+	  	<div class="list-group-item">
+		  	<div class="row">
+		  		<div class="col-sm-12">
+		  			<div class="status" rel="<%- e.id %>" id="event_<%- e.id %>"></div>
+		    		<a href="/event/view/<%- e.id %>"><strong><%- e.name %></strong></a>
+		    		<%- e.starts %> at <%- e.starts_time %> to <%- e.ends %> at <%- e.ends_time %>
+				</div>
+			</div>
+		</div>
+		<% }); %>
+</div>
+
+
+<script id="status-template" type="text/x-handlebars-template">
+	<span class="big">{{users}}<br /><small>users</small></span>
+	<span class="big">{{phase}}<br /><small>phase</small></span>
+	 <span class="big">{{ruleset}}<br /><small>ruleset</small></span>
+	  <span class="big">{{media}}<br /><small>clips</small></span>
+	<a href="/event/kill/{{eventid}}" class="btn btn-danger">Kill Event</a>
+</script>
+
+<script>
+
+function ev(id)
+{
+	
+	return function(response)
+	{
+		var evid = id;
+		events[evid].media == response.length;
+		$('#event_'+evid).html(statustemplate(events[evid]));
+	}
+}
+
+var events = {};
+
+$(function()
+{
+
+	var source = $("#status-template").html();
+    statustemplate = Handlebars.compile(source);
+
+	socket.on('connect',function()
+	{
+		$('.status').each(function()
+		{
+			events[$(this).attr('rel')] = {
+			  	users:0,
+			  	phase:'?',
+			  	ruleset:'?',
+			  	media:0,
+			  	eventid:$(this).attr('rel')
+			  };
+	 		socket.get('/event/updates/'+$(this).attr('rel'), function(response){
+	      		//console.log(response);
+	    	});
+
+	 		var callback = ev($(this).attr('rel'));
+			socket.get('/media/event/'+$(this).attr('rel'), callback);
+		});
+		 
+
+		socket.on('message', function(response){
+
+			if (!response.id)
+			{
+				return;
+			}
+			else
+			{
+			  var eventid = response.id;
+			  var data = events[eventid];
+
+	          if (response.data.users != undefined && response.model == 'event')
+	          {
+	      		  //users
+	      		  data.users = response.data.ucount;
+	          }
+
+	          if (response.data.media != undefined && response.model == 'event' && !response.data.update)
+          		{
+          			data.media = response.data.media.length;
+          		}
+
+	          if (response.data.phase != undefined && response.model == 'event')
+	          {
+	      		 // $('#mode').text(response.data.phase);
+	      		 data.phase = response.data.phase;
+	      		 data.ruleset = response.data.ruleset;
+	            //$('#phase').text(response.data.ruleset);
+	          }
+
+	          //rerender status:
+	          $('#event_'+eventid).html(statustemplate(data));
+			}
+
+      });
+
+	});
+
+
+
+
+
+
+
+	
+});
+//for each event, get status and subscribe for updates: (/event/updates)
+
+//recieve updates..
+</script>

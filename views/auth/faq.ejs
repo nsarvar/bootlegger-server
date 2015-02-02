@@ -1,0 +1,121 @@
+<style>
+
+ol h1
+{
+	font-size: 24px;
+}
+
+#toc a
+{
+	font-size: 17px;
+}
+
+#toc
+{
+	font-size: 17px;
+}
+
+#faq
+{
+	font-size: 24px;
+}
+
+#faq h2
+{
+	color: #428BCA;
+	font-size: 24px;
+}
+
+blockquote
+{
+	font-size: 18px;
+}
+</style>
+
+<h1>Frequently Asked Questions <small>Some helpful answers to common questions</small></h1>
+
+<ol id="toc">
+
+
+</ol>
+
+<hr>
+
+<ol id="faq">
+	<li>
+		<h2>What is Bootlegger?</h2>
+		<blockquote>
+Bootlegger is a revolutionary new tool for shooting live event videos using mobile phones. Spectators can use Bootlegger to produce high-quality multi-camera films of a large event. Bootlegger acts as director and producer, coordinating camera operators, suggesting shots and collecting footage. During the event, the Bootlegger app allocates shots according to where you are at the event. We are primarily interested in supplementing broadcast footage such as that by the BBC with personal and meaningful accounts of the event by spectators. Bootlegger provides overlays to help users try out better and more interesting shots.
+		</blockquote>
+	</li>
+
+	<li>
+		<h2>Who decides what can be bootlegged?</h2>
+		<blockquote>
+			Anyone can create an event on the Bootlegger system, but we advise getting the permission of the venue or artist before doing so.
+		</blockquote>
+	</li>
+
+	<li>
+		<h2>Who runs Bootlegger?</h2>
+		<blockquote>
+			Bootlegger is a research project developed by researchers as Newcastle University. It is designed to be an extensible platform for exploring how participatory media can change the way we film, consume and commission media. As such it is constantly under development and may not be totally robust at all times.
+		</blockquote>
+	</li>
+
+	<li>
+		<h2>Will it use up my data allowance?</h2>
+		<blockquote>
+			No. Bootlegger does not stream video while your are recording. Only tiny bits of information are trasferred during the event. After the event, you can upload your videos on a free WiFi connection.
+		</blockquote>
+	</li>
+
+	<li>
+		<h2>What information will you have about me?</h2>
+		<blockquote>
+			We capture lots of information about the video, such as where it was taken and what we think you were shooting. We store the email address and name you provided with your Google account, but do not track you or store any other personal information about you.
+		</blockquote>
+	</li>
+
+	<li>
+		<h2>Why wont uploads work?</h2>
+		<blockquote>
+			If lots of people are uploading at once, uploading may slow down or stop. Try uploading again at a later time.
+		</blockquote>
+	</li>
+
+	<li>
+		<h2>What happens to the video I shoot?</h2>
+		<blockquote>
+			You get to keep the video that you capture on your device - you can find it in the videos folder. After uploading your videos, the event organiser has access to all the footage from the event, and can choose to release this footage to a wider audience if they want.
+		</blockquote>
+	</li>
+
+	<li>
+		<h2>Where is the Upload Screen?</h2>
+		<blockquote>
+			There are two ways to find it. Login and select the event, before telling bootlegger where you are at the event, press the uploads button. Or if you are already recording, press on the picture icon in the bottom left of the screen, select the 'My Role' tab and press uploads.
+		</blockquote>
+	</li>
+
+	<li>
+		<h2>What if I get a "Problems connecting to WiFi error" when connecting to an event?</h2>
+		<blockquote>
+			WiFi is not actually required to run Bootlegger. Bootlegger is still in Beta, and this occurs on some devices the first time you run the app. Close the app and try again, and it should work.
+		</blockquote>
+	</li>
+</ol>
+
+<script type="text/javascript">
+$(function(){
+	var counter = 0;
+	$('#faq li').each(function()
+	{
+		//gen name
+		$('h2',this).append('<a name="'+counter+'"></a>');
+		$('#toc').append('<li><a href="#'+counter+'">'+$('h2',this).text()+'</a></li>');
+		counter++;
+	});
+});
+</script>
+

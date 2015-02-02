@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bootlegger Cast Transmitter Debugger</title>
+<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
+<script src="playlist_sender.js"></script>
+</head>
+<body>
+  <div id="cast_wrapper" style="display:none;">
+    <div>
+      <br>
+      <div >
+        <div style="margin:0px;">
+           <img src="images/cast_icon_idle.png" id="casticon" width="30">
+        </div>
+        <div>
+	   <input class="vertical" type="range" min="0" max="100" step="1" onmouseup="setReceiverVolume(1-this.value/100,false);">
+        </div>
+      </div>
+
+      <div>
+        <button class="btn btn-primary" onclick="launchApp()">Cast This Event</button>
+        <button class="btn btn-primary" onclick="stopApp()">Stop Casting</button>
+        <br>
+<!-- <button onclick="loadMedia()">Load media</button> -->
+ <!--         <button onclick="addToPlaylist()">Add media to playlist</button> -->
+        <button id="playpauseresume" onclick="playMedia()">Play</button>
+<!--         <button onclick="stopMedia()">Stop media</button> -->
+	<span id="muteText">Mute media</span>
+	<input type="checkbox" onclick="muteMedia(this);"> 
+      <div>
+      <div style="margin:10px;">
+        <input id="progress" type="range" min="1" max="100" value="1" step="1" onmouseup="seekMedia(this.value);" onmousedown="clearTimer();">
+      </div>
+
+      <div style="margin:10px;">
+        <span id="playerstate" class="badge">IDLE</span>
+      </div>
+
+      <div style="margin:10px;">
+        <textarea rows="20" cols="70" id="debugmessage">
+        </textarea>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

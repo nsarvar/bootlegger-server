@@ -1,0 +1,81 @@
+<style>
+ul
+{
+  list-style-type: none;
+  margin:0;
+  padding: 0;
+}
+
+li{
+  /*display:inline-block;*/
+  float: left;
+}
+
+.video{
+  background-repeat:no-repeat;
+  background-size:cover; 
+  width:200px;
+  height:110px;
+}
+
+.container-fluid{
+  padding:10px;
+}
+
+.playlist
+{
+  position:fixed;
+  left:-5px;
+  top:350px;
+}
+
+#player
+{
+  width:200px;
+  height:110px;
+  position:fixed;
+  left:0px;
+  background:green;
+}
+
+video{
+  height:110px;
+  width:200px;
+}
+
+</style>
+<div ng-app="watchApp" ng-controller="Media as controller">
+<script type="text/ng-template" id="media.html">
+  <div class="video" ng-click="playThis(m)" ng-style="{'background-image':'url('+m.thumb+')'}"><img ng-src="{{m.thumb}}" style="display:none;"/></div>
+</script>
+
+
+<div class="col-md-2 playlist">
+<div class="panel panel-info">
+<div class="panel-heading">Playlist</div>
+    <div class="panel-body"  >
+      <ul>
+        <li ng-repeat="m in playlist">
+          <div ng-include=" 'media.html' "></div>
+        </li>
+    </ul>
+
+    </div>
+</div>
+</div>
+
+<div>
+<ul>
+    <li ng-repeat="m in media | filter:{thumb:'!undefined', path:'!undefined'}">
+      <div ng-include=" 'media.html' "></div>
+    </li>
+</ul>
+<span class="hide" ng-bind="sources[0].src"></span>
+
+<videogular vg-autoplay="true">
+      <vg-video vg-src="sources"
+                vg-native-controls="true">
+      </vg-video>
+    </videogular>
+</div>
+</div>

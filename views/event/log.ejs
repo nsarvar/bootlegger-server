@@ -1,0 +1,49 @@
+<link href="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
+<script src="//cdn.datatables.net/1.10.0-beta.2/js/jquery.dataTables.js"></script>
+<script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+<script id="log-template" type="text/x-handlebars-template">
+{{#each this}}
+<tr>
+<td>{{this.timestamp}}</td>
+<td>{{this.userid}}</td>
+<td>{{this.message}}</td>
+<td>{{this.msg}}: {{this.meta}},{{this.shot}},{{this.role}}</td>
+</tr>
+
+
+{{/each}}
+</script>
+
+
+<table class="table table-striped table-bordered" id="alllogs">
+<thead>
+<tr>
+	<th>When</th>
+	<tH>Who</th>
+	<th>What</th>
+	<th>Details</th>
+</th>
+</thead>
+<tbody id="logs">
+
+</tbody>
+</table>
+
+<script>
+$(function(){
+
+
+  //build handlebars templates
+  var source = $("#log-template").html();
+  var logtemplate = Handlebars.compile(source);
+
+  setInterval(function(){
+  	$.getJSON('/event/getlog/<%- event.id %>').done(function(data)
+  	{
+  		$('#logs').html(logtemplate(data));
+  		$('#alllogs').dataTable();
+  	});
+  },3000);
+});
+  
+</script>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bootlegger Cast Receiver</title>
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <style>
+        body {
+            overflow:hidden;
+            margin:0;
+            padding: 0;
+            font-family: 'Open Sans';
+        }
+        video {
+            height:100%;
+            width:100%;
+            background-color: #000000;
+            position:absolute;
+            top:0;
+            left:0;
+        }
+
+        #logo{
+            position:absolute;
+            background: url("/cast/images/cast.png") no-repeat center center black;
+            width:100%;
+            height: 100%;
+        }
+
+        #logo {
+            -webkit-transition: opacity 1s;
+            opacity: 1;
+        }
+
+        #logo.faded {
+            opacity: 0;
+        }
+
+        #overlay
+        {
+            background:url('/cast/images/castoverlay.png') no-repeat left center;
+            margin-left:30px;
+            height:200px;
+            position: absolute;
+            bottom:0;
+            left:0;
+            color:white;
+            width:auto;
+        }
+
+        .inside
+        {
+            background: rgba(0,0,0,0.3);
+            border-bottom-right-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 6px;
+            padding-right:17px;
+            padding-left:12px;
+            font-size: 23pt;
+            margin-left: 92px;
+            margin-top: 69px;
+            margin-right: 200px;
+        }
+
+        #eventname
+        {
+            color:#0088aa;
+        }
+    </style>
+</head>
+<body>
+
+    <video id="vid"></video>
+
+    <div id="overlay">
+        <div class="inside">
+            <div id="shotname"></div>
+            <div id="eventname">Connecting to Bootlegger...</div>
+        </div>
+
+    </div>
+
+    <div id="logo"></div>
+
+    <script type="text/javascript">
+        "use strict";
+
+        window.onload = function() {
+	        // Keep track of a playlist of videos
+            var playlist = null;
+            var currentVideoIndex = -1;
+            var eventname = 'Connecting to Bootlegger...';
+
+            var mediaElement = document.getElementById('vid');
+            cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
+            var castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+
+            castReceiverManager.onReady = function(data){
+                document.getElementById('logo').className += 'faded';
+            };
+
+            // Create a custom namespace channel to receive commands from the sender
+            // app to add items to a playlist
+            var playlistMessageBus = castReceiverManager.getCastMessageBus('urn:x-cast:tv.bootlegger.cast.playlist',
+                cast.receiver.CastMessageBus.MessageType.JSON);
+            // Create a message handler for the custome namespace channel
+            playlistMessageBus.onMessage = function(event) {
+                console.log('Playlist message: ' + JSON.stringify(event));
+                // Handle the ADD command from the sender
+                // Other commands could also be supported
+                if (event.data.type == 'ADD') {
+                    playlist.push(event.data.playlistItem);
+                }
+            };
+
+            var mediaManager = new cast.receiver.MediaManager(mediaElement);
+
+             mediaElement.addEventListener('loadedmetadata', function() {
+                if (currentVideoIndex >= 0) {
+                    // When metadataloaded completes, we can send the new media
+                    // information to the senders. We use metadataloaded so we
+                    // can send the new duration.
+                    mediaManager.broadcastStatus(true);
+                }
+            });
+
+            // Plays the next video in the list
+            var playNextVideo = function() {
+                if (playlist) {
+
+                    if (currentVideoIndex < playlist.length - 1)
+                        currentVideoIndex++;
+                    else
+                        currentVideoIndex=0;
+
+                    mediaElement.src = playlist[currentVideoIndex].contentId;
+                    mediaElement.autoplay = true;
+                    mediaElement.load();
+                    var mediaInformation = mediaManager.getMediaInformation();
+                    mediaInformation.contentId = playlist[currentVideoIndex].contentId;
+                    mediaInformation.metadata.title = playlist[currentVideoIndex].title;
+                    document.getElementById("shotname").innerHTML = mediaInformation.metadata.title;
+                    mediaInformation.metadata.images[0] = {
+                        url: playlist[currentVideoIndex].image
+                    };
+                    // We use false as we do not want to broadcast the new status yet
+                    // we will broadcast manually when the media has been loaded, this
+                    // is to be sure the duration has been updated in the media element
+                    mediaManager.setMediaInformation(mediaInformation, false);
+                    return true;
+                }
+                return false;
+            };
+
+            // Override MediaManager onEnded
+            var onEndedOrig = mediaManager.onEnded.bind(mediaManager);
+            mediaManager.onEnded = function() {
+                if (!playNextVideo()) {
+                    // No more playlist items, simply terminate the media session
+                    // by calling the default onEnded function
+                    onEndedOrig();
+                }
+            };
+
+            // Override MediaManager onError
+            var onErrorOrig = mediaManager.onError.bind(mediaManager);
+            mediaManager.onError = function() {
+                if (!playNextVideo()) {
+                    // No more playlist items, simply terminate the media session
+                    // by calling the default onError function
+                    onErrorOrig();
+                }
+            };
+
+            // Override MediaManager onLoad
+            var onLoadOrig = mediaManager.onLoad.bind(mediaManager);
+            mediaManager.onLoad = function(event) {
+                // Here we fully override the standard load event
+                console.log('onLoad ' + JSON.stringify(event));
+                // Initialize the playlist with the custom data
+                // playlist items
+                playlist = event.data.customData.playlist;
+                eventname = event.data.customData.eventname;
+                document.getElementById("eventname").innerHTML = eventname;
+                document.getElementById("shotname").innerHTML = event.data.media.metadata.title;
+                currentVideoIndex = 0;
+                // Call the original load handler
+                onLoadOrig(event);
+            };
+
+            console.log('Starting receiver...');
+            castReceiverManager.start();
+        };
+    </script>
+</body>
+</html>

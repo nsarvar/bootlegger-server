@@ -1,0 +1,57 @@
+//auto_director
+module.exports = {
+	codename:'example_module',
+	name:'Example Module',
+
+	//when a file has been uploaded
+	process:function(media)
+	{
+		return;
+	},
+
+	//triggered on a timer
+	trigger:function()
+	{
+		//be careful how this function is used:
+		//console.log('trigger for '+this.codename);
+		//console.log(Log.subscribers());
+		return;
+	},
+
+	//triggered on user signin
+	signin:function(event,user)
+	{
+		return;
+	},
+
+
+	//trigged on signout
+	signout:function(event,user)
+	{
+		return;
+	},
+
+	//triggerd when user starts recording
+	startrecording:function(event,user)
+	{
+		return;
+	},
+
+	//triggered when user stops recording
+	stoprecording:function(event,user)
+	{
+		return;
+	},
+
+	//triggered when user holds on current shot
+	holdrecording:function(event,user)
+	{
+		return;
+	},
+
+	//triggered when user asks to skip
+	skiprecording:function(event,user)
+	{
+		return;
+	},
+}

@@ -1,0 +1,40 @@
+<style>
+	    .btn-file {
+	    position: relative;
+	    overflow: hidden;
+	    }
+	    .btn-file input[type=file] {
+	    position: absolute;
+	    top: 0;
+	    right: 0;
+	    min-width: 100%;
+	    min-height: 100%;
+	    font-size: 999px;
+	    text-align: right;
+	    filter: alpha(opacity=0);
+	    opacity: 0;
+	    outline: none;
+	    background: white;
+	    cursor: inherit;
+	    display: block;
+	    }
+</style>
+<div class="row">
+	<div class="col-sm-2">
+
+		<label>Title Generator</label>
+	</div>
+<div class="col-sm-6">
+	<a class="btn btn-lg btn-primary" href="/post/module_function/titles?func=getedl&event=<%-event %>">Download Titles (zip)</a>
+</div>
+
+	<div class="col-sm-4">
+		<div class="popover" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+		    <div class="arrow"></div>
+		    <h3 class="popover-title"><%- name %></h3>
+		    <div class="popover-content">
+		      <p><%- description %></p>
+		    </div>
+		</div>
+	</div>
+</div>

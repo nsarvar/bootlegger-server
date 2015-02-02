@@ -1,0 +1,33 @@
+{
+	"name":"Hiphop Music Video",
+	"percentage_over_coverage":300,
+	"description":"Short music video with audio sync",
+	"direction":"autodirector",
+	"shoot_modules":[
+	],
+	"post_modules":[
+		"audio_sync",
+		"titles"
+	],
+
+
+	"meta_modules":[
+		"mobile",
+		"song_list"
+	],
+
+	"timeline": {
+		"overlay":[
+		{}
+		],
+		"video":[
+
+		],
+		"audio":[
+
+		]
+		},
+
+	"roles": [
+	]
+}

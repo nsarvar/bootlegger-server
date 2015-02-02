@@ -1,0 +1,6 @@
+ <track TL.SQTrackShy="0" TL.SQTrackExpanded="0" MZ.TrackTargeted="1" MZ.TrackName="%%trackname%%">
+	%%track%%
+	<enabled>TRUE</enabled>
+	<locked>FALSE</locked>
+</track>
+

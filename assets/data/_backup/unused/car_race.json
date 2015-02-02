@@ -1,0 +1,48 @@
+{
+	"name":"Car Race",
+	"description":"Your event has many cameras, and car related meta-data, which can be edited into a variety of outputs.",
+	"direction":"autodirector",
+	"direction_modules":[
+		"autodirector",
+		"manualdirector"
+	],
+	"post_modules":[
+		"maps",
+		"titles"
+	],
+
+	"shoot_modules":[
+	],
+
+	"meta_modules":[
+		"mobile",
+		"gps",
+		"map",
+		"telemetry",
+		"car_recogniser"
+	],
+	
+	"timeline": {
+		"overlay":
+		[
+		
+		],
+		"video":
+		[
+			{"in":0, "out":3.0, "shot":0}
+		],
+		"audio":
+		[
+
+		]
+		},
+
+	"shot_types":
+	[
+		{"id":0,"name":"closeup", "image":"shot1.png","difficulty":0}
+	],
+
+	"roles": [
+		{"name":"fixed camera","shot_ids":[0]}
+	]
+}

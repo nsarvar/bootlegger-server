@@ -1,0 +1,214 @@
+{
+    "name": "Demonstration",
+    "codename": "demo",
+    "description": "Live demo event.",
+    "post_modules": {
+        "audio_sync": 0,
+        "titles": 0,
+        "mobile": 0,
+        "song_list": 0
+    },
+    "shoot_modules": {
+        "autodirector": 1,
+        "manualdirector": 0,
+        "shotquality": 0
+    },
+    "timeline": {
+        "overlay": [],
+        "video": [],
+        "audio": []
+    },
+    "shot_types": [
+    
+       
+        {
+            "id": 0,
+            "name": "interview_medium_right",
+            "image": "interview_medium_right.png",
+            "icon": "interview_medium_right.png",
+            "description": "Place %%replaceme%% in the right of the frame, head to waist.",
+            "max_length": 25,
+            "wanted":5
+        },
+              
+        {
+            "id": 0,
+            "name": "interview_wide_right",
+            "image": "interview_wide_right.png",
+            "icon": "interview_wide_right.png",
+            "description": "Place %%replaceme%% in the right of the frame, head to foot.",
+            "max_length": 25,
+            "wanted":5
+        },
+        
+        {
+            "id": 1,
+            "name": "detailcloseup_1",
+            "image": "detail_closeup.png",
+            "icon": "detail_closeup.png",
+            "description": "Get a close-up of the demo in use.",
+            "max_length": 10,
+            "wanted":10
+        },
+        {
+            "id": 2,
+            "name": "detailCloseup_2",
+            "image": "detail_closeup.png",
+            "icon": "detail_closeup.png",
+            "description": "Get a closeup of the demo starting up.",
+            "max_length": 10,
+            "wanted":10
+        },
+        {
+            "id": 3,
+            "name": "detail_wide",
+            "image": "detail_wide.png",
+            "icon": "detail_wide.png",
+            "description": "Get a shot of the whole demo in use.",
+            "max_length": 10,
+            "wanted":10
+        },
+        {
+            "id": 4,
+            "name": "detail_wide",
+            "image": "detail_wide.png",
+            "icon": "detail_wide.png",
+            "description": "Get a shot of the whole demo starting up.",
+            "max_length": 10,
+            "wanted":10
+        },
+        {
+            "id": 5,
+            "name": "OTS",
+            "image": "OTS.png",
+            "icon": "OTS.png",
+            "description": "Shoot the demo being used over a user's shoulder.",
+            "max_length": 10,
+            "wanted":5
+        },
+        {
+            "id": 6,
+            "name": "profile_medium",
+            "image": "profile_medium.png",
+            "icon": "profile_medium.png",
+            "description": "Shoot someone using the demo. Frame them in profile.",
+            "max_length": 8,
+            "wanted":5
+        },
+
+        {
+            "id": 7,
+            "name": "interior_pan",
+            "image": "interior_pan.png",
+            "icon": "interior_pan.png",
+            "description": "Pan around the demo space, taking in the scene.",
+            "max_length": 8,
+            "wanted":4
+        },
+	{
+            "id": 8,
+            "name": "exterior_pan",
+            "image": "exterior_pan.png",
+            "icon": "exterior_pan.png",
+            "description": "Pan around the demo venue, taking in the scene.",
+            "max_length": 8,
+            "wanted":2
+        },
+
+        {
+            "id": 9,
+            "name": "POV",
+            "image": "POV.png",
+            "icon": "POV.png",
+            "description": "Walk around the demo space, shooting what's in front of you.",
+            "max_length": 15,
+            "wanted":5
+        }
+        
+    ],
+    "coverage_classes": {
+        "0": {
+            "percentage": "50",
+            "name": "Demo Closeup",
+            "items": []
+        },
+        "1": {
+            "percentage": "40",
+            "name": "Interview",
+            "items": []
+        },
+        "2": {
+            "percentage": "5",
+            "name": "Venue",
+            "items": []
+        },
+        "3": {
+            "percentage": "15",
+            "name": "Crowds",
+            "items": []
+        }
+    },
+    "ruleset": [
+        {
+            "direction_engine": "timed",
+            "pre_time": 0,
+            "name": "concert"
+        },
+        {
+            "direction_engine": "manual",
+            "name": "interviews",
+            "pre_time": 60
+        },
+        {
+            "direction_engine": "manual",
+            "name": "rigging",
+            "pre_time": 1200
+        }
+    ],
+    "roles": [
+        {
+            "id": 0,
+            "name": "Event Camera (Roaming)",
+            "shot_ids": [
+                0,
+		1,
+		2,
+		3,
+		4,
+		5,
+		6,
+		7,
+		8
+
+            ],
+            "description": "Inside venue, moving around."
+        },
+        {
+            "id": 1,
+            "name": "Event Camera (Fixed)",
+            "shot_ids": [
+               	0,
+		1,
+		2,
+		3,
+		4,
+		5,
+		6,
+		7
+		
+		
+
+            ],
+            "description": "Inside venue, at a demo stand."
+        },
+        {
+            "id": 2,
+            "name": "Event Camera (Exterior)",
+            "shot_ids": [
+              8
+            ],
+            "description": "Outside the venue."
+        }
+        
+    ]
+}

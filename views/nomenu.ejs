@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bootlegger connects fans together in realtime to act as a coordinated camera crew.
+It produces high quality, content rich footage with no expense">
+    <meta name="author" content="Bootlegger.tv">
+    <meta name="google-site-verification" content="9VV37JlFo9nMYNnmxw_iMZ0uEeONLE59qc7m4rzDUQ4" />
+    <link rel="shortcut icon" href="/static/favicon.png">
+
+    <title><%- title %></title>
+ <script src="/static/min/production.js"></script>
+<!--SCRIPTS -->
+<!--SCRIPTS END-->
+
+    
+
+<link rel="stylesheet" href="/static/min/production.css">
+<!--STYLES-->
+<link rel="stylesheet" href="/styles/bootstrap-switch.css">
+<link rel="stylesheet" href="/styles/bootstrap-tokenfield.css">
+<link rel="stylesheet" href="/styles/carousel.css">
+<link rel="stylesheet" href="/styles/datepicker.css">
+<link rel="stylesheet" href="/styles/ekko-lightbox.min.css">
+<link rel="stylesheet" href="/styles/paper-bootstrap.css">
+<link rel="stylesheet" href="/styles/x_app.css">
+<!--STYLES END-->
+
+    
+
+    <script>
+    <% if (user) { %>
+    var localcode = '<%=user.localcode%>';
+    <% } else { %>
+      var localcode = '';
+      <%}%>
+    </script>
+
+    <script id="eventlist-template" type="text/x-handlebars-template">
+      {{#each myevents}}
+      <li>
+      {{#if this.default_event}}
+      <a href="//{{this.server}}/event/view/{{this.id}}"><i class="glyphicon glyphicon-star"></i> {{this.name}}</a>
+      {{else}}
+      <a href="//{{this.server}}/event/view/{{this.id}}"> {{this.name}}</a>
+      {{/if}}
+      </li>
+      {{else}}
+      <li><a href="#" ><span class="text-muted">no events owned</span></a></li>
+      {{/each}}
+      <li class="divider"></li>
+      {{#each codeevents}}
+      <li><a href="#">{{this.name}}</a></li>
+      {{else}}
+      <li><a href="#" ><span class="text-muted">no events joined</span></a></li>
+      {{/each}}
+      <li>&nbsp;</li>
+      <li>
+      <div class="input-group" style="padding:3px 5px;">
+      <input type="text" id="mycode" class="form-control" placeholder="Event Code">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button" onclick="registercode()">Go!</button>
+      </span>
+      </li>
+      <li class="divider"></li>
+      <li><a href="/event/new"><span class="glyphicon glyphicon-plus"></span> Create New Event </a></li>
+    </script>
+  </head>
+
+  <body>
+      <div class="container" style="padding-top:10px;">
+        <% if(flash && flash.msg) { %>
+        <ul class="myalert alert alert-info">
+          <li><%- flash.msg %></li>
+        </ul>
+        <br>
+        <% } %>
+
+        <% if(flash && flash.err) { %>
+        
+          <% if (flash.err instanceof Array) { %>
+          <ul class="myalert alert alert-danger">
+          <% Object.keys(flash.err).forEach(function(error){ %>
+            <script>
+              $(function()
+              {
+                $('[name=<%= flash.err[error].name %>]').tooltip(
+                  {
+                    trigger:'manual',
+                    title:'<%= flash.err[error].msg %>'
+                  });
+                $('[name=<%= flash.err[error].name %>]').tooltip('show');
+              });
+            </script>
+            <li><%- flash.err[error].msg %></li>
+          <% }); %>
+          </ul>
+          <% } else { %>
+          <div class="myalert alert alert-danger"><%- flash.err.msg %></div>
+          <% }} %>
+
+        <div class="row">
+          <div class="col-md-12">
+            <% if (notonthisserver) { %>
+            <div class="jumbotron">
+  <h1>Out for Lunch!</h1>
+  <p><div class="">This event is not hosted on this server, try connecting to the correct server (you should have been redirected)</div></p>
+</div>
+            
+            <% } else { %>
+          <%- body %>
+          <%}%>
+        </div>
+    </div>
+      </div>    
+  </body>
+</html>
