@@ -9,7 +9,8 @@
 It produces high quality, content rich footage with no expense">
 <meta name="author" content="Bootlegger.tv">
 <meta name="google-site-verification" content="9VV37JlFo9nMYNnmxw_iMZ0uEeONLE59qc7m4rzDUQ4" />
-<link href='https://fonts.googleapis.com/css?family=Open+Sans|Waiting+for+the+Sunrise' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans|Waiting+for+the+Sunrise' rel='stylesheet' type='text/css' />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
 <link rel="shortcut icon" href="favicon.png">
 <style>
 
@@ -839,21 +840,20 @@ h5
     <div style="margin:auto auto;width:80%;padding-top:10%;">
       <img src="/static/images/logohome.png" style="width:100%;"  />
     </div>
-    <h1 style="width:80%;margin:auto auto;font-size:2.3em">
+    <h1 style="width:80%;font-size:2em;margin:auto auto">
         Turns fans into film crew.
       </h1>
-      
+      <h1 style="width:90%;margin:auto auto;font-size:30pt;margin-bottom:20px;">
+      <small style="display:block;line-height:1.1;margin-top:20px;font-size:16pt;">Bootlegger connects people together to act as a coordinated camera crew. <br>Produces high quality, content rich footage with no expense.  <br><a href="/howtobootleg">Find Out More</a></small>
+    </h1>
       <div style="margin:auto auto; width:80%;text-align:center;">
-        <h1 style="font-size:1.5em;">
-        <small>Download the app to start Bootlegging</small>
-      </h1>
         <a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger"><img src="/static/images/abadge.png"/></a><br><br>
       </div>
 
       <% if (!localmode) {%>
       <div style="width:80%;margin:auto auto;text-align:center;">
       <h1 style="font-size:1.5em;">
-        <small>Manage your event</small>
+        <small>Manage Your Shoot</small>
       </h1>
       <a href="/auth/google"><img src="/static/images/login.png" style="width:250px;"/></a>
     </div>
@@ -873,14 +873,23 @@ h5
     <li><a href="#how">How it Works</a></li>
     <li><a href="#when">Past Success</a></li>
 
-    <li style="height:87px;padding:0;position:absolute;bottom:0px;right:5px;width:65px;text-align:center;">
+        <li style="height:87px;padding:0;position:absolute;bottom:0px;right:5px;width:65px;text-align:center;">
+      <div style="height:47px;background:rgba(30,30,30,0.5);width:65px;border-top-left-radius: 10px;border-top-right-radius: 10px;">
+        <a href="http://community.bootlegger.tv" class="text-center">
+          <i style="margin-top:12px;margin-left:2px;margin-bottom:14px;" class="fa fa-desktop fa-2x"></i>
+<br>          <span style="display:inline-block;line-height:12px;margin-top:-10px;font-size:10pt;">Online<br>Forum</span>
+        </a>
+      </div>
+    </li>
+
+    <!-- <li style="height:87px;padding:0;position:absolute;bottom:0px;right:5px;width:65px;text-align:center;">
       <div style="height:47px;background:rgba(30,30,30,0.5);width:65px;border-top-left-radius: 10px;border-top-right-radius: 10px;">
         <a data-toggle="modal" data-target="#myModal" href="#">
           <img src="/static/images/server.png" alt="Offline Setup"/>
           <span style="display:inline-block;line-height:12px;margin-top:-10px;font-size:10pt;">Local<br>Setup</span>
         </a>
       </div>
-    </li>
+    </li> -->
 
     <li style="height:87px;padding:0;position:absolute;bottom:0px;right:75px;width:65px;text-align:center;">
       <div style="height:47px;background:rgba(30,30,30,0.5);width:65px;border-top-left-radius: 10px;border-top-right-radius: 10px;">
@@ -922,7 +931,7 @@ h5
   </div>
 </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -966,7 +975,7 @@ h5
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <section id="slide-1" class="homeSlide">
     <div class="bcg"
@@ -975,67 +984,84 @@ h5
         data-top-bottom="background-position: 50% -200px;"
         data-anchor-target="#slide-1">
 
-        <div style="margin:auto auto;width:526px;padding-top:200px;">
+        <div style="margin:auto auto;width:526px;padding-top:80px;">
       <img src="/static/images/logohome.png"  />
     </div>
 
     
     <% if (!localmode) { %>
     <h2 style="position:fixed;top:70px;right:60px;font-size:20pt;z-index:2000;text-align:right;line-height:1;" data-100p="opacity:0"  data-110p="opacity:1" data-200p="opacity:1"  data-210p="opacity:0">
-      Organisers<img src="/static/images/upar.png" />login to <br>manage your gigs.
+      Organisers<img src="/static/images/upar.png" />login to <br>manage your film shoots.
 
     </h2>
     <% } %>
 
     <h1 style="width:900px;margin:auto auto;font-size:32pt;">
       Turns fans into film crew.
-      <small style="display:block;line-height:1.1;margin-top:50px;font-size:14pt;">Bootlegger connects fans together in realtime to act as a coordinated camera crew. <br>It produces high quality, content rich footage with no expense</small>
+      <small style="display:block;line-height:1.1;margin-top:20px;font-size:16pt;">Bootlegger connects people together to act as a coordinated camera crew. <br>Produces high quality, content rich footage with no expense.  <br><a href="/howtobootleg" style="background:#0088aa;border-radius:10px;padding:10px;display:inline-block;margin-top:10px;box-shadow:0 0 10px rgba(0,0,0,0.5);color:white;">Find Out More</a></small>
     </h1>
 
+
+
+<div style="width:100%;margin-top:30px;">
+<div style="margin-left:35%;width:15%;display:inline-block;text-align:center;float:left;">
+ <h1 style="line-height:.5em;margin-bottom:10px;">
+  <small style="font-size:14pt;">
+      Download the app to start Bootlegging.
+    </small>
+  </h1>
+      <a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger" style="display:block;"><img src="/static/images/abadge.png"/></a>
+</div>
+<div style="width:15%;display:inline-block;text-align:center;float:left;">
+  <h1 style="line-height:.5em;margin-bottom:10px;"><small style="font-size:14pt;">
+      Create an shoot for others to Bootleg
+    </small>
+  </h1>
+   <div id="loginbtn" style="z-index:1001;margin:auto auto;width:250px;"
+
+  data-610="position:relative;right:0px;"  data-611="position:fixed;top:0;right:30%;"  data-612="right:30%;" data-780="right:1%;">
+    <a href="/auth/google"><img src="/static/images/login.png" style="width:250px;"/></a>
+  </div>
+</div>
+</div>
+
+<div style="width:100%;clear:both;text-align:center;padding-top:30px;">
+  <div style="border-bottom:1px solid rgba(255,255,255,0.4);margin-bottom:10px;width:30%;margin:auto auto;display:block;clear:both;"><h3 style="font-size:15pt;">Upcoming Shoots</h3></div>
+<% _.each(upcoming,function(u){ %>
+<div class="event" style="margin-top:10px;display:inline-block;background:rgba(0,0,0,0.5);padding:10px;box-shadow:0 0 20px rgba(0,0,0,0.5);color:white;">
+<h1 style="font-size:15pt;"><%- u.name %></h1>
+<%- moment(u.starts,"DD-MM-YYYY").format('ddd Do MMM \'YY') %> <span style="color:silver;">to</span> <%- moment(u.ends,"DD-MM-YYYY").format('ddd Do MMM \'YY') %>
+</div>
+<% }); %>
+</div>
     
 
     <div style="margin:auto auto; width:600px;text-align:center;margin-top:50px;">
-       <h1><small style="font-size:14pt;">
-      Download the app to start Bootlegging. <a href="/faq">FAQ</a>
-    </small>
-  </h1>
+      
 
-      <a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger"><img src="/static/images/abadge.png"/></a>
+
 <% if (localmode) { %>
-        <% if(flash.msg) { %>
-          <div class="myalert alert alert-danger"><%- flash.msg %></div>
-        <% } %>
-        <div class="alert alert-warning">You are in LOCAL mode and so cannot use Google to Login. Enter your Offline Code instead:</div>
-        <form action="/auth/local_login_pc" method="POST">
-          <div class="input-group col-sm-4 col-md-offset-4">
-           
-              <input type="text" name="code" class="btn input-lg form-control" style="font-size:14pt;font-weight:bold;border-radius:10px;border:2px solid silver;padding:5px;" />
-            <span class="input-group-btn">
-              <input type="submit" class="btn input-lg btn-default" value="Login"/>
-            </span>
-          </div>
-        </form>
-        <div class="clearfix"></div><br>
+<% if(flash.msg) { %>
+  <div class="myalert alert alert-danger"><%- flash.msg %></div>
+<% } %>
+<div class="alert alert-warning">You are in LOCAL mode and so cannot use Google to Login. Enter your Offline Code instead:</div>
+<form action="/auth/local_login_pc" method="POST">
+  <div class="input-group col-sm-4 col-md-offset-4">
+   
+      <input type="text" name="code" class="btn input-lg form-control" style="font-size:14pt;font-weight:bold;border-radius:10px;border:2px solid silver;padding:5px;" />
+    <span class="input-group-btn">
+      <input type="submit" class="btn input-lg btn-default" value="Login"/>
+    </span>
+  </div>
+</form>
+<div class="clearfix"></div><br>
 
 <form method="get" action="/auth/sync">
 <button type="submit" class="input-lg btn btn-info">Sync this Local Server with My Online Account</button>
 </form>
 <% } %>
-    </div>
-   
-<% if (!localmode) { %>
+    </div> 
 
-<h1><small style="font-size:14pt;">
-      Or create an event for others to Bootleg
-    </small>
-  </h1>
-
-    <div id="loginbtn" style="z-index:1001;margin:auto auto;width:250px;"
-
-    data-710="position:relative;right:0px;"  data-711="position:fixed;top:10px;right:40%;"  data-712="right:40%;" data-780="right:1%;">
-      <a href="/auth/google"><img src="/static/images/login.png" style="width:250px;"/></a>
-    </div>
-    <%}%>
 
     <div style="width:300px;display:block;position:absolute;right:5%;bottom:0;" data-0="opacity:1"  data-50="opacity:0">
       <h2>Scroll to find out more <img src="/static/images/scroll.png" /></h2> 
@@ -1421,9 +1447,9 @@ style="position:absolute;height:5600px;"
           <div class="carousel-inner" >
               <div class="item active" style="width:468px;">
                  <video style="width:615px;height:470px;background:black"  controls>
-                    <source src="http://static.bootlegger.tv/assets/1.mp4" type="video/mp4"></source>
-                    <source src="http://static.bootlegger.tv/assets/1.webm" type="video/webm" />
-                    <source src="http://static.bootlegger.tv/assets/1.ogg" type="video/ogg" />
+                    <source src="//static.bootlegger.tv/assets/1.mp4" type="video/mp4"></source>
+                    <source src="//static.bootlegger.tv/assets/1.webm" type="video/webm" />
+                    <source src="//static.bootlegger.tv/assets/1.ogg" type="video/ogg" />
 
                   </video>
                <div class="carousel-caption">
@@ -1432,9 +1458,9 @@ style="position:absolute;height:5600px;"
               </div>
               <div class="item">
                  <video style="width:615px;height:470px;background:black"  controls>
-                     <source src="http://static.bootlegger.tv/assets/2.mp4" type="video/mp4"></source>
-                    <source src="http://static.bootlegger.tv/assets/2.webm" type="video/webm" />
-                    <source src="http://static.bootlegger.tv/assets/2.ogg" type="video/ogg" />
+                     <source src="//static.bootlegger.tv/assets/2.mp4" type="video/mp4"></source>
+                    <source src="//static.bootlegger.tv/assets/2.webm" type="video/webm" />
+                    <source src="//static.bootlegger.tv/assets/2.ogg" type="video/ogg" />
                   </video>
                 <div class="carousel-caption">
                   Mouses, 2014
@@ -1443,9 +1469,9 @@ style="position:absolute;height:5600px;"
 
                 <div class="item">
                  <video style="width:615px;height:470px;background:black"  controls>
-                     <source src="http://static.bootlegger.tv/assets/3.mp4" type="video/mp4"></source>
-                    <source src="http://static.bootlegger.tv/assets/3.webm" type="video/webm" />
-                    <source src="http://static.bootlegger.tv/assets/3.ogg" type="video/ogg" />
+                     <source src="//static.bootlegger.tv/assets/3.mp4" type="video/mp4"></source>
+                    <source src="//static.bootlegger.tv/assets/3.webm" type="video/webm" />
+                    <source src="//static.bootlegger.tv/assets/3.ogg" type="video/ogg" />
                   </video>
               <div class="carousel-caption">
                   Mouses, 2014
@@ -1462,9 +1488,9 @@ style="position:absolute;height:5600px;"
 
 </div>
 
-<script src="/static/js/jquery-2.0.3.min.js"></script>
+<script src="/static/js/dependencies/2jquery-2.0.3.min.js"></script>
 <script src="/static/js/skrollr.min.js"></script>
-<script src="/static/js/skrollr.menu.min.js"></script>
+<script src="/static/js-extra/skrollr.menu.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 function adjustWindow(){
@@ -1478,7 +1504,7 @@ function adjustWindow(){
          // forceHeight: false
           render: function(data) {
               //Debugging - Log the current scroll position.
-              console.log(data.curTop);
+              //console.log(data.curTop);
           },
           keyframe: function(element, name, direction) {
             //name will be one of data500, dataTopBottom, data_offsetCenter

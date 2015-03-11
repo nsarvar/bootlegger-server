@@ -327,34 +327,43 @@ module.exports = {
 		//console.log("doing upload");
 		var tmpdir = path.normalize(path.dirname(require.main.filename) + uploaddir);
 		//console.log(req.files);
-		if (req.files.file != undefined)
+		if (req.file('file') != undefined)
 		{
-			var filename = req.files.file.name;
+			req.file('file').upload(function(err,files){
 
-			var tmp = req.files.file.path;
+				var filename = files[0].filename;
 
-			fs.copySync(tmp,tmpdir + filename);
-		
-			Event.findOne(event).exec(function(err,m){
+				var tmp = files[0].fd;
 
-				if (!err && m!=undefined)
-				{
-					//console.log(m);
-					m.audio = tmpdir + filename;
-					m.audio_progress = 0;
-					m.save(function(err){
-						//process file...
-						process_files(m);
-					});
-				}
-				else
-				{
-					console.log("err: " + err);
-				}
+				fs.copySync(tmp,tmpdir + filename);
+			
+				Event.findOne(event).exec(function(err,m){
+
+					if (!err && m!=undefined)
+					{
+						//console.log(m);
+						m.audio = tmpdir + filename;
+						m.audio_progress = 0;
+						m.save(function(err){
+							//process file...
+							process_files(m);
+						});
+					}
+					else
+					{
+						console.log("err: " + err);
+					}
+				});
+				console.log('done upload');
+				req.session.flash = "Done Upload";
+				res.redirect('/post');
 			});
-			req.session.flash = "Done Upload";
+			
 		}
-		res.redirect('/post');
+		else
+		{
+			res.redirect('/post');
+		}
 	},
 
 	reset:function(event,req,res)

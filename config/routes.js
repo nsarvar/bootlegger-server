@@ -33,7 +33,9 @@ module.exports.routes = {
   // 
   // (This would also work if you had a file at: `/views/home.ejs`)
 '/': 'AuthController.login',
-'/faq':'AuthController.faq',
+'/v/:shortlink?':'WatchController.shortlink',
+'/howtobootleg/:platform?':'AuthController.howtobootleg',
+//'/faq':'AuthController.faq',
 '/status':'AuthController.status',
 '/auth': 'AuthController.login',
 '/event/myevents':'EventController.myevents',
@@ -41,9 +43,10 @@ module.exports.routes = {
 '/event/edit/:id?': 'EventController.edit',
 '/auth/clone_output/:id?':'AuthController.clone_output',
 // '/event/getimages/:id?':'EventController.getimages',
-'/event/server/:id?':'EventController.server',
+//'/event/server/:id?':'EventController.server',
 '/pre':'EventControler.view',
 '/shoot':'ShootController.index',
+'/watch/:id?':'WatchController.index',
 '/post':'PostController.index',
 '/deliver':'DeliveryController.index',
 '/media/upload/:id?':{uploadLimit: '500mb'},

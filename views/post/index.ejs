@@ -73,6 +73,7 @@ _.each(event.post_modules,function(p,k) {
 		<div class="alert alert-info" style="text-align:center;min-height:160px;">
 		  <h1 id="ok">-</h1>
 		  <p>Clips Available</p>
+		  <a href="/post/remind/<%- event.id %>" class="btn btn-sm btn-primary">Send Upload Reminder</a>
 		</div>
 	</div>
 
@@ -94,7 +95,6 @@ _.each(event.post_modules,function(p,k) {
 	<div class="col-sm-3">
 		<div class="alert alert-info" style="text-align:center;min-height:160px;">
 		  <h1 id="mins">-</h1>
-		  <p>Total Mins</p>
 		</div>
 	</div>
 
@@ -128,9 +128,19 @@ _.each(event.post_modules,function(p,k) {
 <div class="row" style="margin-bottom:1em;margin-top:1em;">
 	  <a href="#" onclick="doit()" id="transbtn" class="btn btn-success" style="display:none;">Start Copy to Dropbox</a>
 	  <a href="#" onclick="cancel();" id="cancelbtn" class="btn btn-danger" style="display:none;">Stop and Reset Copy</a>
+	  
 </div>
-<% } %>
+<div class="row">
+		<div class="input-group col-sm-4 col-sm-push-4 text-center">
+		    <input type="text" class="datepicker input-sm" name="from" id="from"  data-date-format="dd-mm-yy"/>
+		    <span class="input-group-addon input-sm">to</span>
+		    <input type="text" class="datepicker input-sm" name="to" id="to" data-date-format="dd-mm-yy" />
+		</div>
+	</div>
 
+
+<% } %>
+<div class="row" style="height:10px;"></div>
 
 <div class="row">
 <% if (!user.dropbox) { %>
@@ -141,6 +151,7 @@ _.each(event.post_modules,function(p,k) {
 <!-- Split button -->
 <div class="btn-group">
   <a type="button" href="/post/document/<%-event.id %>" class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-th-list"></i> View Shot List</a>
+
   <button type="button" class="btn btn-primary dropdown-toggle btn-lg" data-toggle="dropdown" aria-expanded="false">
     <span class="caret"></span>
     <span class="sr-only">Toggle Dropdown</span>
@@ -161,7 +172,7 @@ _.each(event.post_modules,function(p,k) {
 <script>
 function doit()
 {
-	io.socket.get('/post/downloadall/<%- event.id %>',function(data)
+	io.socket.post('/post/downloadall/<%- event.id %>',{from:$('#from').val(),to:$('#to').val()},function(data)
 	{
 		//$('#ok').text(data.ok);
 		//$('#transbtn').attr('disabled','disabled');
@@ -185,7 +196,7 @@ function getprogress()
 {
 	io.socket.get('/post/downloadprogress/',function(data)
 	{
-		console.log(data);
+		//console.log(data);
 		if (data.msg)
 		{
 			$('.progresstext').text(data.msg);
@@ -226,12 +237,39 @@ io.socket.on('connect',function()
 			$('#ok').text(data.ok);
 			$('#fail').text(data.missing);
 			$('#crew').text(data.crew);
-			$('#mins').html(data.mins + '<br><span class="text-muted small">' + Math.round(data.filesize/1024) + "MB</span>");
+			$('#mins').html(data.mins + 'min<br><span class="text-muted small">' + Math.round(data.filesize/1024) + "MB</span>");
 			$('#missingfrom').text(data.missingfrom);
 		});
 
 	});
+
+
+var nowTemp = new Date();
+var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+ 
+var checkin = $('#from').datepicker({
+  onRender: function(date) {
+    return date.valueOf() < now.valueOf() ? 'disabled' : '';
+  }
+}).on('changeDate', function(ev) {
+  if (ev.date.valueOf() > checkout.date.valueOf()) {
+    var newDate = new Date(ev.date)
+    newDate.setDate(newDate.getDate() + 1);
+    checkout.setValue(newDate);
+  }
+  checkin.hide();
+  $('#to')[0].focus();
+}).data('datepicker');
+var checkout = $('#to').datepicker({
+  onRender: function(date) {
+    return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
+  }
+}).on('changeDate', function(ev) {
+  checkout.hide();
+}).data('datepicker');
 });
+
+
 
 </script>
 <script>

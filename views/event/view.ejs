@@ -6,10 +6,16 @@
     display: none !important;
   }
 
+
+
   .col-md-8
   {
     float:none !important;
   }
+}
+
+.thispage .popover.right{
+  z-index:1008 !important;
 }
 
 .btn-file {
@@ -47,13 +53,34 @@ input[readonly] {
   top:-2px;
   left:-2px;
 }
+
+.fileinput-preview img
+{
+  height:100px;
+  width:auto;
+}
+
+.thumbnail > img
+{
+  max-width:inherit;
+}
 </style>
+
+<div class="thispage">
 
 <div class="page-header">
   <h1>Prepare Shoot
 <small>Adjust specific settings for your shoot.</small>
   </h1>
 </div>
+<div class="panel panel-default">
+<div class="alert alert-success" style="margin:0;">
+  <i class="fa fa-check fa-4x" style="float:left;margin-top:15px;margin-right:10px;"></i>
+  <h2>All Systems Go! Download the App to get started.
+    <small style="display:block;">However, there are a few things you could tweak...</small></h2>
+</div>
+</div>
+<div class="clearfix"></div>
 <!-- <div class="alert alert-warning">
 This page will include phase editing and template updates. Stay tuned!
 </div> -->
@@ -106,22 +133,112 @@ This page will include phase editing and template updates. Stay tuned!
   </div>
 
 </div>
+<div class="row">
+  <form action="/event/image/<%- event.id %>" method="post" enctype="multipart/form-data">
+    <label class="col-sm-4 control-label">Event Icon
+<% if (event.icon) { %>
+      <img src="<%-event.icon%>" style="width:50px;height:50px;"/>
+      <%}%>
+    </label>
+    
+
+  <div class="col-sm-4">
+
+
+  <div class="fileinput fileinput-new" data-provides="fileinput">
+    <div class="fileinput-new thumbnail" style="width: 110px; height: 110px;" >
+      <img data-src="holder.js/100%x100%" alt="...">
+    </div>
+    <div class="fileinput-preview fileinput-exists thumbnail" style="width: 100px; height: 100px;overflow:hidden;">
+      
+    </div>
+    <div>
+      <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span class="fileinput-exists">Change</span><input type="file" name="image"></span>
+      <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+    </div>
+  </div>
+
+ 
+
+</div>
+<div class="col-sm-4">
+ <button type="submit" class="btn btn-primary">Upload Image</button>
+  </div>
+</form>
+</div>
+
   <% if (user.currentevent != event.id) { %>
  <div class="form-group">
-    <label for="inputEmail5" class="col-sm-4 control-label">This event is not your default</label>
+    <label for="inputEmail5" class="col-sm-6 control-label">This event is not your default</label>
     <button class="btn btn-link" id="makedefault" onclick="makedefault()">Make This Event My Default</button>
    </div>
 <%} else { %>
 <div >
-<label for="inputEmail5" class="col-sm-4 col-sm-offset-4">This event is your default event</label>
+<label for="inputEmail5" class="col-sm-6 col-sm-offset-4">This event is your default event</label>
    </div>
 <% } %>
 
-<div class="text-muted col-sm-6 col-sm-offset-4" style="display:block;">This event is built on the <%- event.eventtype.name %> template.</div>
+<div class="text-muted col-sm-8 col-sm-offset-4" style="display:block;">This event is built on the <%- event.eventtype.name %> template.</div>
 
 </div>
 
 <div class="clearfix"></div>
+<div class="page-header">
+<h1>Production Team</h1>
+</div>
+    <div class="popover right publicbox" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;<%= event.public ? "display:none;" : ""%>">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Choosing your Team</h3>
+        <div class="popover-content">
+          <p>Think carefully about who you want on your production team, is it better to have selected people, or as much footage as possible?</p>
+        </div>
+        </div>
+
+      <div class="form-horizontal col-md-8" style="float:left;">
+        <div class="form-group col-sm-6">
+          <label class="col-sm-7 control-label" for="publicevent">Anyone Can Contribute</label>
+        <div class="make-switch" id="publicevent" style="margin-top:10px;">
+          <input  name="publicevent" type="checkbox" <%= event.public ? "checked" : ""%>/>
+        </div>
+      </div>
+        <div class="form-group col-sm-6">
+        <label class="col-sm-7 control-label" for="viewevent">Contributors Can View All Footage</label>
+        <div class="make-switch" id="viewevent" style="margin-top:10px;">
+          <input  name="viewevent" type="checkbox" <%= event.publicview ? "checked" : ""%>/>
+        </div>
+        </div>
+
+        <div class="form-group col-sm-6">
+        <label class="col-sm-7 control-label" for="publicshare">Footage can be Shared on Social Media</label>
+        <div class="make-switch" id="publicshare" style="margin-top:10px;">
+          <input  name="publicshare" type="checkbox" <%= event.publicshare ? "checked" : ""%>/>
+        </div>
+        </div>
+
+        <div class="clearfix"></div>
+        <ul id="eventcodes" class="list-group loading publicbox" style="<%= event.public ? "display:none;" : ""%>">
+
+        </ul>
+
+      </div>
+
+<div class="clearfix"></div>
+      <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Administrators</h3>
+        <div class="popover-content">
+          <p>Is there anyone who needs access to this screen or who will be responsible for editing the content after the event?</p>
+        </div>
+        </div>
+
+      <div class="form-horizontal col-md-8" style="float:left;">
+        <ul id="admins" class="list-group loading">
+
+        </ul>
+
+      </div>
+
+
 <div class="page-header">
   <h1>Event Meta-Data</h1>
 </div>
@@ -199,45 +316,7 @@ This page will include phase editing and template updates. Stay tuned!
 <div class="clearfix"></div>
 <% } %>
 
-<div class="page-header">
-<h1>Production Team</h1>
-</div>
-		<div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
-        <div class="arrow"></div>
-        <h3 class="popover-title">Choosing your Team</h3>
-        <div class="popover-content">
-          <p>Think carefully about who you want on your production team, is it better to have selected people, or as much footage as possible?</p>
-        </div>
-      	</div>
 
-      <div class="form-horizontal col-md-8" style="float:left;">
-      	<div class="form-group">
-      		<label class="col-sm-4 control-label" for="publicevent">Public Event</label>
-  			<div class="make-switch" id="publicevent">
-  				<input  name="publicevent" type="checkbox" <%= event.public ? "checked" : ""%>/>
-  			</div>
-      	</div>
-      	
-      	<ul id="eventcodes" class="list-group loading">
-
-      	</ul>
-
-      </div>
-<div class="clearfix"></div>
-      <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
-        <div class="arrow"></div>
-        <h3 class="popover-title">Administrators</h3>
-        <div class="popover-content">
-          <p>Is there anyone who needs access to this screen or who will be responsible for editing the content after the event?</p>
-        </div>
-        </div>
-
-      <div class="form-horizontal col-md-8" style="float:left;">
-        <ul id="admins" class="list-group loading">
-
-        </ul>
-
-      </div>
 
 <div class="clearfix"></div>
 <div class="col-sm-12">
@@ -383,7 +462,7 @@ This page will include phase editing and template updates. Stay tuned!
 <a class="list-group-item active" href="#">Event Phases</a>
   {{#each phases}}
   <div class="list-group-item">
-          {{this.name}} {{#unless roles}}<button class="btn btn-link" onclick="removephase({{@index}})"><i class="glyphicon glyphicon-minus"></i></button>{{else}}<span class="pull-right text-muted">assigned by the template</span>{{/unless}}
+          {{#unless roles}}<button class="btn btn-link" onclick="removephase({{@index}})"><i class="glyphicon glyphicon-minus"></i></button> {{this.name}}{{else}}{{this.name}} <span class="pull-right text-muted">assigned by the template</span>{{/unless}}
   </div>
   
   {{else}}
@@ -506,6 +585,16 @@ $(function(){
     $('#publicevent').on('switch-change', function (e, data) {
         var value = data.value;
         updatepublic(data.value);
+    });
+
+    $('#viewevent').on('switch-change', function (e, data) {
+        var value = data.value;
+        updateview(data.value);
+    });
+
+    $('#publicshare').on('switch-change', function (e, data) {
+        var value = data.value;
+        updateshare(data.value);
     });
 
     $('.make-switch.multi').on('switch-change', function (e, data) {
@@ -739,6 +828,26 @@ function updatepublic(val)
   io.socket.post('/event/edit/<%= event.id %>',{public:val},function(response)
   {
     showok('Updated public status',$('#publicevent'));
+    if (!val)
+      $('.publicbox').show();
+    else
+      $('.publicbox').hide();
+  }); 
+}
+
+function updateview(val)
+{
+  io.socket.post('/event/edit/<%= event.id %>',{publicview:val},function(response)
+  {
+    showok('Updated public viewing footage',$('#viewevent'));
+  }); 
+}
+
+function updateshare(val)
+{
+  io.socket.post('/event/edit/<%= event.id %>',{publicshare:val},function(response)
+  {
+    showok('Updated sharing options',$('#publicshare'));
   }); 
 }
 
@@ -748,7 +857,7 @@ function updatemulti(cat,name,val)
   obj[cat] = {};
   $.each($('[cat='+cat+']'),function(){
     //console.log($(this));
-    obj[cat][$(this).attr('name')] = this.checked;
+    obj[cat][$(this).attr('name')] = this.checked ? 1 : 0;;
   });
  
   io.socket.post('/event/edit/<%= event.id %>',obj,function(response)
@@ -764,4 +873,43 @@ function makedefault()
     showok('Made this event the default',$('#makedefault'));
   }); 
 }
+
+$(function(){
+
+  if (localStorage["firstrunview"] == undefined)
+  {
+    $('#myModal').modal('show');
+  }
+  //localStorage["halma.game.in.progress"]
+  //bootstro.start();
+});
+
+function notour()
+{
+  localStorage["firstrunview"] = true;
+}
+
+function tour()
+{
+  $('#myModal').modal('hide');
+  localStorage["firstrunview"] = true;
+  bootstro.start('.bootstro',{stopOnBackdropClick:false});
+}
+
 </script>
+
+<div class="modal fade"  data-show="true" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="margin:auto auto;margin-top:10%;">
+    <div class="modal-content" style="text-align:center;">
+      <div class="modal-body">
+        <h1>Welcome to Your first film shoot</h1>
+        
+      </div>
+      <div class="modal-footer" style="text-align:center;">
+        <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" onclick="tour();">Take the Tour...</button>
+        <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" onclick="notour();">No, Thanks. I know my way around.</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

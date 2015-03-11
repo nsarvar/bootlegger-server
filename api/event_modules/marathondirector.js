@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var moment = require('moment');
 
+var redis = require("redis"), redisclient = redis.createClient(sails.config.session.port,sails.config.session.host);
 
 function processMedia(session, media)
 {
@@ -109,22 +110,45 @@ module.exports = {
 		{
 			_.each(ev,function(e)
 			{
-				if (e.eventtype.shoot_modules[module.exports.codename] == 1)
+				//console.log('maybe '+e.name);
+				if (e.shoot_modules[module.exports.codename] == 1)
 				{
 					//if this server is running it
+					//console.log('maybe '+e.name);
 					if (!e.server || e.server == sails.hostname  || sails.multiserveronline==false)
 					{
+						console.log('starting event '+e.name);
 						module.exports.AllEvents[e.id] = {
 							id : e.id,
 							data : e,
 							users:{},
 							currentphase:'selection',
 							lastuploadchecked:new Date()
-						}		
+						}
+
+						redisclient.get('busers:'+e.id, function(err, reply) {
+							if (reply)
+							{
+								console.log('reply: '+reply);
+								
+								//console.log(JSON.parse(reply));
+								try{
+									var newusers = JSON.parse(reply);
+									console.log(newusers);
+									module.exports.AllEvents[e.id].users = newusers;
+								}
+								catch (ex)
+								{
+									console.log('cant parse from redis');
+								}
+								
+							}
+							module.exports.longpoll();
+						});
 					}
 				}
 			});
-			module.exports.longpoll();
+			
 			//console.log(module.exports.AllEvents);
 		});
 	},
@@ -135,13 +159,21 @@ module.exports = {
 		{
 			Event.findOne(eventid).exec(function(err,e)
 			{
-				module.exports.AllEvents[e.id] = {
-						id : e.id,
-						data : e,
-						users:{},
-						currentphase:'selection',
-						lastuploadchecked:new Date()
-					};
+				if (e.shoot_modules[module.exports.codename] == 1)
+				{
+					//if this server is running it
+					//console.log('maybe '+e.name);
+					if (!e.server || e.server == sails.hostname  || sails.multiserveronline==false)
+					{
+						module.exports.AllEvents[e.id] = {
+							id : e.id,
+							data : e,
+							users:{},
+							currentphase:'selection',
+							lastuploadchecked:new Date()
+						};
+					}
+				}
 				//module.exports.longpoll();
 			});
 		}
@@ -165,6 +197,7 @@ module.exports = {
 				if (!module.exports.AllEvents[event].users[user].processingpush)
 				{
 					module.exports.AllEvents[event].users[user].processingpush = true;
+					Log.logmore('marathondirector',{msg:'Process File',userid:user,eventid:event, media:media.id});
 					//process on timeout to catch all of the clips that batch upload:
 					setTimeout(processMedia(req.session,media),5000);
 				}
@@ -206,7 +239,7 @@ module.exports = {
 					var uniqueusers = _.unique(usersnotuploaded);
 					//console.log("unique users: "+uniqueusers);
 					//for each one of these, find the session info:
-					User.find({id:uniqueusers},function(err, users)
+					User.find({id:uniqueusers}).exec(function(err, users)
 					{
 						_.each(users,function(us){
 							//push a message to them:
@@ -215,6 +248,7 @@ module.exports = {
 								pushes.push(us.id); 
 								//console.log("send msg");
 								Gcm.sendMessage(us.platform,us.pushcode,"Upload Videos","Please upload your " + event.data.name + " videos",event.id);
+								Log.logmore('marathondirector',{msg:'GCM Message',userid:us.id,eventid:event.id});
 							}
 						});
 
@@ -248,6 +282,7 @@ module.exports = {
 			module.exports.AllEvents[event].users[user] = {
 				id:user,
 				name:profile.profile.displayName,
+				profileImg:profile.profile._json.picture,
 				status:'ready',
 				lastpush:new Date(),
 				role:-1,
@@ -255,6 +290,8 @@ module.exports = {
 				lasthearbeat:new Date()
 			};
 
+
+			redisclient.set('busers:'+event, module.exports.AllEvents[event].users);
 
 			//User.publishUpdate(user,{length:module.exports.AllEvents[event].users[user].length, warning:module.exports.AllEvents[event].users[user].warning,live:module.exports.AllEvents[event].users[user].live,cameragap:module.exports.AllEvents[event].users[user].cameragap});
 
@@ -271,6 +308,7 @@ module.exports = {
 			//reconnect user:
 			//console.log('re-connect user');
 			module.exports.AllEvents[event].users[user].status = 'ready';
+			redisclient.set('busers:'+event, module.exports.AllEvents[event].users);
 			//User.publishUpdate(user,{msg:'Welcome back...'});
 			//User.publishUpdate(user,{modechange:'selection'});
 			//User.publishUpdate(user,{eventstarted:module.exports.AllEvents[event].hasstarted});
@@ -284,6 +322,7 @@ module.exports = {
 	disconnect:function(event, user)
 	{
 		module.exports.AllEvents[event].users[user].status = 'offline';
+		redisclient.set('busers:'+event, module.exports.AllEvents[event].users);
 		Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 		Log.logmore('marathondirector',{msg:'User lost',userid:user,eventid:event});
 		//delete module.exports.AllEvents[event].users[user];
@@ -316,6 +355,7 @@ module.exports = {
 		try
 		{
 			module.exports.AllEvents[event].users[user].status = 'signedout';
+			redisclient.set('busers:'+event, module.exports.AllEvents[event].users);
 			Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 			//check for really lost...
 			// setTimeout(function()
@@ -473,10 +513,15 @@ module.exports = {
 
 	checkstatus:function(event)
 	{
+		// console.log("checking status");
+		//console.log(module.exports.AllEvents);
 		var shots = module.exports.AllEvents[event].data.eventtype.shot_types;
-		shots = _.map(shots,function(s){
-			return s.image;
-		});
+		// shots = _.map(shots,function(s){
+		// 	return s;
+		// });
+		//console.log(module.exports.AllEvents[event].users);
+
+
 		Event.publishUpdate(event,{shots:shots});
 		Event.publishUpdate(event,{phase:module.exports.AllEvents[event].currentphase});
 		Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
@@ -564,7 +609,7 @@ module.exports = {
 		{
 			Log.logmore('marathondirector',{msg:'update event',eventid:ev.id});
 			var e = ev;				
-				//cull shottypes from this list which do not match the appropriate leadlocation value
+			
 			var direction = ev.leadlocation;
 
 			var allroles = ev.eventtype.roles;
@@ -581,9 +626,10 @@ module.exports = {
 			e.coverage_classes = tempcoverage;
 			e.roles = allroles;
 			e.eventcss = ev.eventtype.eventcss;
+			e.ispublic = e.public;
 			
 			if (e.roleimg == undefined && ev.eventtype.roleimg != undefined)
-				e.roleimg = ev.eventtype.roleimg;
+				e.roleimg = sails.config.S3_CLOUD_URL + ev.eventtype.roleimg;
 
 			e.codename = ev.eventtype.codename;
 

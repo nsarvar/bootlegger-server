@@ -14,20 +14,20 @@
     // Listen for Comet messages from Sails
     // socket.on('message', function messageReceived(message) {
 
-     io.socket.on('message',function(msg)
-     {
-      //console.log(msg);
-     });
+ //     io.socket.on('message',function(msg)
+ //     {
+ //      //console.log(msg);
+ //     });
 
- io.socket.on('event',function(msg)
-     {
-      console.log(msg);
-     });
+ // io.socket.on('event',function(msg)
+ //     {
+ //      console.log(msg);
+ //     });
 
-  io.socket.on('user',function(msg)
-     {
-      //console.log(msg);
-     });
+ //  io.socket.on('user',function(msg)
+ //     {
+ //      //console.log(msg);
+ //     });
 
     //   //log('New comet message received :: ', message);
 
@@ -89,6 +89,11 @@ $(function()
     content:'<div style="text-align:center">You will need this code to use bootlegger without internet<br><h1 id="localcode" style="text-align:center">'+localcode+'</h1><button class="btn" onclick="getnewcode();">Get New Code</button></div>'
   });
 
+  $("#chromecast").popover({
+    html:true,
+    content:$('#cast_content')
+  });
+
 });
 
 function showok(msg,obj)
@@ -127,7 +132,7 @@ function edittitle()
           editingtitle = false;
           $('#title').replaceWith(oldtitle);
           $('#title span').text(newval);
-          socket.post('/event/changetitle/',{title:newval}, function (response) {
+          io.socket.post('/event/changetitle/',{title:newval}, function (response) {
             showok('Updated',$('#title'));
           });
         }
@@ -141,9 +146,9 @@ function registercode()
 {
   if ($('#mycode').val()!='')
   {
-    socket.post('/event/registercode/',{code: $('#mycode').val()}, function (response) {
+    io.socket.post('/event/registercode/',{code: $('#mycode').val()}, function (response) {
       showok(response.msg,$('#myeventsbtn'));
-      socket.get('/event/myevents',function(resp){
+      io.socket.get('/event/myevents',function(resp){
         $('#eventlist').html(eventlisttemplate(resp));
         $('.dropdown input, .dropdown label').click(function(e) {
           e.stopPropagation();

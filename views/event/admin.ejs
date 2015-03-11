@@ -25,21 +25,38 @@
 }
 </style>
 
-<h2>System Admin</h2>
+<h2>Event Admin</h2>
 
+<a href="/log/all/" class="btn btn-primary">Master Server Log</a><br><br>
+<form action="/post/broadcast" method="post">
+	<div class="input-group">
+<input type="text" name="advert" class=" col-sm-2 form-control" />
+<span class="input-group-btn">
+<button type="submit" class="btn btn-warning">Broadcast Message to All Users</button>
+</span>
+</div><!-- /input-group -->
+</form> 
+<br><br>
 <div class="list-group">
 	<a class="list-group-item active" href="#">All Bootlegger Events</a>
-		<% _.each(events,function(e){ %>
+		<% _.each(events,function(evs,server){ %>
+			<div class="list-group-item text-muted">On <%- server %></div>
+			<% _.each(evs,function(e){%>
 	  	<div class="list-group-item">
 		  	<div class="row">
 		  		<div class="col-sm-12">
 		  			<div class="status" rel="<%- e.id %>" id="event_<%- e.id %>"></div>
 		    		<a href="/event/view/<%- e.id %>"><strong><%- e.name %></strong></a>
 		    		<%- e.starts %> at <%- e.starts_time %> to <%- e.ends %> at <%- e.ends_time %>
+		    		<div style="margin-top:5px;">
+						<a href="/event/kill/<%- e.id %>" onclick="return confirm('Really Kill Event?')" class="btn btn-sm btn-danger">Kill Event</a>
+						<a href="/media/transcode/<%- e.id %>" class="btn btn-sm btn-default">Transcode</a>
+						<a href="/log/view/<%- e.id %>" class="btn btn-sm btn-default">Logs</a>
+		    		</div>
 				</div>
 			</div>
 		</div>
-		<% }); %>
+		<% });}); %>
 </div>
 
 
@@ -48,7 +65,6 @@
 	<span class="big">{{phase}}<br /><small>phase</small></span>
 	 <span class="big">{{ruleset}}<br /><small>ruleset</small></span>
 	  <span class="big">{{media}}<br /><small>clips</small></span>
-	<a href="/event/kill/{{eventid}}" class="btn btn-danger">Kill Event</a>
 </script>
 
 <script>
@@ -59,7 +75,7 @@ function ev(id)
 	return function(response)
 	{
 		var evid = id;
-		events[evid].media == response.length;
+		events[evid].media = response.length;
 		$('#event_'+evid).html(statustemplate(events[evid]));
 	}
 }
@@ -72,7 +88,7 @@ $(function()
 	var source = $("#status-template").html();
     statustemplate = Handlebars.compile(source);
 
-	socket.on('connect',function()
+	io.socket.on('connect',function()
 	{
 		$('.status').each(function()
 		{
@@ -83,16 +99,16 @@ $(function()
 			  	media:0,
 			  	eventid:$(this).attr('rel')
 			  };
-	 		socket.get('/event/updates/'+$(this).attr('rel'), function(response){
+	 		io.socket.get('/event/updates/'+$(this).attr('rel'), function(response){
 	      		//console.log(response);
 	    	});
 
 	 		var callback = ev($(this).attr('rel'));
-			socket.get('/media/event/'+$(this).attr('rel'), callback);
+			io.socket.get('/media/event/'+$(this).attr('rel'), callback);
 		});
 		 
 
-		socket.on('message', function(response){
+		io.socket.on('message', function(response){
 
 			if (!response.id)
 			{

@@ -13,21 +13,21 @@ function genedl(event,callback)
 		//get media
 		//order by captured at (in case no offset)
 		Media.find({event_id:event},function(err, medias){
+
 			//find unique users:
 			var uniqusers = _.uniq(_.pluck(medias,'created_by'));
-
 			var allusers = _.map(uniqusers,function(u){
 				return _.find(users,{id:u});
 			});
 
-			allusers = _.orderBy(allusers,function(u){
-				return u.profile.name.familyName;
+			allusers = _.sortBy(allusers,function(u){
+				return u.profile.name.familyName || u.profile.displayName;
 			});
 
-			//console.log(allusers);
-			var data = _.pluck(allusers,function(u){
+			var data = _.map(allusers,function(u){
 				return u.profile.displayName;
 			});
+
 		    callback(data.join("\r\n"));
 		});//media
 	});//users
@@ -44,8 +44,8 @@ module.exports = {
 
 	getedl:function(event,req,res)
 	{
-		//console.log("done");
 		genedl(event,function(data){
+			// console.log(data);
 			res.setHeader('Content-disposition', 'attachment; filename=Titles.txt');
 			res.send(data);
 		});

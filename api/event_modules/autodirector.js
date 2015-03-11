@@ -187,11 +187,14 @@ module.exports = {
 			_.each(ev,function(e)
 			{
 				//if this server is running it
-				if (e.eventtype.shoot_modules[module.exports.codename] == 1)
+				if (e.shoot_modules[module.exports.codename] == 1)
 				{
+					//console.log('starting event '+e.id);
 					//console.log(e.server);
 					if (e.server == sails.hostname || !e.server || sails.multiserveronline==false)
 					{
+
+						console.log('starting event '+e.name);
 
 						//calc coverage classes:
 						var coverage = e.coverage_classes;
@@ -234,31 +237,40 @@ module.exports = {
 		{
 			Event.findOne(eventid).exec(function(err,e)
 			{
-				var coverage = e.coverage_classes;
-				_.each(coverage,function(c,i)
+				if (e.shoot_modules[module.exports.codename] == 1)
 				{
-					c.weight = 0;
-				});
-				//get media:
-				Media.find({event_id:eventid},function(err,media)
-				{
-					_.each(media, function(m)
+					//console.log('starting event '+e.id);
+					//console.log(e.server);
+					if (e.server == sails.hostname || !e.server || sails.multiserveronline==false)
 					{
-						//console.log(m);
-						if (m.meta.static_meta.coverage_class)
-							coverage[m.meta.static_meta.coverage_class].weight++;
-					});
-					module.exports.AllEvents[e.id] = {
-							id : e.id,
-							data : e,
-							clock : 0,
-							hasstarted:false,
-							currentphase : 'stopped',
-							users:{},
-							coverageweights:coverage,
-						};
-					module.exports.longpoll();
-				});
+
+						var coverage = e.coverage_classes;
+						_.each(coverage,function(c,i)
+						{
+							c.weight = 0;
+						});
+						//get media:
+						Media.find({event_id:eventid},function(err,media)
+						{
+							_.each(media, function(m)
+							{
+								//console.log(m);
+								if (m.meta.static_meta.coverage_class)
+									coverage[m.meta.static_meta.coverage_class].weight++;
+							});
+							module.exports.AllEvents[e.id] = {
+									id : e.id,
+									data : e,
+									clock : 0,
+									hasstarted:false,
+									currentphase : 'stopped',
+									users:{},
+									coverageweights:coverage,
+								};
+							module.exports.longpoll();
+						});
+					}
+				}
 			});
 		}
 		else
@@ -767,6 +779,7 @@ module.exports = {
 				role:-1,
 				shot:false,
 				hold:false,
+				profileImg:profile.profile._json.picture,
 				skip:false,
 				reject_shot:false,
 				cameragap:module.exports.cameragap,
@@ -1211,13 +1224,13 @@ module.exports = {
 		}
 	},
 
-	updateevent:function(ev)
+updateevent:function(ev)
 	{
 		try
 		{
 			Log.logmore('autodirector',{msg:'update event',eventid:ev.id});
 			var e = ev;				
-				//cull shottypes from this list which do not match the appropriate leadlocation value
+			
 			var direction = ev.leadlocation;
 
 			var allroles = ev.eventtype.roles;
@@ -1234,9 +1247,10 @@ module.exports = {
 			e.coverage_classes = tempcoverage;
 			e.roles = allroles;
 			e.eventcss = ev.eventtype.eventcss;
+			e.ispublic = e.public;
 			
 			if (e.roleimg == undefined && ev.eventtype.roleimg != undefined)
-				e.roleimg = ev.eventtype.roleimg;
+				e.roleimg = sails.config.S3_CLOUD_URL + ev.eventtype.roleimg;
 
 			e.codename = ev.eventtype.codename;
 
@@ -1266,7 +1280,5 @@ module.exports = {
 			console.log(e);
 		}
 	}
-
-
 
 }

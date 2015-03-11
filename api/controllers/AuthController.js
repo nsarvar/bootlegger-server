@@ -11,8 +11,23 @@ var uploaddir = "/upload/";
 var path = require('path');
 var usercount = 0;
 var VERSION_STRING = 11;
+var moment = require('moment');
 
 module.exports = {
+
+	howtobootleg:function(req,res)
+	{
+		switch (req.param('platform'))
+		{
+			case 'app':
+				return res.view('help/app',{showhelp:true});
+			case 'web':
+				return res.view('help/web',{showhelp:true});
+			default:
+				return res.view('help/index',{showhelp:true});
+		}
+		
+	},
 
 	demo1:function(req,res)
 	{
@@ -24,9 +39,19 @@ module.exports = {
 		return res.view({_layoutFile: null});
 	},
 
-	faq:function(req,res)
+	setprivacy:function(req,res)
 	{
-		return res.view();
+		User.findOne(req.session.passport.user.id).exec(function(err,user)
+		{
+			if (!user.permissions)
+				user.permissions = {};
+
+			user.permissions[req.param('eventid')] = req.param('privacy');
+			user.save(function(err,done)
+			{
+				res.json({msg:'user updated'});
+			});
+		});
 	},
 
 	status:function(req,res)
@@ -428,9 +453,28 @@ module.exports = {
 			else
 			{
 				if (!req.wantsJSON)
-					return res.view({_layoutFile: '../login.ejs'});
+				{
+					Event.find({public:true}).exec(function(err,upcoming){
+						//console.log(_.pluck(upcoming,'name'));
+					var ups = _.filter(upcoming, function(u)
+						{
+							//console.log(u.ends);								
+							//console.log(moment(u.ends,"DD-MM-YYYY"));
+							//return true;
+							return moment(u.ends,"DD-MM-YYYY").isAfter();
+						});
+						_.sortBy(ups,function(u){
+							return moment(u.ends,"DD-MM-YYYY").toDate();
+						});
+
+						ups.reverse();
+						return res.view({upcoming:_.take(ups,3),_layoutFile: '../login.ejs'});
+					});
+				}
 				else
+				{
 					return res.json({error:'Please login'},403);
+				}
 			}
 
 			// res.view({
@@ -518,20 +562,42 @@ module.exports = {
 		res.redirect('/');
 	},
 
-	fakejson:function(req,res)
+	// fakejson:function(req,res)
+ // 	{
+ // 		//if (sails.localmode)
+ // 		{
+	//  		var uuid = require('node-uuid');
+	//  		var fakeid = uuid.v1();
+	//  		usercount++;
+	//  		req.session.ismobile = true;
+
+	//  		req.session.authenticated = true;
+	//  		//req.session.User = {name:'Tom'};
+	//  		User.findOrCreate({uid: fakeid},{uid: fakeid,name:'User '+usercount,profile:{_json:{picture:''},displayName:'User '+usercount,name:{givenName:'User'}}}, function(err, user) {
+	//  			req.session.passport.user = user;
+	//  	    	return res.json({msg:'logged in'},200);
+	//  	    });
+	//  	}
+	//  	 // else
+	//  	 // {
+	//  	 // 	return res.json({msg:'no chance'},403);
+	//  	 // }
+ // 	},
+
+ 	fakepc:function(req,res)
  	{
  		//if (sails.localmode)
  		{
 	 		var uuid = require('node-uuid');
 	 		var fakeid = uuid.v1();
 	 		usercount++;
-	 		req.session.ismobile = true;
+	 		req.session.ismobile = false;
 
 	 		req.session.authenticated = true;
 	 		//req.session.User = {name:'Tom'};
-	 		User.findOrCreate({uid: fakeid},{uid: fakeid,name:'User '+usercount,profile:{displayName:'User '+usercount,name:{givenName:'User'}}}, function(err, user) {
+	 		User.findOrCreate({uid: fakeid},{uid: fakeid,name:'User '+usercount,profile:{_json:{picture:''},displayName:'User '+usercount,name:{givenName:'User'}}}, function(err, user) {
 	 			req.session.passport.user = user;
-	 	    	return res.json({msg:'logged in'},200);
+	 	    	return res.redirect('/');
 	 	    });
 	 	}
 	 	 // else

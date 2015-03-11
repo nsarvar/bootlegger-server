@@ -3,10 +3,10 @@
  */
 module.exports = function (req, res, ok) {
 
-  var ev = req.param('id') || req.session.event;
+  var ev = req.session.event || req.params.id || req.session.passport.user.currentevent;
   //console.log(req.session.passport.user.profile.emails[0].value);
 
-  if (req.session.passport.user && req.session.passport.user.profile.emails[0].value == 'tom@bartindale.com')
+  if (req.session.passport.user && req.session.passport.user.profile.emails[0].value == sails.config.admin_email)
   {
     //req.session.passport.user.currentevent = ev;
     return ok();
@@ -16,7 +16,7 @@ module.exports = function (req, res, ok) {
     if (ev !=undefined)
     {
       //console.log(req.session.passport.user.id);
-      Event.find().where({id:ev}).done(function (err,e){
+      Event.find().where({id:ev}).exec(function (err,e){
         //console.log(e);
         if (e.length ==1 && _.contains(e[0].ownedby,req.session.passport.user.id))
         {
@@ -31,7 +31,7 @@ module.exports = function (req, res, ok) {
           else
           {
             req.session.flash = {msg:'No can do, sorry (you are not the owner of this event).'};
-            return res.redirect('event/new');
+            return res.redirect('commission/new');
           }
         }
       });

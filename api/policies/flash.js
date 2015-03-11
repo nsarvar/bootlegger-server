@@ -9,7 +9,7 @@ module.exports = function(req, res, next) {
 	if (req.session.passport.user)
 	{
 		res.locals.user = req.session.passport.user;
-		res.locals.user.emailhash = md5(req.session.passport.user.profile.emails[0].value.trim());
+		//res.locals.user.emailhash = md5(req.session.passport.user.profile.emails[0].value.trim());
 	}
 	else
 	{
@@ -20,6 +20,7 @@ module.exports = function(req, res, next) {
 	//res.locals.dropbox = req.session.passport.dropbox;
 	res.locals.localmode = sails.localmode;
 	res.locals.inspect = require('util').inspect;
+	res.locals.moment = require('moment');
 
 	if (!res.locals.event)
 	{

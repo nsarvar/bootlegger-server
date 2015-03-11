@@ -1,0 +1,70 @@
+<style>
+
+
+.highlight
+{
+  background:#dff0d8;
+}
+
+.shothidden
+{
+  opacity: 0.5;
+}
+
+.ng-invalid
+{
+  border:red solid 1px;
+}
+
+</style>
+  <script type="text/javascript" src="//fgnass.github.io/spin.js/spin.min.js"></script>
+<div class="page-header">
+  <h1>Live Commission
+<small>Change what shots you need in real-time</small>
+  </h1>
+</div>
+<div class="alert alert-info"><p>If a participant is currently filming, these changes will occur now, else they will be notified next time they connect.</p></div>
+
+<div ng-app="shotApp" ng-controller="Event">
+  <div class="alert alert-success" ng-show="success">Event updated and participants notified!</div>
+<div class="alert alert-danger" ng-show="error">Problem updating the event!</div>
+<div>
+  <button ng-click="save()" class="btn btn-primary">Save Changes + Send Updates</button>
+<span us-spinner="{radius:10, width:4, length: 10}"></span>
+<div>
+  <div class="media" ng-repeat="m in event.eventtype.shot_types" style="width:50%;display:inline-block;" ng-class="{'highlight':m.isnew==true, 'shothidden':m.hidden}">
+      <div class="pull-left" style="position:relative;" >
+       <img style="width:180px;" class="media-object" ng-src="/data/icons/{{m.icon}}"/>
+       <span class="label label-success" style="position:absolute;top:0px;left:0px;">{{m.footage.length}}</span>
+
+       </div>
+    <div class="media-body">
+      <div style="float:right;width:15%;">
+        <button class="btn btn-link" ng-click="hide(m)"><i class="fa" ng-class="{'fa-eye-slash':m.hidden, 'fa-eye':m.hidden==undefined || m.hidden==false}" ng-model="m.hidden"></i></button>
+        <button class="btn btn-link" ng-click="clone(m)"><i class="fa fa-files-o"></i></button>
+        <button class="btn btn-link" ng-show="m.isnew" ng-click="remove(m)"><i class="fa fa-times"></i></button>
+      </div>
+
+<div style="float:left;width:85%;">
+      <textarea ng-show="m.isnew" class="form-control" ng-model="m.description" minlength="10" required></textarea>
+      
+      <div class="input-group col-xs-6" ng-show="m.isnew">
+       <input  class="form-control" ng-model="m.max_length" min="5" max="50" required></input>
+        <span class="input-group-addon" id="basic-addon2">secs</span>
+      </div>
+
+      <div class="input-group col-xs-6" ng-show="m.isnew">
+       <input  class="form-control" ng-model="m.wanted" min="1" max="50" required></input>
+        <span class="input-group-addon" id="basic-addon2">shots</span>
+      </div>
+    </div>
+
+      <h4 class="media-heading" ng-hide="m.isnew">{{m.description}}</h4>
+      <span class="text-muted" ng-hide="m.isnew">{{m.wanted}} shots of {{m.max_length}}s wanted</span>
+
+      
+    </div>
+  </div>
+</div>
+</div>
+</div>

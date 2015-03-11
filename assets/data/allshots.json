@@ -1,0 +1,3071 @@
+[
+    {
+        "id": 0,
+        "name": "Presenter Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Make their face fill the frame"
+    },
+    {
+        "id": 1,
+        "name": "Subject Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%subject%%. Make their face fill the frame"
+    },
+    {
+        "id": 2,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 3,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%subject%%. Frame them from head to waist"
+    },
+    {
+        "id": 4,
+        "name": "Presenter doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of %%presenter%% holding something.  Frame them from head to waist"
+    },
+    {
+        "id": 5,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of %%subject%% holding something. Frame them from head to waist"
+    },
+    {
+        "id": 6,
+        "name": "Presenter OTS shot medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "Following %%presenter%% as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 7,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "Following the %%subject%% as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 8,
+        "name": "Presenter Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_right.png",
+        "icon": "figure-operating_reverse_detail_high_right.png",
+        "description": "A shot of %%presenter%% over their shoulder, holding something"
+    },
+    {
+        "id": 9,
+        "name": "Subject Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_right.png",
+        "icon": "figure-operating_reverse_detail_high_right.png",
+        "description": "A shot of %name% over their shoulder, holding something"
+    },
+    {
+        "id": 10,
+        "name": "Presenter OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%presenter%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 11,
+        "name": "Subject OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%subject%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 12,
+        "name": "Presenter in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%subject%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 13,
+        "name": "Presenter in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%subject%%'s shoulder. Make them fill the frame, head to waist"
+    },
+    {
+        "id": 14,
+        "name": "Subject in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_right.png",
+        "icon": "dialog_forward_closeup_mid_right.png",
+        "description": "A shot of %%subject%% from over %%presenter%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 15,
+        "name": "Subject in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_right.png",
+        "icon": "dialog_forward_medium_mid_right.png",
+        "description": "A shot of %%presenter%% from over %%subject%%'s shoulder.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 16,
+        "name": "Vehicle moving towards camera long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_long_mid_left.png",
+        "icon": "vehicle_forward_long_mid_left.png",
+        "description": "A shot of a vehicle moving towards the camera from some way off"
+    },
+    {
+        "id": 17,
+        "name": "Vehicle from other vehicle wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_wide_mid_straight.png",
+        "icon": "vehicle_forward_wide_mid_straight.png",
+        "description": "A shot of the front of a vehicle in motion, shot from another vehicle"
+    },
+    {
+        "id": 18,
+        "name": "Vehicle moving away from camera long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_reverse_long_mid_left.png",
+        "icon": "vehicle_reverse_long_mid_left.png",
+        "description": "A shot of a vehicle moving away from the camera from some way off"
+    },
+    {
+        "id": 19,
+        "name": "Vehicle from other vehicle wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_reverse_wide_mid_straight.png",
+        "icon": "vehicle_reverse_wide_mid_straight.png",
+        "description": "A shot of the rear of a vehicle in motion, shot from another vehicle"
+    },
+    {
+        "id": 20,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 21,
+        "name": "Landscape passing by detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A shot of an interesting detail passing by from a vehicle"
+    },
+    {
+        "id": 22,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape"
+    },
+    {
+        "id": 23,
+        "name": "Landscape passing by",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by from a vehicle"
+    },
+    {
+        "id": 24,
+        "name": "Interior detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "An interesting interior detail"
+    },
+    {
+        "id": 25,
+        "name": "Interior wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an interior"
+    },
+    {
+        "id": 26,
+        "name": "Crowd of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to waist"
+    },
+    {
+        "id": 27,
+        "name": "Crowd of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to foot"
+    },
+    {
+        "id": 28,
+        "name": "Group of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A group of subjects, framed from head to waist"
+    },
+    {
+        "id": 29,
+        "name": "Group of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A group of subjects, framed from head to foot"
+    },
+    {
+        "id": 30,
+        "name": "Landmark wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "%%landmark%% framed to fill the frame"
+    },
+    {
+        "id": 31,
+        "name": "Subject Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Make their face fill the frame"
+    },
+    {
+        "id": 32,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Make them fill the frame head to waist"
+    },
+    {
+        "id": 33,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of %%name%% with an object. Make their face fill the frame"
+    },
+    {
+        "id": 34,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%% taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 35,
+        "name": "Subject Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%% with an object taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 36,
+        "name": "Subject OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "A shot of %%name%% taken over their shoulder. Make them fill the frame."
+    },
+    {
+        "id": 37,
+        "name": "Vehicle moving towards camera long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_long_mid_left.png",
+        "icon": "vehicle_forward_long_mid_left.png",
+        "description": "A shot of a vehicle moving towards the camera from some way off"
+    },
+    {
+        "id": 38,
+        "name": "Vehicle from other vehicle wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_wide_mid_straight.png",
+        "icon": "vehicle_forward_wide_mid_straight.png",
+        "description": "A shot of the front of a vehicle in motion, shot from another vehicle"
+    },
+    {
+        "id": 39,
+        "name": "Vehicle moving away from camera long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_reverse_long_mid_left.png",
+        "icon": "vehicle_reverse_long_mid_left.png",
+        "description": "A shot of a vehicle moving away from the camera from some way off"
+    },
+    {
+        "id": 40,
+        "name": "Vehicle from other vehicle wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_reverse_wide_mid_straight.png",
+        "icon": "vehicle_reverse_wide_mid_straight.png",
+        "description": "A shot of the rear of a vehicle in motion, shot from another vehicle"
+    },
+    {
+        "id": 41,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 42,
+        "name": "Landscape passing by detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A shot of an interesting detail passing by from a vehicle"
+    },
+    {
+        "id": 43,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape"
+    },
+    {
+        "id": 44,
+        "name": "Landscape passing by",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by from a vehicle"
+    },
+    {
+        "id": 45,
+        "name": "Interior detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "An interesting interior detail"
+    },
+    {
+        "id": 46,
+        "name": "Interior wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an interior"
+    },
+    {
+        "id": 47,
+        "name": "Crowd of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to waist"
+    },
+    {
+        "id": 48,
+        "name": "Crowd of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to foot"
+    },
+    {
+        "id": 49,
+        "name": "Group of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A group of subjects, framed from head to waist"
+    },
+    {
+        "id": 50,
+        "name": "Group of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A group of subjects, framed from head to foot"
+    },
+    {
+        "id": 51,
+        "name": "Landmark wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "%%Landmark%% framed to fill the frame"
+    },
+    {
+        "id": 52,
+        "name": "Presenter Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Make their face fill the frame"
+    },
+    {
+        "id": 53,
+        "name": "Subject Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Make their face fill the frame"
+    },
+    {
+        "id": 54,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 55,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Frame them from head to waist"
+    },
+    {
+        "id": 56,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of %%presenter%% holding something.  Frame them from head to waist"
+    },
+    {
+        "id": 57,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_right.png",
+        "icon": "figure-operating_forward_detail_mid_right.png",
+        "description": "A shot of %%name%% holding something. Frame them from head to waist"
+    },
+    {
+        "id": 58,
+        "name": "Presenter OTS shot medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 59,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Frame them from head to waist"
+    },
+    {
+        "id": 60,
+        "name": "Presenter doing something Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_left.png",
+        "icon": "figure-operating_reverse_detail_high_left.png",
+        "description": "A shot of %%presenter%% over their shoulder, holding something"
+    },
+    {
+        "id": 61,
+        "name": "Subject Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_right.png",
+        "icon": "figure-operating_reverse_detail_high_right.png",
+        "description": "Following the %%name%% as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 62,
+        "name": "Presenter OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%presenter%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 63,
+        "name": "Subject OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%name%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 64,
+        "name": "Presenter in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 65,
+        "name": "Presenter in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder. Make them fill the frame, head to waist"
+    },
+    {
+        "id": 66,
+        "name": "Subject in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_right.png",
+        "icon": "dialog_forward_closeup_mid_right.png",
+        "description": "A shot of %%name%% from over %%presenter%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 67,
+        "name": "Subject in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_right.png",
+        "icon": "dialog_forward_medium_mid_right.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 68,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 69,
+        "name": "Landscape passing by detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A shot of an interesting detail passing by from a vehicle"
+    },
+    {
+        "id": 70,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by"
+    },
+    {
+        "id": 71,
+        "name": "Landscape passing by",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by from a vehicle"
+    },
+    {
+        "id": 72,
+        "name": "Interior detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "An interesting interior detail"
+    },
+    {
+        "id": 73,
+        "name": "Interior wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an interior"
+    },
+    {
+        "id": 74,
+        "name": "Crowd of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to waist"
+    },
+    {
+        "id": 75,
+        "name": "Crowd of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to foot"
+    },
+    {
+        "id": 76,
+        "name": "Group of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A group of subjects, framed from head to waist"
+    },
+    {
+        "id": 77,
+        "name": "Group of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A group of subjects, framed from head to foot"
+    },
+    {
+        "id": 78,
+        "name": "Landmark wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "%%Landmark%% framed to fill the frame"
+    },
+    {
+        "id": 79,
+        "name": "Presenter Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%presenter%%. Make their face fill the frame"
+    },
+    {
+        "id": 80,
+        "name": "Presenter long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_long_mid_straight.png",
+        "icon": "figure_forward_long_mid_straight.png",
+        "description": "A shot of %%presenter%% in the distance"
+    },
+    {
+        "id": 81,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%. Make them fill the frame head to waist"
+    },
+    {
+        "id": 82,
+        "name": "Presenter OTS medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%presenter%% taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 83,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 84,
+        "name": "Landscape wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape"
+    },
+    {
+        "id": 85,
+        "name": "Wildlife Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "animal_forward_closeup_mid_left.png",
+        "icon": "animal_forward_closeup_mid_left.png",
+        "description": "A shot of a %%animal%%. Make its head fill the frame"
+    },
+    {
+        "id": 86,
+        "name": "Wildife Detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "animal_forward_detail_mid_left.png",
+        "icon": "animal_forward_detail_mid_left.png",
+        "description": "A shot of a detail of a %%animal%%."
+    },
+    {
+        "id": 87,
+        "name": "Wildife Long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "animal_forward_long_mid_left.png",
+        "icon": "animal_forward_long_mid_left.png",
+        "description": "A shot of a %%animal%% in the distance"
+    },
+    {
+        "id": 88,
+        "name": "Wildife Wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "animal_forward_wide_mid_left.png",
+        "icon": "animal_forward_wide_mid_left.png",
+        "description": "A shot of  %%animal%% filling the frame"
+    },
+    {
+        "id": 89,
+        "name": "Landscape pan",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape, panning from left to right and back"
+    },
+    {
+        "id": 90,
+        "name": "Presenter Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Make their face fill the frame"
+    },
+    {
+        "id": 91,
+        "name": "Subject Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Make their face fill the frame"
+    },
+    {
+        "id": 92,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 93,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Frame them from head to waist"
+    },
+    {
+        "id": 94,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of %%presenter%% holding something.  Frame them from head to waist"
+    },
+    {
+        "id": 95,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_right.png",
+        "icon": "figure-operating_forward_detail_mid_right.png",
+        "description": "A shot of %%name%% holding something. Frame them from head to waist"
+    },
+    {
+        "id": 96,
+        "name": "Presenter OTS shot medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 97,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Frame them from head to waist"
+    },
+    {
+        "id": 98,
+        "name": "Presenter doing something Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_left.png",
+        "icon": "figure-operating_reverse_detail_high_left.png",
+        "description": "A shot of %%presenter%% over their shoulder, holding something"
+    },
+    {
+        "id": 99,
+        "name": "Subject Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_right.png",
+        "icon": "figure-operating_reverse_detail_high_right.png",
+        "description": "Following the %%name%% as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 100,
+        "name": "Presenter OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%presenter%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 101,
+        "name": "Subject OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%name%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 102,
+        "name": "Presenter in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 103,
+        "name": "Presenter in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder. Make them fill the frame, head to waist"
+    },
+    {
+        "id": 104,
+        "name": "Subject in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_right.png",
+        "icon": "dialog_forward_closeup_mid_right.png",
+        "description": "A shot of %%name%% from over %%presenter%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 105,
+        "name": "Subject in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_right.png",
+        "icon": "dialog_forward_medium_mid_right.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 106,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 107,
+        "name": "Landscape passing by detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A shot of an interesting detail passing by from a vehicle"
+    },
+    {
+        "id": 108,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by"
+    },
+    {
+        "id": 109,
+        "name": "Landscape passing by",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by from a vehicle"
+    },
+    {
+        "id": 110,
+        "name": "Interior detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "An interesting interior detail"
+    },
+    {
+        "id": 111,
+        "name": "Interior wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an interior"
+    },
+    {
+        "id": 112,
+        "name": "Crowd of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to waist"
+    },
+    {
+        "id": 113,
+        "name": "Crowd of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to foot"
+    },
+    {
+        "id": 114,
+        "name": "Group of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A group of subjects, framed from head to waist"
+    },
+    {
+        "id": 115,
+        "name": "Group of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A group of subjects, framed from head to foot"
+    },
+    {
+        "id": 116,
+        "name": "Landmark wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "%%Landmark%% framed to fill the frame"
+    },
+    {
+        "id": 117,
+        "name": "Presenter Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of the presenter.  Make their face fill the frame"
+    },
+    {
+        "id": 118,
+        "name": "Subject Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Make their face fill the frame"
+    },
+    {
+        "id": 119,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of the presenter.  Frame them from head to waist"
+    },
+    {
+        "id": 120,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Frame them from head to waist"
+    },
+    {
+        "id": 121,
+        "name": "Presenter doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of the presenter holding something.  Frame them from head to waist"
+    },
+    {
+        "id": 122,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_right.png",
+        "icon": "figure-operating_forward_detail_mid_right.png",
+        "description": "A shot of %%name%% holding something. Frame them from head to waist"
+    },
+    {
+        "id": 123,
+        "name": "Presenter OTS shot medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "Following the presenter as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 124,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "Following the %%name%% as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 125,
+        "name": "Presenter Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_left.png",
+        "icon": "figure-operating_reverse_detail_high_left.png",
+        "description": "A shot of the presenter over their shoulder, holding something"
+    },
+    {
+        "id": 126,
+        "name": "Subject Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_right.png",
+        "icon": "figure-operating_reverse_detail_high_right.png",
+        "description": "A shot of %name% over their shoulder, holding something"
+    },
+    {
+        "id": 127,
+        "name": "Presenter OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot the presenter walking away. Frame them from head to foot"
+    },
+    {
+        "id": 128,
+        "name": "Subject OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%name%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 129,
+        "name": "Presenter in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_right.png",
+        "icon": "dialog_forward_closeup_mid_right.png",
+        "description": "A shot of %%name%% from over the presenter's shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 130,
+        "name": "Presenter in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_right.png",
+        "icon": "dialog_forward_medium_mid_right.png",
+        "description": "A shot of the presenter from over %%name%%'s shoulder. Make them fill the frame, head to waist"
+    },
+    {
+        "id": 131,
+        "name": "Subject in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": "A shot of %%name%% from over the presenter's shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 132,
+        "name": "Subject in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": "A shot of the presenter from over %%name%%'s shoulder.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 133,
+        "name": "Vehicle moving towards camera long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_long_mid_left.png",
+        "icon": "vehicle_forward_long_mid_left.png",
+        "description": "A shot of a vehicle moving towards the camera from some way off"
+    },
+    {
+        "id": 134,
+        "name": "Vehicle from other vehicle wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_wide_mid_straight.png",
+        "icon": "vehicle_forward_wide_mid_straight.png",
+        "description": "A shot of the front of a vehicle in motion, shot from another vehicle"
+    },
+    {
+        "id": 135,
+        "name": "Vehicle moving away from camera long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_reverse_long_mid_left.png",
+        "icon": "vehicle_reverse_long_mid_left.png",
+        "description": "A shot of a vehicle moving away from the camera from some way off"
+    },
+    {
+        "id": 136,
+        "name": "Vehicle from other vehicle wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_reverse_wide_mid_straight.png",
+        "icon": "vehicle_reverse_wide_mid_straight.png",
+        "description": "A shot of the rear of a vehicle in motion, shot from another vehicle"
+    },
+    {
+        "id": 137,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 138,
+        "name": "Landscape passing by detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A shot of an interesting detail passing by from a vehicle"
+    },
+    {
+        "id": 139,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by"
+    },
+    {
+        "id": 140,
+        "name": "Landscape passing by",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by from a vehicle"
+    },
+    {
+        "id": 141,
+        "name": "Interior detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "An interesting interior detail"
+    },
+    {
+        "id": 142,
+        "name": "Interior wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an interior"
+    },
+    {
+        "id": 143,
+        "name": "Crowd of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to waist"
+    },
+    {
+        "id": 144,
+        "name": "Crowd of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to foot"
+    },
+    {
+        "id": 145,
+        "name": "Group of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A group of subjects, framed from head to waist"
+    },
+    {
+        "id": 146,
+        "name": "Group of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A group of subjects, framed from head to foot"
+    },
+    {
+        "id": 147,
+        "name": "Wildife Long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "animal_forward_long_mid_left.png",
+        "icon": "animal_forward_long_mid_left.png",
+        "description": "A shot of a %%animal%% in the distance"
+    },
+    {
+        "id": 148,
+        "name": "Wildife Wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "animal_forward_wide_mid_left.png",
+        "icon": "animal_forward_wide_mid_left.png",
+        "description": "A shot of  %%animal%% filling the frame"
+    },
+    {
+        "id": 149,
+        "name": "Landmark wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "%%Landmark%% framed to fill the frame"
+    },
+    {
+        "id": 150,
+        "name": "Subject Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Make their face fill the frame"
+    },
+    {
+        "id": 151,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Make them fill the frame head to waist"
+    },
+    {
+        "id": 152,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of %%name%% with an object. Make their face fill the frame"
+    },
+    {
+        "id": 153,
+        "name": "Subject doing something wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_right.png",
+        "icon": "figure-operating_forward_detail_mid_right.png",
+        "description": "A shot of %%name%% with an object. Make them fill the frame"
+    },
+    {
+        "id": 154,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%% taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 155,
+        "name": "Subject Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%% with an object taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 156,
+        "name": "Subject OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "A shot of %%name%% taken over their shoulder. Make them fill the frame."
+    },
+    {
+        "id": 157,
+        "name": "Presenter in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 158,
+        "name": "Presenter in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder. Make them fill the frame, head to waist"
+    },
+    {
+        "id": 159,
+        "name": "Subject in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": "A shot of %%name%% from over %%presenter%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 160,
+        "name": "Subject in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 161,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 162,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape"
+    },
+    {
+        "id": 163,
+        "name": "Interior detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "An interesting interior detail"
+    },
+    {
+        "id": 164,
+        "name": "Interior wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an interior"
+    },
+    {
+        "id": 165,
+        "name": "Device wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "artefact_forward_wide_mid_straight.png",
+        "icon": "artefact_forward_wide_mid_straight.png",
+        "description": "A shot of a %%device%%. Make it fill the frame"
+    },
+    {
+        "id": 166,
+        "name": "Device detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "artefact_forward_detail_mid_straight.png",
+        "icon": "artefact_forward_detail_mid_straight.png",
+        "description": "A shot of a %%device%%. Get some details"
+    },
+    {
+        "id": 167,
+        "name": "Presenter Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Make their face fill the frame"
+    },
+    {
+        "id": 168,
+        "name": "Subject Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Make their face fill the frame"
+    },
+    {
+        "id": 169,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 170,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Frame them from head to waist"
+    },
+    {
+        "id": 171,
+        "name": "Presenter doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of %%presenter%% holding something.  Frame them from head to waist"
+    },
+    {
+        "id": 172,
+        "name": "Subject doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_right.png",
+        "icon": "figure-operating_forward_detail_mid_right.png",
+        "description": "A shot of %%name%% holding something. Frame them from head to waist"
+    },
+    {
+        "id": 173,
+        "name": "Presenter OTS shot medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 174,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Frame them from head to waist"
+    },
+    {
+        "id": 175,
+        "name": "Presenter doing something Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_left.png",
+        "icon": "figure-operating_reverse_detail_high_left.png",
+        "description": "A shot of %%presenter%% over their shoulder, holding something"
+    },
+    {
+        "id": 176,
+        "name": "Subject Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_reverse_detail_high_right.png",
+        "icon": "figure-operating_reverse_detail_high_right.png",
+        "description": "Following the %%name%% as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 177,
+        "name": "Presenter OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%presenter%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 178,
+        "name": "Subject OTS shot wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_wide_mid_straight.png",
+        "icon": "figure_reverse_wide_mid_straight.png",
+        "description": "Shoot %%name%% walking away. Frame them from head to foot"
+    },
+    {
+        "id": 179,
+        "name": "Presenter in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 180,
+        "name": "Presenter in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder. Make them fill the frame, head to waist"
+    },
+    {
+        "id": 181,
+        "name": "Subject in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_right.png",
+        "icon": "dialog_forward_closeup_mid_right.png",
+        "description": "A shot of %%name%% from over %%presenter%%'s shoulder.  Make their face fill the frame"
+    },
+    {
+        "id": 182,
+        "name": "Subject in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_right.png",
+        "icon": "dialog_forward_medium_mid_right.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 183,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 184,
+        "name": "Landscape passing by detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A shot of an interesting detail passing by from a vehicle"
+    },
+    {
+        "id": 185,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by"
+    },
+    {
+        "id": 186,
+        "name": "Landscape passing by",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape passing by from a vehicle"
+    },
+    {
+        "id": 187,
+        "name": "Interior detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "An interesting interior detail"
+    },
+    {
+        "id": 188,
+        "name": "Interior wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an interior"
+    },
+    {
+        "id": 189,
+        "name": "Crowd of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to waist"
+    },
+    {
+        "id": 190,
+        "name": "Crowd of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A crowd of subjects, framed from head to foot"
+    },
+    {
+        "id": 191,
+        "name": "Group of subjects medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A group of subjects, framed from head to waist"
+    },
+    {
+        "id": 192,
+        "name": "Group of subjects wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A group of subjects, framed from head to foot"
+    },
+    {
+        "id": 193,
+        "name": "Artefact wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "artefact_forward_wide_mid_straight.png",
+        "icon": "artefact_forward_wide_mid_straight.png",
+        "description": "A shot of a %%artefact%%. Make it fill the frame"
+    },
+    {
+        "id": 194,
+        "name": "Artefact detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "artefact_forward_detail_mid_straight.png",
+        "icon": "artefact_forward_detail_mid_straight.png",
+        "description": "A shot of a %%artefact%%. Get some details"
+    },
+    {
+        "id": 195,
+        "name": "Subject Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Make their face fill the frame"
+    },
+    {
+        "id": 196,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Make them fill the frame head to waist"
+    },
+    {
+        "id": 197,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%% taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 198,
+        "name": "Subject Reverse Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot of %%name%% with an object taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 199,
+        "name": "Vehicle detail static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_detail_mid_left.png",
+        "icon": "vehicle_forward_detail_mid_left.png",
+        "description": "A detail shot of a static %%vehicle%%"
+    },
+    {
+        "id": 200,
+        "name": "Driver OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "driver_reverse_medium_mid_left.png",
+        "icon": "driver_reverse_medium_mid_left.png",
+        "description": "A shot of %%subject%% taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 201,
+        "name": "Vehicle long shot, passing",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_long_low_left.png",
+        "icon": "vehicle_forward_long_low_left.png",
+        "description": "A shot of a %%vehicle%% passing by the camera"
+    },
+    {
+        "id": 202,
+        "name": "Vehicle wide shot, front",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_wide_mid_straight.png",
+        "icon": "vehicle_forward_wide_mid_straight.png",
+        "description": "A shot of the front of a %%vehicle%% in motion, shot from another vehicle"
+    },
+    {
+        "id": 203,
+        "name": "Vehicle wide shot, rear",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_reverse_wide_mid_straight.png",
+        "icon": "vehicle_reverse_wide_mid_straight.png",
+        "description": "A shot of the rear of a %%vehicle%% in motion, shot from another vehicle"
+    },
+    {
+        "id": 204,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 205,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape"
+    },
+    {
+        "id": 206,
+        "name": "Driving Profile",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "driver_forward_medium_mid_straight.png",
+        "icon": "driver_forward_medium_mid_straight.png",
+        "description": "A shot of %%subject%% driving, framed in profile from head to elbows"
+    },
+    {
+        "id": 207,
+        "name": "Controls",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "driver_forward_detail_mid_straight.png",
+        "icon": "driver_forward_detail_mid_straight.png",
+        "description": "A shot of %%subject%%'s hands on the controls"
+    },
+    {
+        "id": 208,
+        "name": "Gauges",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "gauges_forward_detail_mid_straight.png",
+        "icon": "gauges_forward_detail_mid_straight.png",
+        "description": "A shot of a %%vehicle%%'s instruments in closeup"
+    },
+    {
+        "id": 209,
+        "name": "Presenter in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": ""
+    },
+    {
+        "id": 210,
+        "name": "Presenter in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": ""
+    },
+    {
+        "id": 211,
+        "name": "Subject in interview, closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_closeup_mid_left.png",
+        "icon": "dialog_forward_closeup_mid_left.png",
+        "description": ""
+    },
+    {
+        "id": 212,
+        "name": "Subject in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_left.png",
+        "icon": "dialog_forward_medium_mid_left.png",
+        "description": ""
+    },
+    {
+        "id": 213,
+        "name": "Presenter interview Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%presenter%%. Make them fill the frame head to waist"
+    },
+    {
+        "id": 214,
+        "name": "Driver in car Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%driver%% driving from in the car. Make their face fill the frame"
+    },
+    {
+        "id": 215,
+        "name": "Driver interview Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%driver%%. Make them fill the frame head to waist"
+    },
+    {
+        "id": 216,
+        "name": "Driver OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "driver_reverse_medium_mid_left.png",
+        "icon": "driver_reverse_medium_mid_left.png",
+        "description": "A shot of %%subject%% taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 217,
+        "name": "Mechanic working on car",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "technician_reverse_medium_mid_left.png",
+        "icon": "technician_reverse_medium_mid_left.png",
+        "description": "A shot of %%subject%% taken over their shoulder. Make them fill the frame head to waist"
+    },
+    {
+        "id": 218,
+        "name": "Vehicle detail static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_detail_mid_left.png",
+        "icon": "vehicle_forward_detail_mid_left.png",
+        "description": "A detail shot of a static %%vehicle%%"
+    },
+    {
+        "id": 219,
+        "name": "Vehicle detail moving",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_wide_mid_straight.png",
+        "icon": "vehicle_forward_wide_mid_straight.png",
+        "description": "A detail shot of a moving %%vehicle%%"
+    },
+    {
+        "id": 220,
+        "name": "Vehicle long shot, passing",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_long_mid_left.png",
+        "icon": "vehicle_forward_long_mid_left.png",
+        "description": "A shot of a %%vehicle%% passing by the camera"
+    },
+    {
+        "id": 221,
+        "name": "Vehicle wide shot, front",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_wide_mid_straight.png",
+        "icon": "vehicle_forward_wide_mid_straight.png",
+        "description": "A shot of the front of a %%vehicle%% in motion, shot from another vehicle"
+    },
+    {
+        "id": 222,
+        "name": "Vehicle wide shot, rear",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_reverse_wide_mid_straight.png",
+        "icon": "vehicle_reverse_wide_mid_straight.png",
+        "description": "A shot of the rear of a %%vehicle%% in motion, shot from another vehicle"
+    },
+    {
+        "id": 223,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 224,
+        "name": "Landscape static",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape"
+    },
+    {
+        "id": 225,
+        "name": "Crowd shot, wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A shot of the crowd"
+    },
+    {
+        "id": 226,
+        "name": "Driving Profile",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "driver_forward_medium_mid_straight.png",
+        "icon": "driver_forward_medium_mid_straight.png",
+        "description": "A shot of %%driver%% driving, framed in profile from head to elbows"
+    },
+    {
+        "id": 227,
+        "name": "Controls",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "driver_forward_detail_mid_straight.png",
+        "icon": "driver_forward_detail_mid_straight.png",
+        "description": "A shot of %%driver%%'s hands on the controls"
+    },
+    {
+        "id": 228,
+        "name": "Gauges",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "gauges_forward_detail_mid_straight.png",
+        "icon": "gauges_forward_detail_mid_straight.png",
+        "description": "A shot of a %%driver%%'s instruments in closeup"
+    },
+    {
+        "id": 229,
+        "name": "Landmark wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "A shot of %%landmark%% filling the frame"
+    },
+    {
+        "id": 230,
+        "name": "Start line wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "start_forward_wide_mid_straight.png",
+        "icon": "start_forward_wide_mid_straight.png",
+        "description": "A shot of the start banner filling the frame"
+    },
+    {
+        "id": 231,
+        "name": "Finish line wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "finish_forward_wide_mid_straight.png",
+        "icon": "finish_forward_wide_mid_straight.png",
+        "description": "A shot of the finish banner filling the frame"
+    },
+    {
+        "id": 232,
+        "name": "Checkpoint wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "checkpoint_forward_wide_mid_straight.png",
+        "icon": "checkpoint_forward_wide_mid_straight.png",
+        "description": "A shot of a checkpoint filling the frame"
+    },
+    {
+        "id": 233,
+        "name": "Runner Interview",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "An interview with a runner. Frame them from head to waist"
+    },
+    {
+        "id": 234,
+        "name": "Spectator Interview",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "An interview with a runner. Frame them from head to waist"
+    },
+    {
+        "id": 235,
+        "name": "Presenter Interview",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "An interview by %%presenter%%. Frame them from head to waist"
+    },
+    {
+        "id": 236,
+        "name": "Organising",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "technician_reverse_medium_mid_left.png",
+        "icon": "technician_reverse_medium_mid_left.png",
+        "description": "A shot of an organiser setting up. Frame them from head to waist"
+    },
+    {
+        "id": 237,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 238,
+        "name": "Landscape wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape"
+    },
+    {
+        "id": 239,
+        "name": "Spectators",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A shot of spectators framed head to waist"
+    },
+    {
+        "id": 240,
+        "name": "Runner arriving",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner_forward_wide_mid_straight.png",
+        "icon": "runner_forward_wide_mid_straight.png",
+        "description": "A shot of a runner arriving"
+    },
+    {
+        "id": 241,
+        "name": "Spectators",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A shot of spectators, framed head to feet"
+    },
+    {
+        "id": 242,
+        "name": "winners",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A shot of the winners on the podium"
+    },
+    {
+        "id": 243,
+        "name": "Landmark with runners",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner-landmark_forward_long_mid_straight.png",
+        "icon": "runner-landmark_forward_long_mid_straight.png",
+        "description": "A shot of runners passing %%landmark%%"
+    },
+    {
+        "id": 244,
+        "name": "Runners wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner_forward_wide_mid_straight.png",
+        "icon": "runner_forward_wide_mid_straight.png",
+        "description": "A shot of runners , framed head to feet"
+    },
+    {
+        "id": 245,
+        "name": "Runners medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner_forward_medium_mid_straight.png",
+        "icon": "runner_forward_medium_mid_straight.png",
+        "description": "A shot of runners , framed head to waist"
+    },
+    {
+        "id": 246,
+        "name": "Runners feet",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner-feet_forward_detail_mid_straight.png",
+        "icon": "runner-feet_forward_detail_mid_straight.png",
+        "description": "A shot of runners' feet"
+    },
+    {
+        "id": 247,
+        "name": "Landmark wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "A shot of %%landmark%% filling the frame"
+    },
+    {
+        "id": 248,
+        "name": "Start line wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "start_forward_wide_mid_straight.png",
+        "icon": "start_forward_wide_mid_straight.png",
+        "description": "A shot of the start banner filling the frame"
+    },
+    {
+        "id": 249,
+        "name": "Finish line wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "finish_forward_wide_mid_straight.png",
+        "icon": "finish_forward_wide_mid_straight.png",
+        "description": "A shot of the finish banner filling the frame"
+    },
+    {
+        "id": 250,
+        "name": "Checkpoint wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "checkpoint_forward_wide_mid_straight.png",
+        "icon": "checkpoint_forward_wide_mid_straight.png",
+        "description": "A shot of a checkpoint or mile marker filling the frame"
+    },
+    {
+        "id": 251,
+        "name": "Player Interview",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "An interview with a player. Frame them from head to waist"
+    },
+    {
+        "id": 252,
+        "name": "Spectator Interview",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "An interview with a spectator. Frame them from head to waist"
+    },
+    {
+        "id": 253,
+        "name": "Presenter Interview",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "An interview by %%presenter%%. Frame them from head to waist"
+    },
+    {
+        "id": 254,
+        "name": "Organising",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "technician_reverse_medium_mid_left.png",
+        "icon": "technician_reverse_medium_mid_left.png",
+        "description": "A shot of an organiser setting up. Frame them from head to waist"
+    },
+    {
+        "id": 255,
+        "name": "Landscape detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A still shot of an interesting detail in the landscape"
+    },
+    {
+        "id": 256,
+        "name": "Landscape wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the landscape"
+    },
+    {
+        "id": 257,
+        "name": "Spectators",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A shot of spectators framed head to waist"
+    },
+    {
+        "id": 258,
+        "name": "Spectators",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A shot of spectators, framed head to feet"
+    },
+    {
+        "id": 259,
+        "name": "winners",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A shot of the winners on the podium"
+    },
+    {
+        "id": 260,
+        "name": "Ground",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "ground_forward_wide_mid_straight.png",
+        "icon": "ground_forward_wide_mid_straight.png",
+        "description": "A wide shot of the ground"
+    },
+    {
+        "id": 261,
+        "name": "Players wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner_forward_wide_mid_straight.png",
+        "icon": "runner_forward_wide_mid_straight.png",
+        "description": "A shot of players , framed head to feet"
+    },
+    {
+        "id": 262,
+        "name": "Player medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner_forward_medium_mid_straight.png",
+        "icon": "runner_forward_medium_mid_straight.png",
+        "description": "A shot of players , framed head to waist"
+    },
+    {
+        "id": 263,
+        "name": "Runners feet",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner-feet_forward_detail_mid_straight.png",
+        "icon": "runner-feet_forward_detail_mid_straight.png",
+        "description": "A shot of players' feet"
+    },
+    {
+        "id": 264,
+        "name": "Musician closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%musician%%. Make their face fill the frame"
+    },
+    {
+        "id": 265,
+        "name": "Musician",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_right.png",
+        "icon": "figure_forward_medium_mid_right.png",
+        "description": "A shot of %%musician%% Make them fill the frame head to waist"
+    },
+    {
+        "id": 266,
+        "name": "Musician",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_left.png",
+        "icon": "figure_forward_medium_mid_left.png",
+        "description": "A shot of %%musician%% Make them fill the frame head to waist"
+    },
+    {
+        "id": 267,
+        "name": "interior detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "A shot of a detail of the set"
+    },
+    {
+        "id": 268,
+        "name": "Interior wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A shot of the set"
+    },
+    {
+        "id": 269,
+        "name": "Band medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A shot of the musicians, framed head to waist"
+    },
+    {
+        "id": 270,
+        "name": "Band wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_mid_straight.png",
+        "icon": "group_forward_wide_mid_straight.png",
+        "description": "A shot of the musicians, framed head to feet"
+    },
+    {
+        "id": 271,
+        "name": "Instrument Detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "instrument_forward_detail_wide_straight.png",
+        "icon": "instrument_forward_detail_wide_straight.png",
+        "description": "A shot of hands on instruments"
+    },
+    {
+        "id": 272,
+        "name": "Musician closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_low_straight.png",
+        "icon": "figure_forward_closeup_low_straight.png",
+        "description": "A shot of %%musician%%. Make their face fill the frame"
+    },
+    {
+        "id": 273,
+        "name": "Musician hands",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_hands_mid_right.png",
+        "icon": "figure_forward_hands_mid_right.png",
+        "description": "A shot of %%musician%%'s hands"
+    },
+    {
+        "id": 274,
+        "name": "Musician",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_low_right.png",
+        "icon": "figure_forward_medium_low_right.png",
+        "description": "A shot of %%musician%% Make them fill the frame head to waist"
+    },
+    {
+        "id": 275,
+        "name": "Crowd medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A shot of the audience, framed head to waist"
+    },
+    {
+        "id": 276,
+        "name": "Crowd wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A shot of the audience, framed head to feet"
+    },
+    {
+        "id": 277,
+        "name": "Crowd from behind",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_reverse_medium_mid_straight.png",
+        "icon": "crowd_reverse_medium_mid_straight.png",
+        "description": "A shot of the band from behind the audience"
+    },
+    {
+        "id": 278,
+        "name": "Band medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_low_straight.png",
+        "icon": "group_forward_medium_low_straight.png",
+        "description": "A shot of the musicians, framed head to waist"
+    },
+    {
+        "id": 279,
+        "name": "Band wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_wide_low_straight.png",
+        "icon": "group_forward_wide_low_straight.png",
+        "description": "A shot of the musicians, framed head to feet"
+    },
+    {
+        "id": 280,
+        "name": "Instrument Detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "instrument_forward_detail_mid_straight.png",
+        "icon": "instrument_forward_detail_mid_straight.png",
+        "description": "A shot of hands on instruments"
+    },
+    {
+        "id": 281,
+        "name": "Stage Detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "stage_forward_detail_mid_straight.png",
+        "icon": "stage_forward_detail_mid_straight.png",
+        "description": "A shot of cables, lights or amplifiers onstage"
+    },
+    {
+        "id": 282,
+        "name": "Stage long",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "stage_forward_long_mid_straight.png",
+        "icon": "stage_forward_long_mid_straight.png",
+        "description": "A shot of the stage from as far back in the venue as possible"
+    },
+    {
+        "id": 283,
+        "name": "Stage wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "stage_forward_wide_mid_straight.png",
+        "icon": "stage_forward_wide_mid_straight.png",
+        "description": "A shot of the stage. Make it fill the frame"
+    },
+    {
+        "id": 284,
+        "name": "Venue exterior sign",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "venue_forward_wide_mid_straight.png",
+        "icon": "venue_forward_wide_mid_straight.png",
+        "description": "A shot of a sign outside the venue"
+    },
+    {
+        "id": 285,
+        "name": "Technician rigging",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "technician_reverse_medium_mid_left.png",
+        "icon": "technician_reverse_medium_mid_left.png",
+        "description": "A shot of a technician setting up the stage"
+    },
+    {
+        "id": 286,
+        "name": "Band preparing",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A shot of the musicians preparing backstage, framed head to waist"
+    },
+    {
+        "id": 287,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 288,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Frame them from head to waist"
+    },
+    {
+        "id": 289,
+        "name": "Presenter OTS shot medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "Following %%presenter%% as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 290,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "Following the %%name%% as they walk. Frame them from head to waist"
+    },
+    {
+        "id": 291,
+        "name": "Presenter in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 292,
+        "name": "Presenter in interview, wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_wide_mid_left.png",
+        "icon": "dialog_forward_wide_mid_left.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder. Make them fill the frame, head to feet"
+    },
+    {
+        "id": 293,
+        "name": "Subject in interview, medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%% from over %%presenter%%'s shoulder.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 294,
+        "name": "Subject in interview, wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_wide_mid_right.png",
+        "icon": "dialog_forward_wide_mid_right.png",
+        "description": "A shot of %%presenter%% from over %%name%%'s shoulder.  Make them fill the frame, head to feet"
+    },
+    {
+        "id": 295,
+        "name": "Exterior Event detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A closeup shot of something happening at an event"
+    },
+    {
+        "id": 296,
+        "name": "Exterior Event wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A wide shot of an event outside"
+    },
+    {
+        "id": 297,
+        "name": "Interior event detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "A closeup shot of something happening at an event indoors"
+    },
+    {
+        "id": 298,
+        "name": "Interior event wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an event indoors"
+    },
+    {
+        "id": 299,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%presenter%%.  Frame them from head to waist"
+    },
+    {
+        "id": 300,
+        "name": "Subject Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%subject%%. Frame them from head to waist"
+    },
+    {
+        "id": 301,
+        "name": "Presenter OTS shot medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "Following %%presenter%% as they walk away. Frame them from head to waist"
+    },
+    {
+        "id": 302,
+        "name": "Subject OTS shot Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "Following %%subject%% as they walk away. Frame them from head to waist"
+    },
+    {
+        "id": 303,
+        "name": "Exterior Event detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A closeup shot of something happening at an event"
+    },
+    {
+        "id": 304,
+        "name": "Exterior Event wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_detail_mid_straight.png",
+        "icon": "exterior_forward_detail_mid_straight.png",
+        "description": "A wide shot of an event outside"
+    },
+    {
+        "id": 305,
+        "name": "Interior event detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_detail_mid_straight.png",
+        "icon": "interior_forward_detail_mid_straight.png",
+        "description": "A closeup shot of something happening at an event indoors"
+    },
+    {
+        "id": 306,
+        "name": "Interior event wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of an event indoors"
+    },
+    {
+        "id": 307,
+        "name": "Presenter Closeup",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_straight.png",
+        "icon": "figure_forward_closeup_mid_straight.png",
+        "description": "A shot of %%name%%. Make their face fill the frame"
+    },
+    {
+        "id": 308,
+        "name": "Presenter Medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of %%name%%. Make them fill the frame head to waist"
+    },
+    {
+        "id": 309,
+        "name": "Presenter doing something medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_left.png",
+        "icon": "figure-operating_forward_detail_mid_left.png",
+        "description": "A shot of %%name%% with an object. Make their face fill the frame"
+    },
+    {
+        "id": 310,
+        "name": "Presenter doing something wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure-operating_forward_detail_mid_right.png",
+        "icon": "figure-operating_forward_detail_mid_right.png",
+        "description": "A shot of %%name%% with an object. Make them fill the frame"
+    },
+    {
+        "id": 311,
+        "name": "Device wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "artefact_forward_wide_mid_straight.png",
+        "icon": "artefact_forward_wide_mid_straight.png",
+        "description": "A shot of a %%device%%. Make it fill the frame"
+    },
+    {
+        "id": 312,
+        "name": "Device detail",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "artefact_forward_detail_mid_straight.png",
+        "icon": "artefact_forward_detail_mid_straight.png",
+        "description": "A shot of a %%device%%. Get some details"
+    },
+    {
+        "id": 313,
+        "name": "Caravan",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "caravan_forward_wide_mid_straight.png",
+        "icon": "caravan_forward_wide_mid_straight.png",
+        "description": "A shot of the caravan. Make it fill the frame"
+    },
+    {
+        "id": 314,
+        "name": "Press group",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "A shot of the press, framed head to waist"
+    },
+    {
+        "id": 315,
+        "name": "Clown close-up",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "clown_forward_closeup_mid_right.png",
+        "icon": "clown_forward_closeup_mid_right.png",
+        "description": "A shot of a clown. Make their face fill the frame"
+    },
+    {
+        "id": 316,
+        "name": "Kilty close-up",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_left.png",
+        "icon": "figure_forward_closeup_mid_left.png",
+        "description": "A shot of Richard Kilty. Make his face fill the frame"
+    },
+    {
+        "id": 317,
+        "name": "Landscape",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "exterior_forward_wide_mid_straight.png",
+        "icon": "exterior_forward_wide_mid_straight.png",
+        "description": "A shot of the surrounding environment"
+    },
+    {
+        "id": 318,
+        "name": "Clown over The shoulder",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_reverse_medium_mid_straight.png",
+        "icon": "figure_reverse_medium_mid_straight.png",
+        "description": "A shot from behind a clown as they run or walk. Frame them from head to waist"
+    },
+    {
+        "id": 319,
+        "name": "Crowd  medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_medium_mid_straight.png",
+        "icon": "crowd_forward_medium_mid_straight.png",
+        "description": "A crowd of people, framed from head to waist"
+    },
+    {
+        "id": 320,
+        "name": "Crowd wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "crowd_forward_wide_mid_straight.png",
+        "icon": "crowd_forward_wide_mid_straight.png",
+        "description": "A crowd of people, framed from head to foot"
+    },
+    {
+        "id": 321,
+        "name": "Runners wide",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner_forward_wide_mid_straight.png",
+        "icon": "runner_forward_wide_mid_straight.png",
+        "description": "A shot of people running, framed from head to foot"
+    },
+    {
+        "id": 322,
+        "name": "Runners medium",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "runner_forward_medium_mid_straight.png",
+        "icon": "runner_forward_medium_mid_straight.png",
+        "description": "A shot of runners , framed head to waist"
+    },
+    {
+        "id": 323,
+        "name": "Place Name",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "venue_forward_wide_mid_straight.png",
+        "icon": "venue_forward_wide_mid_straight.png",
+        "description": "A shot of a sign showing the name of the place"
+    },
+    {
+        "id": 324,
+        "name": "Balcony at Belasis Park",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A wide shot of the upper balcony"
+    },
+    {
+        "id": 325,
+        "name": "Passing on whisper",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_right.png",
+        "icon": "dialog_forward_medium_mid_right.png",
+        "description": "A shot of someone passing on the whisper to another.  Make them fill the frame, head to waist"
+    },
+    {
+        "id": 326,
+        "name": "Infinity Bridge",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "A shot of the infinity bridge. Make it fill the frame"
+    },
+    {
+        "id": 327,
+        "name": "Ice rink",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "interior_forward_wide_mid_straight.png",
+        "icon": "interior_forward_wide_mid_straight.png",
+        "description": "A shot of the ice rink: get as much in shot as possible"
+    },
+    {
+        "id": 328,
+        "name": "Performer",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_medium_mid_straight.png",
+        "icon": "figure_forward_medium_mid_straight.png",
+        "description": "A shot of a performer, framed head to waist"
+    },
+    {
+        "id": 329,
+        "name": "Boat",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "boat_forward_wide_mid_straight.png",
+        "icon": "boat_forward_wide_mid_straight.png",
+        "description": "A shot of the boat. Make it fill the frame"
+    },
+    {
+        "id": 330,
+        "name": "Barrage",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "landmark_forward_wide_mid_straight.png",
+        "icon": "landmark_forward_wide_mid_straight.png",
+        "description": "A shot of the barrage. Make it fill the frame"
+    },
+    {
+        "id": 331,
+        "name": "Bus",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "bus_forward_wide_mid_right.png",
+        "icon": "bus_forward_wide_mid_right.png",
+        "description": "A shot of the bus. Make it fill the frame"
+    },
+    {
+        "id": 332,
+        "name": "Motorbike",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "motorcycle_forward_wide_mid_right.png",
+        "icon": "motorcycle_forward_wide_mid_right.png",
+        "description": "A shot of a motorcycle. Make it fill the frame"
+    },
+    {
+        "id": 333,
+        "name": "Clown on bike",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "motorcycle_forward_wide_mid_right.png",
+        "icon": "motorcycle_forward_wide_mid_right.png",
+        "description": "A shot of a clown on a motorcycle. Make it fill the frame"
+    },
+    {
+        "id": 334,
+        "name": "Jeep",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "vehicle_forward_wide_mid_straight.png",
+        "icon": "vehicle_forward_wide_mid_straight.png",
+        "description": "A shot of the jeep. Make it fill the frame"
+    },
+    {
+        "id": 335,
+        "name": "Tip handover",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "dialog_forward_medium_mid_right.png",
+        "icon": "dialog_forward_medium_mid_right.png",
+        "description": "A shot of the tip being handed over. Frame the clown and waiter head to waist"
+    },
+    {
+        "id": 336,
+        "name": "Tip close-up",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "document_forward_detail_mid_straight.png",
+        "icon": "document_forward_detail_mid_straight.png",
+        "description": "A shot of the tip. Make it fill the frame"
+    },
+    {
+        "id": 337,
+        "name": "What's going on?'",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_left.png",
+        "icon": "figure_forward_closeup_mid_left.png",
+        "description": "A shot of someone involved. Ask them what's going on at the moment."
+    },
+    {
+        "id": 338,
+        "name": "What's great about Stockton?'",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_left.png",
+        "icon": "figure_forward_closeup_mid_left.png",
+        "description": "A shot of someone involved. Ask them what's great about Stockton"
+    },
+    {
+        "id": 339,
+        "name": "Who are you?'",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "figure_forward_closeup_mid_left.png",
+        "icon": "figure_forward_closeup_mid_left.png",
+        "description": "A shot of someone involved. Ask them who they are."
+    },
+    {
+        "id": 340,
+        "name": "This is Stockton on Tees'",
+        "max_length": 15,
+        "wanted": 7,
+        "image": "group_forward_medium_mid_straight.png",
+        "icon": "group_forward_medium_mid_straight.png",
+        "description": "Ask a group of people to say 'this is Stockton on Tees'. Frame them head to waist"
+    }
+]

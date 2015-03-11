@@ -1,21 +1,21 @@
-<style>
-ul
-{
-  list-style-type: none;
-  margin:0;
-  padding: 0;
-}
 
-li{
-  /*display:inline-block;*/
-  float: left;
-}
+<style>
 
 .video{
   background-repeat:no-repeat;
   background-size:cover; 
-  width:200px;
-  height:110px;
+  width:250px;
+  height:150px;
+  position:relative;
+  background-color:#eee;
+}
+
+.vid_tmp
+{
+  width:255px;
+  height:155px;
+  background:silver;
+  display:inline-block;
 }
 
 .container-fluid{
@@ -24,58 +24,206 @@ li{
 
 .playlist
 {
-  position:fixed;
-  left:-5px;
-  top:350px;
+/*min-height:250px;*/
+}
+.allmedia
+{
+  width:100%;
+  display: block;
+  z-index:0;
 }
 
-#player
+.allmedia .rembtn
 {
-  width:200px;
-  height:110px;
-  position:fixed;
-  left:0px;
-  background:green;
+  display:none;
+}
+
+.allmedia ul
+{
+  list-style-type: none;
+  margin:0;
+  padding: 0;
+}
+
+.allmedia li
+{
+  /*float: left;*/
+  margin:2px;
+  cursor: pointer;
+  display:inline-block;
+  /*height:20px;*/
+}
+
+.playlist .video{
+  cursor:pointer;
 }
 
 video{
-  height:110px;
-  width:200px;
+  height:220px;
+  width:391px;
+  margin-bottom:-5px;
 }
 
+.circle
+{
+  background:#5cb85c;
+  display:block;
+  width:50px;
+  height: 50px;
+  border-radius: 25px;
+  text-align:center;
+  font-size:18pt;
+  color:white;
+  position:relative;
+  display:inline-block;
+  margin:3px;
+  padding-top:8px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+
+.circle span
+{
+  position:absolute;
+  margin-top:42px;
+  color:#5cb85c;
+  font-size:8pt;
+  text-align: center;
+  left:0;
+  width:50px;
+  text-transform: uppercase;
+}
+
+
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+}
+
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+  opacity:0;
+}
+
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+#videomodal video{
+  width:100%;
+  height:100%;
+}
 </style>
-<div ng-app="watchApp" ng-controller="Media as controller">
+
+<!--
+the animate service will automatically add .ng-enter and .ng-leave to the element
+to trigger the CSS transition/animations
+-->
+</style>
+
+<div ng-app="watchApp" ng-controller="Media as controller" style="position:absolute;width:100%;top:0;left:0;">
+
 <script type="text/ng-template" id="media.html">
-  <div class="video" ng-click="playThis(m)" ng-style="{'background-image':'url('+m.thumb+')'}"><img ng-src="{{m.thumb}}" style="display:none;"/></div>
+<div class="panel panel-default" style="margin:0;">
+  <div popover="{{format(m)}}" popover-popup-delay="200" popover-append-to-body="true" popover-trigger="mouseenter" popover-placement="bottom" class="video" ng-click="playThis(m)" ng-style="{'background-image':'url('+m.thumb+')'}">
+<i class="fa" ng-class="{'fa-video-camera':m.meta.static_meta.media_type=='VIDEO', 'fa-photo':m.meta.static_meta.media_type=='PHOTO', 'fa-audio':m.meta.static_meta.media_type=='AUDIO'}" style="position:absolute;right:2px;bottom:2px;"></i>
+  <button style="position:absolute;right:0;top:0;" class="rembtn btn btn-link" ng-click="remove(m)"><i class="fa fa-times"></i></button>
+
+ <div style="position:absolute;left:2px; bottom:2px;">
+    <button class="btn btn-link" style="color:orange;text-decoration:none;" ng-click="star(m,$event)"><i style="color:orange;" class="fa" ng-class="{'fa-star':m.stars[username], 'fa-star-o':m.stars[username]==undefined || m.stars[username]==false}"></i> {{size(m.stars)}}</button>
+  </div>
+  <i class="fa fa-play" style="font-size:35pt;padding-top:50px;color:white;position:absolute;top:0;left:0;margin-left:110px;text-align:center;" ng-if="isplaying==m"></i>
+  </div>
+  </div>
 </script>
+<div class="row" style="padding-top:10px;background:white;z-index:100;position:fixed;width:100%;left:15px;top:-10px;padding-left:10px;padding-right:10px;margin-bottom:10px;margin-top:10px;box-shadow: 0px 5px 5px rgba(0,0,0,0.3);">
 
+<!--   <div style="text-align:center;" class="col-md-2 hidden-xs hidden-sm">
+  <a href="#" ng-click="share()" class="btn btn-lg btn-primary">Share Your Best Bits</a>
+  
+  </div> -->
 
-<div class="col-md-2 playlist">
-<div class="panel panel-info">
-<div class="panel-heading">Playlist</div>
-    <div class="panel-body"  >
-      <ul>
-        <li ng-repeat="m in playlist">
-          <div ng-include=" 'media.html' "></div>
-        </li>
-    </ul>
+  <div style="text-align:center;position:fixed;bottom:15px;left:10px;">
+    <div class="circle">{{totals.mine}} <span>I Shot</span></div>
+    <div class="circle">{{totals.total}} <span>Total</span></div>
+    <div class="circle">{{totals.mins}} <span>Mins</span></div>
+    <div class="circle">{{totals.people}} <span>People</span></div>
+  </div>
+
+    <div class="col-md-9">
+          <div class="panel panel-info playlist" style="margin-bottom:5px;">
+          <div class="panel-heading" style="height:45px;"><h2 style="padding:0;margin:0;display:inline-block;margin-top:-5px;"><span style="padding-left:30px;color:#357ebd"><i class="fa fa-list-ul fa-6x" ></i> Playlist</span></h2>
+          <button ng-click="playall()" class="btn btn-lg btn-success pull-right" style="margin-right:-15px;margin-top:-10px;">Lights Down Mode <i class="fa fa-desktop"></i></button>
+        </div>
+              <div class="panel-body" style="margin:0;padding:0;">
+                <div class="playlist" ui-sortable="{ 'placeholder':'vid_tmp', 'ui-floating': true, 'axis': 'x' }" ng-model="playlist" style="margin:0;padding:0;overflow-y:hidden;overflow-x:scroll;height:174px;white-space: nowrap;">
+                    <div ng-repeat="m in playlist track by $index" ng-include=" 'media.html' " style="display:inline-block;margin:3px;"></div>
+                </div>
+
+              </div>
+          </div>
+    </div>
+
+    <div class="col-md-3" style="text-align:center;">
+        <div class="panel panel-default" style="width:auto;height:auto;padding:0;margin:0;display:inline-block;" id="videopanel">
+          <videogular vg-player-ready="controller.onPlayerReady($API)" vg-complete="onCompleteVideo()" vg-native-controls="true">
+                <vg-media vg-src="sources"
+                          >
+                </vg-media>
+          </videogular>
+        </div>
 
     </div>
-</div>
+
+<div style="position:absolute;bottom:0;margin-bottom:-45px;width:100%;left:0px;text-align:center;">
+            <div class="btn-group">
+                <label class="btn btn-primary" ng-model="search.created_by" btn-radio=" '{{username}}' ">My Shots</label>
+                <label class="btn btn-primary" ng-model="search.created_by" btn-radio="0">Everyone's Shots</label>
+            </div>
+            <div class="btn-group">
+                <label class="btn btn-primary" ng-model="order_filter" btn-radio="'meta.static_meta.captured_at'">Sort by Time</label>
+                <label class="btn btn-primary" ng-model="order_filter" btn-radio="sizeM">Best Bits First</label>
+                <label class="btn btn-primary" ng-model="order_filter" btn-radio="'order'">Random</label>
+            </div>
+      </div>
+
 </div>
 
-<div>
+
+<div class="allmedia" style="text-align:center;margin-top:290px;">
+  <span us-spinner="{radius:10, width:4, length: 10}"></span>
 <ul>
-    <li ng-repeat="m in media | filter:{thumb:'!undefined', path:'!undefined'}">
+    <li class="animate-repeat" ng-repeat="m in media | filter:{thumb:'!undefined', path:'!undefined'} | filter:{created_by:search.created_by} | orderBy:order_filter">
       <div ng-include=" 'media.html' "></div>
     </li>
 </ul>
-<span class="hide" ng-bind="sources[0].src"></span>
+</div>
+<div class="modal fade"  data-show="true" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="margin:auto auto;margin-top:10%;">
+    <div class="modal-content" style="text-align:center;">
+      <div class="modal-body">
+        <h1>We have collected all the footage from this event.</h1>
+          <h2>You can <span style="color:yellowgreen"><i class="fa fa-play fa-6x" ></i> play</span>, <span style="color:orange"><i class="fa fa-star fa-6x" ></i> like</span> and <span style="color:#357ebd"><i class="fa fa-list-ul fa-6x" ></i> playlist</span> what you and others have filmed.</h2>
+      </div>
+      <div class="modal-footer" style="text-align:center;">
+        <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" >Great, Thanks!</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 
-<videogular vg-autoplay="true">
-      <vg-video vg-src="sources"
-                vg-native-controls="true">
-      </vg-video>
-    </videogular>
+<div class="modal fade"  data-show="true" id="playAll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="margin:auto auto;margin-top:10%;width:60%;">
+    <div class="modal-content" style="text-align:center;">
+      <div class="modal-body" id="videomodal" style="padding:0;margin-right:-1px;">
+
+      </div>
+    </div>
+  </div>
 </div>
 </div>

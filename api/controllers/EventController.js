@@ -8,6 +8,7 @@
 var urlencode = require('urlencode');
 var path = require('path');
 var fs = require('fs');
+var lwip = require('lwip');
 
 module.exports = {
 
@@ -15,28 +16,13 @@ module.exports = {
 	{
 		//lists all events and their current status, allows removal / stopping of events...
 		Event.find({},function(err,events){
-			res.view({events:events});	
+			res.view({events:_.groupBy(events,'server')});	
 		});
 	},
 
 	index:function(req,res)
 	{
 		return res.redirect('/event/view');
-	},
-
-	server:function(req,res)
-	{
-		//console.log(req.params.id);
-		Event.findOne(req.params.id).exec(function(err,event){
-			if (event != undefined)
-			{
-				res.json({myaddress:req.headers.host,eventserver:event.server});
-			}
-			else
-			{
-				res.json({error:"No Event Specified"},500);
-			}
-		});
 	},
 
 	view:function(req,res)
@@ -90,6 +76,11 @@ module.exports = {
 					return res.redirect('/commission/new');
 				}
 				event.calcphases();
+				if (event.eventtype.roleimg)
+					event.eventtype.roleimg = sails.config.S3_CLOUD_URL+event.eventtype.roleimg;
+
+				if (event.icon)
+					event.icon = sails.config.S3_CLOUD_URL+event.icon;
 				//console.log(event);
 				res.view({event:event});
 			});
@@ -145,6 +136,8 @@ module.exports = {
 	{
 		Event.findOne(req.params.id).exec(function(err,ev)
 		{
+			//console.log(ev);
+
 			if (err || ev == null)
 				return res.json({});
 			else
@@ -347,7 +340,7 @@ module.exports = {
 
 		//register this user with the event manager
 		sails.eventmanager.signin(req.param('id'),req.session.passport.user.id,req.session.passport.user,false,req.param('force'));
-		return;
+		return res.json({msg:'subscribed'});
 	},
 
 	resub:function(req,res)
@@ -355,7 +348,7 @@ module.exports = {
 		User.subscribe(req.socket,[req.session.passport.user.id]);
 		sails.eventmanager.signin(req.param('id'),req.session.passport.user.id,req.session.passport.user,true,req.param('force'));		
 		//console.log('Attempted re-subscribe (after connection drop) with: ' + req.socket.id);
-		return;
+		return res.json({msg:'subscribed'});
 	},
 
 	//this is for the web view (not producing content) to get updates
@@ -364,7 +357,7 @@ module.exports = {
 		//console.log('subscribe to: '+ req.param('id'));
 		Event.subscribe(req.socket,[req.param('id')]);
 		sails.eventmanager.checkstatus(req.param('id'));
-		return;
+		return res.json({msg:'subscribed'});
 	},
 	
 	signout:function(req,res)
@@ -378,7 +371,7 @@ module.exports = {
 			{
 				//req.logout();
 				//console.log("done logout");
-				return;
+				return res.json({msg:'logged out'});
 			});
 		});
 	},
@@ -413,9 +406,10 @@ module.exports = {
 				e.coverage_classes = tempcoverage;
 				e.roles = allroles;
 				e.eventcss = ev.eventtype.eventcss;
+				e.ispublic = e.public;
 				
 				if (e.roleimg == undefined && ev.eventtype.roleimg != undefined)
-					e.roleimg = ev.eventtype.roleimg;
+					e.roleimg = sails.config.S3_CLOUD_URL + ev.eventtype.roleimg;
 
 				e.codename = ev.eventtype.codename;
 
@@ -458,9 +452,9 @@ module.exports = {
 			var evs = new Array();
 			_.each(data,function(d){
 				if (!sails.localmode)
-						evs.push({name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description,default_event:(d.id==req.session.passport.user.currentevent)});
+						evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description,default_event:(d.id==req.session.passport.user.currentevent)});
 					else
-						evs.push({name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description,default_event:(d.id==req.session.passport.user.currentevent)});
+						evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description,default_event:(d.id==req.session.passport.user.currentevent)});
 				
 			});
 
@@ -473,22 +467,38 @@ module.exports = {
 				var evs = new Array();
 				_.each(event,function(d){
 					if (!sails.localmode)
-						evs.push({name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:d.server,description:d.eventtype.description});
+						evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description});
 					else
-						evs.push({name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description});
+						evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description});
 				});
-				codeevents = evs;
-				Event.find().where({public:true}).exec(function(err,event)
+
+				Media.find({created_by:req.session.passport.user.id}).exec(function(err,media)
 				{
-					var evs = new Array();
-					_.each(event,function(d){
-					if (!sails.localmode)
-						evs.push({name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:d.server,description:d.eventtype.description});
-					else
-						evs.push({name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description});
+					var events = _.pluck(media,'event_id');
+
+					Event.find(events).exec(function(err,all)
+					{
+						codeevents = evs;
+						_.each(all,function(d)
+						{
+							codeevents.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description});
+						});
+
+						Event.find().where({public:true}).exec(function(err,event)
+						{
+							var evs = new Array();
+							_.each(event,function(d){
+							if (!sails.localmode)
+								evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description});
+							else
+								evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description});
+							});
+							return res.json({myevents:myevents,codeevents:codeevents,publicevents:evs});	
+						});		
 					});
-					return res.json({myevents:myevents,codeevents:codeevents,publicevents:evs});	
-				});				
+				});
+
+						
 			});
 		});
 	},
@@ -496,21 +506,21 @@ module.exports = {
 	registercode:function(req,res)
 	{
 		//find the event that matches the code
-		Event.find().where({'codes.code':req.param('code')}).exec(function(err,event){
+		Event.findOne().where({'codes.code':req.param('code')}).exec(function(err,event){
 			//find the code that matches this:
 			//console.log(event);
-			if (event.length > 0)
+			if (event != null)
 			{
-				_.each(event[0].codes,function(c){
+				_.each(event.codes,function(c){
 					if (c.code == req.param('code'))
 					{
 						c.uid = req.session.passport.user.id;
 						c.status = 'linked';
 					}
 				});
-				event[0].save(function()
+				event.save(function()
 				{
-					return res.json({msg:'You have been added as a team member to '+event.name,code:200,event_id:event[0].id},200);
+					return res.json({msg:'You have been added as a team member to '+event.name,code:200,event_id:event.id},200);
 				});
 			}
 			else
@@ -522,42 +532,9 @@ module.exports = {
 
 	me:function(req,res)
 	{
-		return res.json(req.session.passport.user);
-	},
-
-	getlog:function(req,res)
-	{
-		var eventid = req.params.id;
-		Log.find({eventid:eventid}).limit(20).sort('_id DESC').exec(function(err,logs){
-			res.json(logs);
-		});
-	},
-
-	log:function(req,res)
-	{
-		//live log:
-		var lookupid = req.session.event || req.session.passport.user.currentevent;
-		//console.log(lookupid);
-
-		//if event is explicitally set in GET
-		if (req.params.id)
+		User.findOne(req.session.passport.user.id).exec(function(err,u)
 		{
-			lookupid = req.params.id;
-		}
-
-		req.session.event = lookupid;
-
-		//event config screen -- module selection for the event
-		//console.log(lookupid);
-		Event.findOne(lookupid).exec(function(err,event){
-			if (event == undefined)
-			{
-				console.log("no event found to log "+lookupid);
-				//req.session.flash = {err:"Event not found"};
-				return res.redirect('/commision/new');
-			}
-			//console.log(event);
-			res.view({event:event});
+			return res.json(u);
 		});
 	},
 
@@ -602,22 +579,22 @@ module.exports = {
 		});
 	},
 
-	testeventupdate:function(req,res)
-	{
-		Event.findOne(req.param('id'),function(err,ev){
-			//console.log(ev);
-			if (err==null && ev!=null)
-			{
-				//console.log(ev);
-				sails.eventmanager.updateevent(ev.id);
-				return res.json({msg:'Updated Changed'});
-			}
-			else
-			{
-				return res.json({msg:'Problem Updating'});
-			}
-		});
-	},
+	// testeventupdate:function(req,res)
+	// {
+	// 	Event.findOne(req.param('id'),function(err,ev){
+	// 		//console.log(ev);
+	// 		if (err==null && ev!=null)
+	// 		{
+	// 			//console.log(ev);
+	// 			sails.eventmanager.updateevent(ev.id);
+	// 			return res.json({msg:'Updated Changed'});
+	// 		}
+	// 		else
+	// 		{
+	// 			return res.json({msg:'Problem Updating'});
+	// 		}
+	// 	});
+	// },
 
 	changephase:function(req,res)
 	{
@@ -755,43 +732,118 @@ module.exports = {
 		    bucket: sails.config.S3_BUCKET
 		  }
 
-		if (req.files.map != undefined)
+
+		  //console.log(req.method);
+		if (req.method == "POST" && req.file('map') != undefined)
 		{
-			var uuid = require('node-uuid');
-	 		var fakeid = uuid.v1();
-			var filename = fakeid + req.files.map.name;
-			var tmp = req.files.map.path;
-			var client = knox.createClient(knox_params);
-			//fs.copySync(tmp,tmpdir + filename);
-		
+			
+			req.file('map').upload(function(err, tt)
+			{
+				var uuid = require('node-uuid');
+		 		var fakeid = uuid.v1();
+				var filename = fakeid + tt[0].filename;
+				var tmp = tt[0].fd;
+				var client = knox.createClient(knox_params);
+				//fs.copySync(tmp,tmpdir + filename);
 
-			client.putFile(tmp, 'upload/' + filename, {'x-amz-acl': 'public-read'},
-	    		function(err, result) {
-	    			//done uploading
-	    			if (err)
-	    				console.log("s3 upload error: "+err);
+				//console.log('ready with file');
+			
 
-	    			fs.unlink(tmp, function (err) {
-	    				//console.log(err);
-	    			});
+				client.putFile(tmp, 'upload/' + filename, {'x-amz-acl': 'public-read'},
+		    		function(err, result) {
+		    			//done uploading
+		    			//console.log('done uploading');
+		    			if (err)
+		    				console.log("s3 upload error: "+err);
 
-	    			Event.findOne(req.param('id')).exec(function(err,m){
+		    			// fs.unlink(tmp, function (err) {
+		    			// 	//console.log(err);
+		    			// });
 
-						if (!err && m!=undefined)
-						{
-							m.eventtype.roleimg = sails.config.S3_URL+'/upload/'+filename;
-							m.save(function(err){
-								req.session.flash = "Upload Complete";
+		    			Event.findOne(req.param('id')).exec(function(err,m){
+
+							if (!err && m!=undefined)
+							{
+								m.eventtype.roleimg = filename;
+								m.save(function(err){
+									req.session.flash = "Upload Complete";
+									res.redirect('/event/view');
+								});
+							}
+							else
+							{
+								req.session.flash = "Error Uploading Image";
 								res.redirect('/event/view');
-							});
-						}
-						else
-						{
-							req.session.flash = "Error Uploading Image";
-							res.redirect('/event/view');
-						}
+							}
+						});
+		    		});	
+			});
+		}
+		else
+		{
+			res.redirect('/event/view');
+		}
+	},
+
+	image:function(req,res)
+	{
+		var knox = require('knox');
+		//upload map file for an event role:
+		var knox_params = {
+		    key: sails.config.AWS_ACCESS_KEY_ID,
+		    secret: sails.config.AWS_SECRET_ACCESS_KEY,
+		    bucket: sails.config.S3_BUCKET
+		  }
+
+
+		  //console.log(req.method);
+		if (req.method == "POST" && req.file('image') != undefined)
+		{
+			
+			
+
+			req.file('image').upload(function(err, tt)
+			{
+				var uuid = require('node-uuid');
+	 			var fakeid = uuid.v1();
+				var filename = fakeid + tt[0].filename;
+				var tmp = tt[0].fd;
+				var client = knox.createClient(knox_params);
+
+				lwip.open(tmp, function(err, image) {
+				    if (err) return console.log(err);
+				    image.cover(100,100,function(err, image){
+				        image.writeFile(tmp+"_small.png", function(err){
+				            if (err) return console.log(err);
+							client.putFile(tmp+"_small.png", 'upload/' + filename, {'x-amz-acl': 'public-read'},
+					    		function(err, result) {
+					    			//done uploading
+					    			//console.log('done uploading');
+					    			if (err)
+					    				console.log("s3 upload error: "+err);
+
+					    			Event.findOne(req.param('id')).exec(function(err,m){
+
+										if (!err && m!=undefined)
+										{
+											m.icon = filename;
+											m.save(function(err){
+												req.session.flash = "Upload Complete";
+												res.redirect('/event/view');
+											});
+										}
+										else
+										{
+											req.session.flash = "Error Uploading Image";
+											res.redirect('/event/view');
+										}
+									});
+					    		});	
+					        });
+					    });
 					});
-	    		});	
+				
+			});
 		}
 		else
 		{
@@ -816,6 +868,13 @@ module.exports = {
 		});
 	},
 
+	triggeradd:function(req,res)
+	{
+		console.log("new event triggered: "+req.param('id'));
+		sails.eventmanager.addevent(req.param('id'));
+		res.json({});
+	},
+
 	addevent:function(req,res,next)
 	{
 		//console.log("creating: " + req.param('eventtype'));
@@ -823,26 +882,69 @@ module.exports = {
 		//do save
 		EventTemplate.findOne(req.param('eventtype')).exec(function(err,myev)
 		{
-			
+		
+			//console.log(myev);	
 			//var myev = tys[req.param('eventtype')];
+			//console.log(myev);
+			var coverage_classes = myev.coverage_classes;
+			//console.log(coverage_classes);
+			_.each(coverage_classes,function(c)
+			{
+				c.items = [];
+			});
+
+			//console.log(coverage_classes);
+			
+			//add in missing modules:
+			if (!myev.post_modules)
+			{
+				myev.post_modules = {};
+				_.each(_.pluck(sails.eventmanager.post_modules,'codename'),function(m)
+				{
+					myev.post_modules[m] = 0;
+				});
+			}
+
+			if (!myev.shoot_modules)
+			{
+				myev.shoot_modules = {};
+				_.each(_.pluck(sails.eventmanager.event_modules,'codename'),function(m)
+				{
+					myev.shoot_modules[m] = 0;
+				});
+
+				var lastone = _.last(_.pluck(sails.eventmanager.event_modules,'codename'));
+				myev.shoot_modules[lastone] = 1;
+			}
+
+			if (!myev.ruleset)
+			{
+				myev.ruleset = [{direction_engine:'manual', name:'manual', pre_time:0}];
+			}
+
+
 			var meta_modules = myev.meta_modules;
 			var post_modules = myev.post_modules;
 			var shoot_modules = myev.shoot_modules;
-			var coverage_classes = myev.coverage_classes;
+			var phases = myev.phases;
+
 			Event.getnewcode(function(code){
 				//console.log(myev);
 
 				var whichserver = sails.config.master_url;
 
 				//var e = req.params.all();
-				Event.create(_.extend(req.params.all(),{public:0,eventtype:myev,ownedby:[req.session.passport.user.id],meta_modules:meta_modules,post_modules:post_modules,shoot_modules:shoot_modules,coverage_classes:coverage_classes,offlinecode:code}),function(err,event){
+				//console.log(req.params.all());
+				var neevent = _.extend(req.params.all(),{publicshare:0,public:1,publicview:1,eventtype:myev,ownedby:[req.session.passport.user.id],meta_modules:meta_modules,post_modules:post_modules,shoot_modules:shoot_modules,coverage_classes:coverage_classes,offlinecode:code, codes:[], phases:phases});
+				delete neevent.id;
+				Event.create(neevent,function(err,event){
 
 					//event.ownedby = [];
 					// if (event.ownedby == undefined)
 					// 	event.ownedby = new Array();
 					//event.ownedby.push(req.session.passport.user.id);
 					//event.save(function(){
-						//console.log(err);
+				    console.log(err);
 					if (err)
 					{
 						//console.log("error adding event");
@@ -866,8 +968,12 @@ module.exports = {
 								    whichserver = JSON.parse(body).server;
 								}
 
-								//console.log("err:"+err);
-								//console.log("server:"+whichserver);
+
+								console.log(body);
+
+								console.log("server:"+whichserver);
+								//console.log("me:"+sails.hostname + ':'+ sails.port);
+								//console.log(err);
 
 								//set default event id in session
 								//console.log('new event id: '+event.id);
@@ -881,12 +987,8 @@ module.exports = {
 									console.log("adding event to director")
 									sails.eventmanager.addevent(event.id);
 								}
-								else
-								{
-									//redirect to the correct server (and asume longpoll gets activated)
-									console.log("Event allocated to another server, redirecting");
-									return res.redirect(whichserver + '/event/view/' + event.id);
-								}
+
+								console.log("whichserver: " + whichserver);
 
 								event.server = whichserver;
 								event.save(function(err){
@@ -895,6 +997,7 @@ module.exports = {
 									User.findOne(req.session.passport.user.id).exec(function(err,user){
 										if (err)
 										{
+											//console.log(err);
 											req.session.flash = {err:err};
 											return res.redirect('/commision/new');
 										}
@@ -904,7 +1007,7 @@ module.exports = {
 											user.currentevent = event.id;
 											user.save(function(err)
 											{
-												console.log("redirect to view");
+												//console.log("redirect to view");
 												return res.redirect('/event/view');		
 											}); //end user update
 											  

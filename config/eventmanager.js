@@ -20,6 +20,7 @@ module.exports = {
 			//console.log(module.exports.event_modules);
 			module.exports.event_modules[e.codename] = e;
 			module.exports.event_modules[e.codename].init(multiserver);
+			sails.winston.info("Init "+e.codename+ " done.");
 			e.longpoll();
 			setInterval(function (){
 				e.trigger();
@@ -29,8 +30,6 @@ module.exports = {
 			}, 60*1000);
 			//console.log(module.exports.event_modules[e.name]);
 		});
-
-
 
 		_.each(fs.readdirSync('./api/post_modules'),function(ev)
 		{

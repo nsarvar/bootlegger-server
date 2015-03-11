@@ -80,12 +80,6 @@ module.exports = {
 
 			var all = _.union(im_files, ic_files);
 
-			// if (this.eventtype.roleimg)
-			// {
-			// 	//download file:
-			// 	all.push({source:dir+'roles/'+this.eventtype.roleimg,target:this.eventtype.roleimg});
-			// }
-
 			var zip = new JSZip();
 			_.each(all,function(f)
 			{
@@ -106,10 +100,19 @@ module.exports = {
 				}
 			});
 
-			var content = zip.generate({type:"nodebuffer",compression:'DEFLATE'});
-			require("fs").writeFile(dir+'/'+this.id+'.zip', content, function(err){
+			try
+			{
+				var content = zip.generate({type:"nodebuffer",compression:'DEFLATE'});
+				require("fs").writeFile(dir+'/'+this.id+'.zip', content, function(err){
 				cb();
-			});
+				});
+			}
+			catch (e)
+			{
+				console.log('no file written');
+				cb();
+			}
+			
 	  }
 
     

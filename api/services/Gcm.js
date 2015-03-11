@@ -1,4 +1,4 @@
-exports.sendMessage = function(platform,deviceid,title,msg,uploadid) {
+exports.sendMessage = function(platform,deviceid,title,msg,uploadid, advert) {
 	if (platform=='Android')
 	{
 		var GCM = require('gcm').GCM;
@@ -19,6 +19,11 @@ exports.sendMessage = function(platform,deviceid,title,msg,uploadid) {
 		{
 			message['data.upload'] = true;
 			message['data.eventid'] = uploadid;
+		}
+
+		if (advert)
+		{
+			message['data.advert'] = advert;
 		}
 
 		gcm.send(message, function(err, messageId){

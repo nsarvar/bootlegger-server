@@ -35,6 +35,9 @@
 
 	<div class="col-sm-6" id="inpgrp"> 
 		<form action="/post/module_function/audio_sync" enctype="multipart/form-data" method="POST" > 
+			
+		<input type="hidden" name="event" value="<%- event %>"/> 
+		<input type="hidden" name="func" value="upload"/>
 		<div class="input-group" >
 		        <span class="input-group-btn">
 		            <span class="btn btn-primary btn-file">
@@ -48,8 +51,6 @@
 
 
 
-		<input type="hidden" name="event" value="<%- event %>"/> 
-		<input type="hidden" name="func" value="upload"/>
 		</form>
 	</div>
 

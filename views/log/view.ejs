@@ -1,0 +1,19 @@
+<script type="text/javascript" src="//fgnass.github.io/spin.js/spin.min.js"></script>
+<style>
+.myGrid
+{
+	height:500px;
+}
+</style>
+<div class="page-header">
+  <h1>Event Logs
+  </h1>
+</div>
+
+<div ng-app="logApp">
+  <div ng-controller="Log">
+  	<span us-spinner="{radius:10, width:4, length: 10}"></span>
+    <div ui-grid="gridOptions" class="myGrid" ui-grid-pagination ui-grid-move-columns ui-grid-resize-columns ></div>
+
+  </div>
+</div>

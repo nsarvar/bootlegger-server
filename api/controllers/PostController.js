@@ -53,12 +53,72 @@ module.exports = {
     });
   },
 
+  remind:function(req,res)
+  {
+    Event.findOne(req.params.id).exec(function(err,event){
+      Media.find({event_id:event.id},function(err,media){
+        //find unique list of users with un-uploaded footage:
+        //filter by not uploaded:
+        //console.log("media: "+media.length);
+        //console.log(media);
+
+        var notuploaded = _.filter(media,function(m){return typeof m.path == 'undefined';});
+        //console.log("notuploaded: "+notuploaded.length);
+        var usersnotuploaded = _.pluck(notuploaded,'created_by');
+        //console.log("user: "+usersnotuploaded.length);
+        var uniqueusers = _.unique(usersnotuploaded);
+        //console.log("unique users: "+uniqueusers);
+        //for each one of these, find the session info:
+        //console.log("send msg"+us);
+        User.find({id:uniqueusers},function(err, users)
+        {
+          _.each(users,function(us){
+            //push a message to them:
+            //console.log("wanting to send push");
+            if (us.pushcode)
+            {
+              Gcm.sendMessage(us.platform,us.pushcode,"Upload Videos","Please upload your " + event.name + " videos",event.id);
+            }
+          });
+
+          req.session.flash = {msg:"Upload reminder sent!"};
+          res.redirect('/post');
+        });
+      });
+    });
+  },
+
+  broadcast:function(req,res)
+  {
+    if (req.param('advert'))
+    {
+      User.find({}).exec(function(err,users)
+      {
+        _.each(users,function(u){
+          if (u.pushcode) //for testing.... && u.profile.emails[0].value == sails.config.admin_email
+          {
+            //console.log(u.profile.emails[0].value);
+            Gcm.sendMessage(u.platform,u.pushcode,"Bootlegger Info","Latest updates from Bootlegger",null,req.param('advert'));
+          }
+        });
+        req.session.flash = {msg:"Broadcast Message Sent!"};
+        res.redirect('/event/admin');
+      });
+    }
+    else
+    {
+      req.session.flash = {msg:"No Message Given!"};
+      res.redirect('/event/admin');
+    }
+  },
+
   module_function:function(req,res)
   {
     //console.log("done0");
     var module = req.param('id');
     var func = req.param('func');
     var ev = req.param('event');
+    //console.log(req.params.all());
     sails.eventmanager.module_function(module,func ,ev, req, res);
   },
 
@@ -120,7 +180,13 @@ module.exports = {
 
         User.find({}).exec(function(err,allusers)
         {
-            var usersmissing = _.countBy(missing, function(num) { return _.findWhere(allusers, {id: num.created_by}).profile.displayName; });
+            var usersmissing = _.countBy(missing, function(num) { 
+              var x = _.findWhere(allusers, {id: num.created_by});
+              if (x)
+                return x.profile.displayName;
+              else
+                return 'Anon';
+               });
 
             var missingfrom = _.reduce(usersmissing,function(prev,next,val){
               return prev + val + " (" + next + "), ";
@@ -163,8 +229,9 @@ module.exports = {
               }
 
               var timestamp = m.meta.static_meta.captured_at.split(' ');
-              var filename =  timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_' + m.user.profile.displayName + + path.extname(m.path);
+              var filename =  timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_' + m.user.profile.displayName + path.extname(m.path);
               m.originalpath = m.path;
+              m.thumb = sails.config.S3_CLOUD_URL + m.thumb;
               m.path = filename;
 
             });            
@@ -179,6 +246,9 @@ module.exports = {
     req.session.cancelsync = true;
     cancelthese[req.session.id] = true;
     delete req.session.downloading;
+
+    if (req.session.downloadprogress.value==0 || req.session.downloadprogress.value==100)
+      delete req.session.downloadprogress;
     req.session.save();
     //console.log(req.session);
     res.json({msg:'ok'});
@@ -208,10 +278,16 @@ module.exports = {
 
   downloadall:function(req,res)
   {
+    var from = req.param('from')?moment(req.param('from'),'DD-MM-YY') : null;
+    var to = req.param('to')?moment(req.param('to'),'DD-MM-YY') : null;
+
+    //console.log(from);
+    //console.log(to);
+
     //console.log(req.session);
     var eventid = req.param('id');
     // removed this for now :   !req.session.downloading
-    if (!sails.localmode && !req.session.downloading)
+    if (!sails.localmode && !req.session.downloading && req.session.passport.user.dropbox)
     {
         req.session.downloading = true;
         delete req.session.cancelsync;
@@ -258,18 +334,33 @@ module.exports = {
                   //call function:
                   var request = require('request');
                   //console.log('http://localhost:'+sails.config.port+'/post/document/'+eventid);
-                  request('http://localhost:'+sails.config.port+'/post/document/'+eventid,
+                  request('http://'+sails.config.hostname+':'+sails.config.port+'/post/document/'+eventid,
                     function(err,resp,doc) 
                     {
-                      var documentfilename = 'upload/'+eventid+".html";
-                      fs.writeFileSync(documentfilename, doc);
+                      if (doc)
+                      {
+                        var documentfilename = 'upload/'+eventid+".html";
+                        fs.writeFileSync(documentfilename, doc);
+                      }
                       //console.log('done writing file list');
                       _.each(data,function(d)
                       {
-                        if (d.path)
-                          files.push(d);
+                        if (from && to)
+                        {
+                          var tt = moment(d.meta.static_meta.captured_at,"DD/MM/YYYY HH:mm:ss");
+                          //console.log(tt.toString());
+                          if (from.isBefore(tt) && to.isAfter(tt) && d.path)
+                          {
+                            files.push(d)
+                          }
+                        }
                         else
-                          missing.push(d);
+                        {
+                          if (d.path)
+                            files.push(d);
+                          else
+                            missing.push(d);
+                        }
                       });
                     
                     //do some more things:

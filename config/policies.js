@@ -31,7 +31,14 @@ module.exports.policies = {
     	'edit':['authenticated','isowner','flash'],
         'server':true,
         'admin':['superadmin','flash'],
-        'kill':['superadmin','flash']
+        'kill':['superadmin','flash'],
+        'triggeradd':true
+    },
+
+    'watch':
+    {
+        'index':['authenticated','viewonly','flash'],
+        'shortlink':true
     },
 
     'shoot':
@@ -39,10 +46,18 @@ module.exports.policies = {
         'index':['flash','authenticated','hasevents','isowner']
     },
 
+    'commission':
+    {
+        '*':['flash','authenticated'],
+        'index':['flash','authenticated','hasevents','isowner']
+    },
+
     'post':
     {
         'document':true,
-         'index':['flash','authenticated','hasevents','isowner']
+         'index':['flash','authenticated','hasevents','isowner'],
+         'remind':['flash','authenticated','isowner'],
+         'broadcast':['flash','authenticated','superadmin']
     },
 
     'media':
@@ -51,12 +66,17 @@ module.exports.policies = {
         'uploadthumb':true
     },
 
+    'log':
+    {
+        '*':['superadmin','flash']
+    },
 	// whitelist the auth controller
 	'auth':
 	{
 		'*': ['flash',true],
 		'local_login':true,
 		'localcode':'authenticated',
-        'dropbox':'authenticated'
+        'dropbox':'authenticated',
+        'setprivacy':'authenticated'
 	}
 };

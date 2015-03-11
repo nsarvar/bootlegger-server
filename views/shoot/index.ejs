@@ -1,3 +1,5 @@
+
+<!-- <script src"https://raw.githubusercontent.com/balderdashy/angularSails/master/dist/ngsails.io.js"></script> -->
 <style>
 .status_ready
 {
@@ -29,82 +31,459 @@
   display: none;
 }
 
-</style>
+.angular-google-map-container { height: 300px; }
 
+.circle
+{
+  background:#5cb85c;
+  display:block;
+  width:50px;
+  height: 50px;
+  border-radius: 25px;
+  text-align:center;
+  font-size:18pt;
+  color:white;
+  position:relative;
+  display:inline-block;
+  margin:3px;
+  padding-top:8px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+
+.circle span
+{
+  position:absolute;
+  margin-top:42px;
+  color:#5cb85c;
+  font-size:8pt;
+  text-align: center;
+  left:0;
+  width:50px;
+  text-transform: uppercase;
+}
+
+.captured_at::before
+{
+  content: "\f017";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.displayName::before
+{
+  content: "\f007";
+  font-family:'FontAwesome';
+  margin-right:3px;
+
+}
+.gps::before
+{
+  content: "\f041";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.nicepath::before
+{
+  
+   content: "\f1c8";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.clip_length::before
+{
+  
+   content: "\f07e";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.meta{
+  display:block;
+  color:#999999;
+}
+
+.filesize::before
+{
+  
+  content: "\f016";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.coverage::before
+{
+  content: "\f02c";
+  font-family:'FontAwesome';
+  margin-right:3px; 
+}
+.coverage::before
+{
+  content: "\f0c9";
+  font-family:'FontAwesome';
+  margin-right:3px; 
+}
+.phase::before
+{
+  content: "\f0cb";
+  font-family:'FontAwesome';
+  margin-right:3px; 
+  
+}
+.role::before
+{
+  content: "\f140";
+  font-family:'FontAwesome';
+  margin-right:3px; 
+  
+}
+
+.zoom::before
+{
+
+ content: "\f00e";
+  font-family:'FontAwesome';
+  margin-right:3px; 
+}
+
+.shot::before
+{
+
+ content: "\f0c0";
+  font-family:'FontAwesome';
+  margin-right:3px; 
+}
+
+.shot_meta::before
+{
+
+ content: "\f02b";
+  font-family:'FontAwesome';
+  margin-right:3px; 
+}
+.panel-small
+{
+  padding:0;
+}
+
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+}
+
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+  opacity:0;
+}
+
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+.highlighted
+{
+  border:1px red solid !important;
+}
+
+.user
+{
+  cursor: pointer;
+  margin-right:5px;
+  margin-bottom:5px;
+  border:1px transparent solid;
+}
+
+.mediaitem 
+{
+  position:relative;
+}
+
+.allmeta
+{
+  /*box-shadow: 0 0 5px rgba(0,0,0,0.5);*/
+  overflow-y:hidden;
+  overflow-x:hidden;
+  height:120px;
+  padding:3px;
+}
+
+.mediaitem:hover .allmeta
+{
+  background: white;
+  overflow-y:visible !important;
+  height:inherit;
+  position:absolute;
+  z-index:2;
+  right:0;
+  top:0;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+video
+{
+  width:100%;
+  height:100%;
+  margin-bottom:-6px;
+}
+
+</style>
 <div class="page-header">
-  <h1>Shoot Watch <small>Realtime updates from your shoot</small>
+  <h1>Shoot Monitor <small>Realtime updates from your shoot</small>
   </h1>
 </div>
-<div class="alert alert-warning">
-This page is in the process of being re-invented as a media visualisation interface and manual phase switching. Stay tuned!
+<div ng-app="liveApp" ng-controller="Live">
+
+  <i ng-show="loading" style="position:fixed;top:130px;left:50%;" class="fa fa-spinner fa-spin fa-5x"></i>
+
+<div class="modal fade"  data-show="true" id="playAll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="margin:auto auto;margin-top:10%;width:46%;">
+    <div class="modal-content" style="text-align:center;height:100%;width:100%;">
+      <div class="modal-body" id="videomodal" style="padding:0;">
+          <videogular vg-player-ready="onPlayerReady($API)" vg-native-controls="true">
+                <vg-media vg-src="sources">
+                </vg-media>
+          </videogular>
+      </div>
+    </div>
+  </div>
 </div>
+
+ <h2><button class="btn btn-link" ng-click="showControls()"><i  class="fa" ng-class="controlshow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Controls</h2>
+<div class="row" ng-show="controlshow">
+
+<div class="col-xs-3">
+<% if (event.shoot_modules.autodirector == 0) { %>
+
+  <div class="panel panel-info" id="startedbox">
+      <div class="panel-heading">
+        Shots
+      </div>
+      <div class="panel-body panel-small" >
+<p>Want to Adjust What People are Capturing?</p>
+<a href="/commission/live" class="btn btn-lg btn-success" style="width:100%;">Change Shots</a>
+</div>
+</div>
+ <div style="text-align:center;">
+        <div class="label label-success">{{ucount}} <span>Users</span></div>
+        <div class="label label-success"><span>Direction Mode:</span> {{mode}}</div>
+        <div class="label label-success"><span>Style: </span> {{phase}} </div>
+      </div>
+      <% } %>
+</div>
+
+
+
 
 <% if (event.phases) { %>
 <div class="row">
-<div class="phase col-xs-9">
-  <div class="well">
-<h2>Select a phase that your shoot is currently in:</h2>
-<div class="btn-group" data-toggle="buttons">
-<% 
-var i=0;
-_.each(event.phases,function(p){ 
-   %>
-  <label class="btn btn-primary <% if (event.currentphase == i){%>active<%}%>" onclick="changemetaphase(<%- i %>)">
-  <input type="radio" name="options" id="option3" autocomplete="off" ><%- p.name %></label>
-<% i++;}); %>
+  <div class="phaset col-xs-3">
+    <div class="panel panel-info">
+  <div class="panel-heading">Shoot Phase</div>
+  <div class="panel-body panel-small">
+    <p>Select a phase that your shoot is currently in:</p>
+  <div class="btn-group-vertical" style="width:100%;" data-toggle="buttons">
+  <% 
+  var i=0;
+  _.each(event.phases,function(p){ 
+     %>
+    <label class="btn btn-primary <% if (event.currentphase == i){%>active<%}%>" onclick="changemetaphase(<%- i %>)">
+    <input type="radio" name="options" id="option3" autocomplete="off" ><%- p.name %></label>
+  <% i++;}); %>
 </div>
-</div>
-</div>
-<% if (event.shoot_modules.autodirector == 1) { %>
-<div class="col-xs-3">
-  <div class="panel panel-info" id="startedbox">
-    <div class="panel-heading">
-      Shoot Status
-    </div>
-    <div class="panel-body" style="text-align:center;">
-      <button class="btn btn-success" onclick="startshoot()">Start Shoot</button>
-      <button class="btn btn-danger" onclick="pause()">Pause Shoot</button>
-    </div>
   </div>
   </div>
+  </div>
+  <% if (event.shoot_modules.autodirector && event.shoot_modules.autodirector == 1) { %>
+  <div class="col-xs-3">
+    <div class="panel panel-info" id="startedbox">
+      <div class="panel-heading">
+        Shoot Status
+      </div>
+      <div class="panel-body panel-small" style="text-align:center;">
+        <br>
+        <div class="btn-group" style="width:100%;" role="group"> 
+
+          <button class="btn btn-success" onclick="startshoot()">Start</button>
+          <button class="btn btn-danger" onclick="pause()">Pause</button>
+        </div>
+      </div>
+    </div>
+    </div>
+    <% } %>
 </div>
-<% } %>
-<% } %>
 
+<% } %>
+</div>
 
+    <!-- <div class="row"> -->
+
+     
+        
+
+<h2><button class="btn btn-link" ng-click="showMap()"><i  class="fa" ng-class="mapshown ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Media Locations </h2>
+<div ng-show="mapshown">
+  <button ng-click="fit();log('fit');" class="btn btn-default">Re-center</button> <label>Filter by location <input ng-click="log('filterbylocation',{filterbylocation:filterbylocation});" type="checkbox" ng-model="filterbylocation" /></label>
+<ui-gmap-google-map zoom='map.zoom' center='map.center' bounds="map.bounds" events="map.events">
+      <ui-gmap-marker ng-repeat="m in media track by $index"
+            idKey='m.id'
+            click="setMapFilter(m.id);log('mappin',{media:m.id});"
+            coords='{latitude:m.meta.static_meta.gps_lat,longitude:m.meta.static_meta.gps_lng}'>
+      </ui-gmap-marker>
+      <ui-gmap-circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
+                visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable" control="c.control" events="c.events"></ui-gmap-circle>
+</ui-gmap-google-map>
+</div>
+
+<h2><button class="btn btn-link" ng-click="showCrew()"><i  class="fa" ng-class="crewshow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Crew <!-- <span class="label label-success">{{users.length}}</span> --></h2>
+<div class="row" ng-show="crewshow">
+    <div class="col-xs-12">
+      <div ng-class="{'highlighted':user.id==mapfilter.created_by}" ng-click="setUser(user.id);log('filteruser',{user:user.id});" class="user animate-repeat {{'status_'+user.status}}" ng-repeat="user in users" style="position:relative;width:250px;height:60px;overflow:hidden;display:inline-block;float:left;" >
+            <div style="background:black;width:100px;height:60px;float:left;margin-right:5px;">
+              <img style="height:60px;width:100px;" ng-src="{{shotMap(user)}}"/>
+            </div>
+            <!-- <span>{{user.shot}}</span> -->
+            <!-- <img ng-src="{{user.profileImg}}" style="height:60px;"/> -->
+            <div style="padding:5px;margin-left:5px;">
+            <img ng-src="{{user.profileImg}}" style="height:30px;width:30px;border-radius:15px;"/>
+            <!-- <div style="background:#333;width:100%;height:105px;display:inline-block;"></div> -->
+              <!-- <span ng-bind="user.shot"></span> -->
+              <span style="white-space: nowrap;text-overflow: ellipsis;overflow:hidden;width:100px;display:inline-block;vertical-align:middle;">{{user.name}}</span>
+             </div>
+             <div style="position:absolute;right:0;bottom:0;">
+              <span ng-bind="mediaCount(user.id)"></span>
+              <span class="badge" >{{user.status}}</span>
+            </div>
+        </div>
+
+      <div ng-show="users.length==0" class="text-muted" class="col-sm-12">
+        No Users Signed In
+      </div>    
+  </div>
+</div>
+
+  <div class="allmedia">
+    <h2><button class="btn btn-link" ng-click="showFilter()"><i  class="fa" ng-class="filtershow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Filter Results <!-- <span class="label label-success">{{filteredmedia.length}}</span> --></h2>
+
+    <div ng-show="filtershow" class="well" style="position:relative;">
+  <button ng-click="clearFilters();log('clearfilter');" class="pull-right btn-link"><i class="fa fa-times"></i></button>  <label class="pull-right">Show only Uploaded <input ng-click="log('filteruploaded',{uploaded:hasvideo});"  type="checkbox" ng-model="hasvideo"/></label> 
 
 <div class="row">
-<div class="col-sm-3">
-<div class="alert alert-info" style="text-align:center;">
-  <h1 id="eventclock">?</h1>
-  <p>Current Shot Timer</p>
-</div>
+      <div class="col-xs-4">
+              <strong class="col-xs-3 text-muted">Role</strong>
+           <div >
+                <label ng-repeat="role in roles">
+                  <input checklist-model="rolefilter" ng-click="log('filterrole',{role:role,checked:this.checked});" checklist-value="role" type="checkbox" autocomplete="off"><i class="fa fa-check" ng-show="_.contains(rolefilter,role)"></i> {{role}} &nbsp;
+                </label>
+               
+              </div>
+
+                    <div>
+                <strong class="col-xs-3 text-muted">Phase</strong>
+                              <div >
+                        <label ng-repeat="c in phases">
+                          <input checklist-model="phasefilter" ng-click="log('filterphase',{phase:c,checked:this.checked});" checklist-value="c" type="checkbox" autocomplete="off">{{c}} &nbsp;
+                        </label>
+                      </div>
+
+                      </div>
+<div>
+                              <strong class="col-xs-3 text-muted">Subject</strong>
+          <div class="btn-group">
+            <label ng-repeat="c in coverage">
+              <input checklist-model="coveragefilter" ng-click="log('filtercoverage',{coverage:c,checked:this.checked});" checklist-value="c" type="checkbox" autocomplete="off">{{c}} &nbsp;
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-1">
+        <strong class="text-muted">Shot</strong>
+      </div>
+ <div class="col-xs-5">
+      <div>
+        
+          <div  >
+        <label ng-repeat="c in takenshots">
+          <input checklist-model="shotfilter" ng-click="log('filtershots',{shots:c,checked:this.checked});" checklist-value="c" type="checkbox" autocomplete="off">{{c}} &nbsp;
+        </label>
+      </div>
+      </div>
+      </div>
+
 </div>
 
-<div class="col-sm-3">
-<div class="alert alert-info" style="text-align:center;">
-  <h1 id="users">?</h1>
-  <p>Number of Crew Live</p>
-</div>
-</div>
 
-<div class="col-sm-3">
-<div class="alert alert-info" style="text-align:center;">
-  <h1 id="mode">?</h1>
-  <p>Direction Mode</p>
-</div>
-</div>
 
-<div class="col-sm-3">
-<div class="alert alert-info" style="text-align:center;">
-  <h1 id="phase">?</h1>
-  <p>Current Direction Style</p>
+      <div class="row">
+        <div class="col-xs-3">
+          <strong class="col-xs-12 text-muted">Length ({{lengthfilter[0]}}s - {{lengthfilter[1]}}s)</strong>
+        </div>
+        <div class="col-xs-9">
+        <div ui-slider="{range:true}" 
+          ng-click="log('filterlength',{min:lengthfilter[0],max:lengthfilter[1]});"
+          min="0" 
+          max="50" 
+          ng-model="lengthfilter"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3">
+          <strong class="col-xs-12 text-muted">Time Shot</strong>
+        </div>
+        <div class="col-xs-4">
+            <timepicker ng-click="log('filtertime',{from:timefilterfrom,to:timefilterto});" style="display:inline-block" ng-model="timefilterfrom" show-meridian="ismeridian">From</timepicker>  
+          </div>
+          <div class="col-xs-4">
+            <timepicker ng-click="log('filtertime',{from:timefilterfrom,to:timefilterto});" style="display:inline-block" ng-model="timefilterto" show-meridian="ismeridian">To</timepicker>
+          </div>
+      </div>
+
+
+
+      <div style="position:absolute;right:0;bottom:0;font-size:30px;line-height:30px;color:silver;">{{filteredmedia.length}}</div>
+    </div>
+
+    
+
+    <div class="mediaitem col-sm-6" ng-repeat="m in filteredmedia = (media | hasVideoFilter:hasvideo | rangeFilter:lengthfilter | timeFilter:{from:timefilterfrom, to:timefilterto} | checkFilter:{scope:this,name:'meta.static_meta.role_ex.name', value:rolefilter} | checkFilter:{scope:this,name:'meta.static_meta.shot_ex.name', value:shotfilter} | checkFilter:{scope:this,name:'meta.static_meta.coverage_class_ex.name', value:coveragefilter} | areaFilter:{circle:circlefilter,filterbylocation:filterbylocation} | checkFilter:{scope:this,name:'meta.static_meta.meta_phase.name', value:phasefilter} | filter:mapfilter)" style="float:left;">
+      <div style="float:left;margin-bottom:10px;" class="col-sm-6">
+        <a ng-show="m.path && m.thumb" href="#" ng-click="playThis(m)" style="position:relative;display:inline-block;" data-toggle="lightbox">
+          <img style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
+          <img src="/images/download.png" style="position:absolute;left:5px;bottom:5px;"/>
+        </a>
+        <img ng-show="m.thumb && !m.path"  style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
+        <div ng-hide="m.thumb" style="width:200px;height:120px;"><span class="text-muted">Waiting for Upload</span></div>
+        <i class="fa" ng-class="{'fa-video-camera':m.meta.static_meta.media_type=='VIDEO', 'fa-photo':m.meta.static_meta.media_type=='PHOTO', 'fa-audio':m.meta.static_meta.media_type=='AUDIO'}" style="position:absolute;right:8px;bottom:2px;"></i>
+      </div>
+      <div class="col-sm-6 allmeta">
+          <span class="text-muted">
+            <span class="displayName" ng-click="setUser(m.created_by);log('filteruser',{user:m.created_by});" style="cursor:pointer;">{{m.user.profile.displayName}}</span>
+          </span>
+
+          <span ng-repeat="(key, value) in m.meta.static_meta"  ng-bind-html="format(key,value)">
+
+          </span>
+         
+        
+      </div>
+    </div>
+    </div>
+
+<div class="clearfix"></div>
+<!-- <div class="circle">{{timer}} <span>Clock</span></div> -->
 </div>
-</div>
-</div>
+<hr>
+
+<!-- OLD STUFF:: -->
 
 
 <div class="col-sm-12" id="timeline">
+
 </div>
 
 <div class="col-sm-12" style="padding:0;" id="map">
@@ -114,9 +493,6 @@ _.each(event.phases,function(p){
 </div>
 </div>
 
-<h1>Event Media <a href="/event/log" class="btn btn-warning">View Live Log</a> <a class="btn btn-link btn-warning" href="/event/getlog/<%-event.id %>"><i class="glyphicon glyphicon-download"></i></a></h1>
-<div class="col-sm-12" id="media">
-</div>
 
 <script id="selection-template" type="text/x-handlebars-template">
 <div class="row" style="margin-bottom:10px;border:1px solid silver;padding:10px;margin-left:0;margin-right:0;">
@@ -187,42 +563,6 @@ _.each(event.phases,function(p){
     </div>
   </div>
 </div>
-</script>
-
-<script id="media-template" type="text/x-handlebars-template">
-{{#each this}}
-<div style="float:left;" class="col-sm-6">
-<div class="col-sm-6">
-{{#if this.path}}
-<a href="https://bootlegger.s3.amazonaws.com/upload/{{this.path}}" style="position:relative;display:inline-block;" data-toggle="lightbox">
-  <img class="img-thumbnail" style="width:200px;height:120px;" src="{{this.thumb}}" />
-  <img src="/images/download.png" style="position:absolute;left:5px;bottom:5px;"/>
-</a>
-{{else}}
-{{#if this.thumb}}
-<img class="img-thumbnail" style="width:200px;height:120px;" src="{{this.thumb}}" />
-{{else}}
-<div class="img-thumbnail" style="width:200px;height:120px;"><span class="text-muted">Waiting for Upload</span></div>
-{{/if}}
-{{/if}}
-<span class="text-muted">
-<br>{{this.user.profile.displayName}}<br>
-<small>{{this.createdAt}}</small>
-
-</h6>
-</div>
-<div class="col-sm-6" style="padding:0">
-    {{#each this.meta.static_meta}}
-    <span class="label label-default">{{@key}}: {{this}}</span>
-    {{/each}}
-    {{#each this.meta.timed_meta}}
-    <span class="label label-info">{{@key}}: {{this}}</span>
-    {{/each}}
-</div>
-</div>
-{{else}}
-<span class="text-muted">No media produced yet</span>
-{{/each}}
 </script>
 
 <style>
@@ -322,261 +662,180 @@ function pause()
 }
 
 
-$(function(){
+// $(function(){
 
-  io.socket.on('event', function(response){
+//   io.socket.on('event', function(response){
 
-        if (response.data.shots != undefined)
-        {
-          //console.log('setting shots');
-          shots = response.data.shots;
-        }
+//         if (response.data.shots != undefined)
+//         {
+//           //console.log('setting shots');
+//           shots = response.data.shots;
+//         }
 
-          //console.log(response.data.update);
-          if (response.data.media != undefined)
-          {
-              //new media item from this event
-              //render media:
-              //add media to the front of the list...
-              if (response.data.update)
-              {
-                //find the one that matches...
-                for (var i=0;i<media.length;i++)
-                {
-                  if (media[i].id == response.data.media.id)
-                  {
-                    media[i] = response.data.media;
-                  }
-                }
+//           //console.log(response.data.update);
+//           if (response.data.media != undefined)
+//           {
+//               //new media item from this event
+//               //render media:
+//               //add media to the front of the list...
+//               if (response.data.update)
+//               {
+//                 //find the one that matches...
+//                 for (var i=0;i<media.length;i++)
+//                 {
+//                   if (media[i].id == response.data.media.id)
+//                   {
+//                     media[i] = response.data.media;
+//                   }
+//                 }
 
-                //update whole table...
-                $('#media').html(mediatemplate(media));
-              }
-              else
-              {
-                media.unshift(response.data.media);
-                $('#media').html(mediatemplate(media));
-              }
-          }
+//                 //update whole table...
+//                 $('#media').html(mediatemplate(media));
+//               }
+//               else
+//               {
+//                 media.unshift(response.data.media);
+//                 $('#media').html(mediatemplate(media));
+//               }
+//           }
 
-          //add this to the log...
-          if (response.data.timer != undefined)
-          {
-            $('#eventclock').text(response.data.timer);
-            timer = response.data.timer;
+//           //add this to the log...
+//           if (response.data.timer != undefined)
+//           {
+//             $('#eventclock').text(response.data.timer);
+//             timer = response.data.timer;
           
 
-            $('#mover').animate({marginLeft:-((pixsecs*response.data.timer) - 300)},1000,"linear");
-            //$('#mover').css('margin-left',-((pixsecs*timer) - 300));
-          }
+//             $('#mover').animate({marginLeft:-((pixsecs*response.data.timer) - 300)},1000,"linear");
+//             //$('#mover').css('margin-left',-((pixsecs*timer) - 300));
+//           }
 
-          if (response.data.users != undefined)
-          {
+//           if (response.data.users != undefined)
+//           {
             
-            //$('.mover').css('height',(3*60));
-            $('#users').text(response.data.ucount);
+//             //$('.mover').css('height',(3*60));
+//             $('#users').text(response.data.ucount);
 
-            if (mapmode)
-            {
-              $('#selectiontimeline').html(selectiontemplate(response.data.users));
-            }
-            else
-            {
-              $('#timeline').html(timelinetemplate(response.data.users));
+//             if (mapmode)
+//             {
+//               $('#selectiontimeline').html(selectiontemplate(response.data.users));
+//             }
+//             else
+//             {
+//               $('#timeline').html(timelinetemplate(response.data.users));
 
-              $('.shooting').each(function()
-              {
-                $(this).css('width',pixsecs*($(this).attr('length')));
-              });
+//               $('.shooting').each(function()
+//               {
+//                 $(this).css('width',pixsecs*($(this).attr('length')));
+//               });
 
-              $('.allocation_offset').each(function()
-              {
-                $(this).css('width',pixsecs*1);
-              });
+//               $('.allocation_offset').each(function()
+//               {
+//                 $(this).css('width',pixsecs*1);
+//               });
 
-              $('.warning').each(function()
-              {
-                $(this).css('width',($(this).attr('length'))* pixsecs);
-              });
+//               $('.warning').each(function()
+//               {
+//                 $(this).css('width',($(this).attr('length'))* pixsecs);
+//               });
 
-              $('.live').each(function()
-              {
-                $(this).css('width',$(this).attr('length')* pixsecs);
-              });
+//               $('.live').each(function()
+//               {
+//                 $(this).css('width',$(this).attr('length')* pixsecs);
+//               });
 
-               $('.indicator').each(function()
-              {
-                  var width = 0;
-                   $(this).children().each(function() {
-                      width += $(this).outerWidth( true );
-                  });
-                 $(this).css('width',width+'px');
-              });
+//                $('.indicator').each(function()
+//               {
+//                   var width = 0;
+//                    $(this).children().each(function() {
+//                       width += $(this).outerWidth( true );
+//                   });
+//                  $(this).css('width',width+'px');
+//               });
 
-              $('.mainrows').each(function()
-              {
-                //console.log("offset: "+$(this).attr('offset'));
-                var first = $(this).find('.indicator:first');
-                first.css('margin-left',(pixsecs * (Number(first.attr('offset')))));
-              });
+//               $('.mainrows').each(function()
+//               {
+//                 //console.log("offset: "+$(this).attr('offset'));
+//                 var first = $(this).find('.indicator:first');
+//                 first.css('margin-left',(pixsecs * (Number(first.attr('offset')))));
+//               });
 
-              if (response.data.ucount)
-              {
-                  $('.mainrows').css('width',2*(pixsecs*response.data.users[Object.keys(response.data.users)[0]].length*(response.data.ucount+1)));
-                  $('#mover').css('width',2*(pixsecs*response.data.users[Object.keys(response.data.users)[0]].length*(response.data.ucount+1)));
-              }
+//               if (response.data.ucount)
+//               {
+//                   $('.mainrows').css('width',2*(pixsecs*response.data.users[Object.keys(response.data.users)[0]].length*(response.data.ucount+1)));
+//                   $('#mover').css('width',2*(pixsecs*response.data.users[Object.keys(response.data.users)[0]].length*(response.data.ucount+1)));
+//               }
 
 
-               $('#mover').css('margin-left',-((pixsecs*timer) - 300));
-             }
-          }
+//                $('#mover').css('margin-left',-((pixsecs*timer) - 300));
+//              }
+//           }
 
-          if (response.data.phase != undefined)
-          {
-            $('#mode').text(response.data.phase);
-            $('#phase').text(response.data.ruleset);
-            if (response.data.phase == 'selection')
-            {
+//           if (response.data.phase != undefined)
+//           {
+//             $('#mode').text(response.data.phase);
+//             $('#phase').text(response.data.ruleset);
+//             if (response.data.phase == 'selection')
+//             {
 
-              $('#eventclock').parent().parent().hide();
-              $('#phase').parent().parent().hide();
-              $('#timeline').hide();
-              $('#map').show();
-              mapmode = true;
-            } 
-            else
-            {
-              $('#map').hide();
-            }
-          }
-      });
+//               $('#eventclock').parent().parent().hide();
+//               $('#phase').parent().parent().hide();
+//               $('#timeline').hide();
+//               $('#map').show();
+//               mapmode = true;
+//             } 
+//             else
+//             {
+//               $('#map').hide();
+//             }
+//           }
+//       });
 
-	io.socket.on('connect',function()
-	{
-    //console.log('really connected');
-    //sign up for updates
-		io.socket.get('/event/updates/<%= event.id%>', function(response){
-      		//console.log(response);
-  	});
+// 	io.socket.on('connect',function()
+// 	{
+//     //console.log('really connected');
+//     //sign up for updates
+// 		io.socket.get('/event/updates/<%= event.id%>', function(response){
+//       		//console.log(response);
+//   	});
 
-    io.socket.get('/media/event/<%= event.id%>', function(response){
-          //console.log(response); 
-          media = response;
-          $('#media').html(mediatemplate(media));
-          deleteMarkers();
-          $.each(media,function(u)
-          {
-            if (media[u].meta.static_meta.gps_lat != undefined)
-            {
-              addMarker(new google.maps.LatLng(media[u].meta.static_meta.gps_lat,media[u].meta.static_meta.gps_lng));
-            }
-          });
-          showMarkers();
-      });
+//     io.socket.get('/media/event/<%= event.id%>', function(response){
+//           //console.log(response); 
+//           media = response;
+//           $('#media').html(mediatemplate(media));
+//           deleteMarkers();
+//           $.each(media,function(u)
+//           {
+//             if (media[u].meta.static_meta.gps_lat != undefined)
+//             {
+//               addMarker(new google.maps.LatLng(media[u].meta.static_meta.gps_lat,media[u].meta.static_meta.gps_lng));
+//             }
+//           });
+//           showMarkers();
+//       });
 
 		
-	});
-var pixsecs = 15;
+// 	});
+// var pixsecs = 15;
 
-var timelinetemplate;
-var mediatemplate;
-var selectiontemplate;
+// var timelinetemplate;
+// var mediatemplate;
+// var selectiontemplate;
 
-  //build handlebars templates
-  var source = $("#timeline-template").html();
-  timelinetemplate = Handlebars.compile(source);
-  source = $("#media-template").html();
-  mediatemplate = Handlebars.compile(source);
-  source = $("#selection-template").html();
-  selectiontemplate = Handlebars.compile(source);
+//   //build handlebars templates
+//   var source = $("#timeline-template").html();
+//   timelinetemplate = Handlebars.compile(source);
+//   source = $("#media-template").html();
+//   mediatemplate = Handlebars.compile(source);
+//   source = $("#selection-template").html();
+//   selectiontemplate = Handlebars.compile(source);
 
 
-  var timer = 0;
-  var media = new Array();
-  var mapmode = false;
+//   var timer = 0;
+//   var media = new Array();
+//   var mapmode = false;
 
-});
+// });
 </script>
-<script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCVY8qaGUDSItAXOAMrpmn_cpl2aAj8Npc">
-</script>
-<script type="text/javascript">
-// In the following example, markers appear when the user clicks on the map.
-// The markers are stored in an array.
-// The user can then click an option to hide, show or delete the markers.
-var markers = [];
-var map;
-var shots = [];
 
-Handlebars.registerHelper('shotimage', function() {
-  //console.log('shot: '+this.shot + ' in '+shots.length);
-  return '/icons/'+ shots[this.shot];
-});
 
-<% if (event.shoot_modules.marathondirector == 1) { %>
-
-function initialize() {
-  var mapOptions = {
-    center: new google.maps.LatLng(-34.397, 150.644),
-    zoom: 8
-  };
-
-  map = new google.maps.Map(document.getElementById("map-canvas"),mapOptions);
-  //showMarkers();
-}
-
-google.maps.event.addDomListener(window, 'load', initialize);
-
-// Add a marker to the map and push to the array.
-function addMarker(location) {
-  var marker = new google.maps.Marker({
-    position: location,
-    map: map
-  });
-  markers.push(marker);
-  marker.setMap(map);
-}
-
-// Sets the map on all markers in the array.
-function setAllMap(map) {
-  if (map!=null)
-  {
-    var latlngbounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < markers.length; i++) {
-      latlngbounds.extend(markers[i].position);
-    }
-    map.setCenter(latlngbounds.getCenter());
-    map.fitBounds(latlngbounds); 
-  }
-}
-
-// Removes the markers from the map, but keeps them in the array.
-function clearMarkers() {
-  setAllMap(null);
-}
-
-// Shows any markers currently in the array.
-function showMarkers() {
-  setAllMap(map);
-}
-
-// Deletes all markers in the array by removing references to them.
-function deleteMarkers() {
-  clearMarkers();
-  markers = [];
-}
-<% } else { %>
-function initialize() {
-}
-function addMarker(location) {
-}
-function setAllMap(map) {
-}
-function clearMarkers() {
-}
-function showMarkers() {
-}
-function deleteMarkers() {
-}
-  <% } %>
-</script>

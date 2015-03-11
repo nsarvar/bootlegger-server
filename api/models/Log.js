@@ -9,11 +9,7 @@
 module.exports = {
 
   attributes: {
-  	
-  	/* e.g.
-  	nickname: 'string'
-  	*/
-    
+
   },
 
   logmore:function(module,o)
@@ -21,7 +17,7 @@ module.exports = {
   	sails.winston['info'](module,o);
   },
 
-
+  //Log.logmore('marathondirector',{msg:'User signin',userid:user,eventid:event});
 
   log:function(msg)
 	{

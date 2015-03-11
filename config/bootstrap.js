@@ -29,13 +29,69 @@ module.exports.bootstrap = function (cb) {
         password : sails.config.db_password,
         db : sails.config.db_database,
         storeHost:true,
-        handleExceptions: true
+        //handleExceptions: true
     });
 
     sails.winston.info("Connected to MongoDB on "+sails.config.db_host);
 
     //sails.winston.remove(sails.winston.transports.Console);
 	sails.winston.info('started',{local:sails.localmode});
+
+	//load init data:
+	Shot.find({}).exec(function(err, shots){
+		if (shots.length == 0)
+		{
+			Shot.create(JSON.parse(fs.readFileSync('assets/data/allshots.json'))).exec(function(err,done)
+			{
+				sails.winston.info('Init Shots');
+			});
+		}
+		else
+		{
+			_.each(shots,function(s)
+			{
+				//console.log('assets/data/images/'+s.image);
+				if (!fs.existsSync('assets/data/images/'+s.image))
+				{
+					sails.winston.error('Missing Large ' + s.image);
+				}
+
+				if (!fs.existsSync('assets/data/icons/'+s.icon))
+				{
+					sails.winston.error('Missing Small ' + s.icon);
+				}
+			});
+		}
+	});
+
+	EventTemplate.find({}).exec(function(err, evs){
+
+		if (evs.length == 0)
+		{
+			EventTemplate.create(JSON.parse(fs.readFileSync('assets/data/alltemplates.json'))).exec(function(err,done)
+			{
+				sails.winston.info('Init Templates');
+			});
+		}
+	});
+
+
+
+	// Media.find({}).exec(function(err,media)
+	// {
+	// 	_.each(media,function(m)
+	// 	{
+	// 		if (m.thumb)
+	// 		{
+	// 			m.thumb = m.thumb.replace('https://bootlegger.s3.amazonaws.com/upload/','');
+	// 			//console.log(m.thumb);
+	// 			m.save(function(err,done)
+	// 			{
+	// 				console.log('updated '+done.id);
+	// 			});
+	// 		}
+	// 	});
+	// });
 
 	//start passport authentication
 	var passport = require('passport');
@@ -141,8 +197,8 @@ module.exports.bootstrap = function (cb) {
 	{
 		//not local -- tell the central server to reload events:
 		sails.winston.info("Signing on with Multi-Control Server");
-		sails.winston.info("Current Hostname is "+require('os').hostname());
-		sails.hostname = require('os').hostname();
+		sails.hostname = sails.config.hostname + ':' + sails.config.port;
+		sails.winston.info("Current Hostname is "+sails.hostname);
 		var req = require('request');
 		req({url:sails.config.multiserver + '/alive/?id='+sails.hostname,timeout:300},function(err){
 			if (!err)

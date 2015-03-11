@@ -1,26 +1,50 @@
+<style>
+.carousel .item {
+  background: none;
+}
+</style>
+<% if (myevents.length > 0) { %>
+<div class="panel panel-default" style="padding:10px;">
+  You have recently contributed to film shoots. View footage here for   
+<% _.each(myevents,function(e){ %>
+<a href="/watch/<%- e.id %>"><%- e.name %></a>, 
+<%});%>
+</div>
+<% } %>
+
 <h1 >Bootlegger film shoots start with a template <br><small>Choose an existing one or create your own from one of ours</small></h1>
 <form class="form-horizontal" role="form" method="post" action="/event/addevent">
-<div class="well">
+<input type="hidden" name="eventtype" value="-1" id="evtyp" />
+<div id="carousel-example-generic" data-interval="false" class="carousel slide" style="margin-bottom:0;" data-ride="carousel">
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <!-- <div class="well"> -->
 <div class="list-group-item search"><input id="filter" type="text" class="form-control input-lg" placeholder="Search Templates..."></div>
-<ul class="list-group searchable" id="searchlist" style="overflow: scroll;overflow-x: hidden;height:270px;">
+<ul class="list-group searchable" id="searchlist" style="overflow: scroll;overflow-x: hidden;height:80%;border-bottom:#ddd 1px solid;">
 
 <% for (i=0;i<types.length;i++){ %>
-    <li class="list-group-item">
+    <li class="list-group-item" style="min-height:86px;">
 
-    <input type="radio" name="eventtype" id="eventtype<%= i %>" value="<%= types[i].id %>" class="myradio" style="margin-right:15px;" checked/>
+   <!--  <input type="radio" name="eventtype" id="eventtype<%= i %>" value="<%= types[i].id %>" class="myradio" style="margin-right:15px;height:60px;display:block;" checked/> -->
 
+<div class="pull-right right" style="margin-top:-10px;margin-right:-15px;">
+<a href="#carousel-example-generic" role="button" onclick="go('<%= types[i].id %>');" style="width:100%;height:84px;padding-top:30px;" class=" btn btn-lg btn-primary">
+    Setup My Shoot <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+</a>
+</div>
 
-<a style="float:right;padding-right:4px;margin-top:-10px;height:65px;margin-right:-15px;width:130px;text-align:left;" class="btn btn-lg btn-info" href="/commissioning/create/<%- types[i].id %>"><i class="pull-right fa fa-chevron-right fa-2x" style="margin-top:6px;"></i> create<br>template </a>
 
 <div style="margin-right:10px;float:right;display:block;margin-top:3px;text-align:right;">
-    <% if (!types[i].user_id){ %>
+    <% if (!types[i].user_id && !types[i].original){ %>
     <i class="badge" style="border:silver 1px solid;border-radius:3px;color:silver;padding:2px;background:none;font-weight:normal;"><i class="fa fa-users"></i> Community Contribution</i>
-    <% } else { %>
+    <% } else if (types[i].user_id) { %>
     <!-- <a style="float:right;" href="/commissioning/edit/<%- types[i].id %>">edit this template</a> -->
+    <i class="label label-success" ><i class="fa fa-users"></i> Created by Me</i>
     <% } %>
     <br>
     <% if (types[i].updatedAt) { %>
-     <div class="text-muted" style="float:right;"><%= types[i].updatedAt %></div>
+     <div class="text-muted" style="float:right;"><%= moment(types[i].updatedAt).format('MMMM Do YYYY') %></div>
      <% } %>
 </div>
 
@@ -51,16 +75,17 @@
   });
 </script>
 
-
-  <div class="form-group">
-    <label for="inputEmail3" class="col-sm-2 control-label">Event Name</label>
-    <div class="col-sm-10">
-      <input type="text" name="name" class="form-control input-lg" id="inputEmail3" placeholder="name">
     </div>
-  </div>
+    <div class="item">
+      <div class="form-group">
+          <label for="inputEmail3" class="col-sm-2 control-label">Shoot Name</label>
+          <div class="col-sm-10">
+            <input type="text" name="name" class="form-control input-lg" id="inputEmail3" placeholder="name">
+          </div>
+        </div>
 
   <div class="form-group">
-    <label for="inputEmail2" class="col-sm-2 control-label">Event Starts on</label>
+    <label for="inputEmail2" class="col-sm-2 control-label">Shoot Starts on</label>
     <div class="col-sm-3">
       <div class="input-group input-group-lg" id="dp3" >
             <input name="starts" class="col-sm-2 form-control datepicker" size="16" type="text" data-date-format="dd-mm-yyyy">
@@ -79,7 +104,7 @@
 
 
   <div class="form-group">
-    <label for="inputEmail4" class="col-sm-2 control-label">Event Finishes on</label>
+    <label for="inputEmail4" class="col-sm-2 control-label">Shoot Finishes on</label>
     <div class="col-sm-3">
       <div class="input-group input-group-lg" id="dp4">
             <input name="ends" class="col-sm-2 form-control datepicker" size="16" type="text" data-date-format="dd-mm-yyyy">
@@ -94,12 +119,54 @@
         </div>
   </div>
 
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-primary btn-lg">Start Configuring this Event</button>
+<a href="#carousel-example-generic" role="button" onclick="$('#carousel-example-generic').carousel(0);">
+    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Select Another Template
+  </a>
+
+<div class="pull-right">
+  <a class="btn btn-info btn-lg" href="/commissioning/create/" id="adjust"> Adjust this Template First <i class="fa fa-cog"></i></a>
+
+  <button type="submit" class="btn btn-success btn-lg">Start this Shoot <i class="fa fa-chevron-right"></i></button>
+</div>
+
+      <div class="panel" style="margin-top:20px;">
+        <h2 class="text-muted">You will be asked for shots such as</h2>
+        <div id="exampleshots"></div>
+      </div>
+
     </div>
+    
   </div>
 
+  <!-- Controls -->
+  
+</div> 
 
-</div>
+<!-- 
+</div> -->
 </form>
+
+<script id="shots-template" type="text/x-handlebars-template">
+{{#each this}}
+   <img src="/data/icons/{{icon}}" />
+{{/each}}
+</script>
+<script>
+var shotstemplate;
+$(function(){
+  var source = $("#shots-template").html();
+  shotstemplate = Handlebars.compile(source);
+});
+
+function go(ev)
+{
+  $('#carousel-example-generic').carousel(1);
+  $('#evtyp').val(ev);
+  $('#adjust').attr('href','/commissioning/create/'+ev);
+  io.socket.get('/commission/example/'+ev,function(result)
+  {
+    console.log(result);
+    $('#exampleshots').html(shotstemplate(result));
+  });
+}
+</script>
