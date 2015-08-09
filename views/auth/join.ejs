@@ -1,0 +1,31 @@
+<div class="text-center">
+<% if (!shoot) {%>
+<h1>Sorry, the shoot you are trying to join is not available.</h1>
+<%} else {%>
+
+  <% if (me.status == 'sent') { %>
+
+<h1>Hello. You have been asked to take part in the filming of <br><span class="text-muted"><%- shoot.name %></span>.</h1>
+<br>
+If you want to go ahead, just login using one of the following options:
+<br>
+
+    <a href="/auth/google">
+        <img style="width:80%" src="/images/google-oauth.png" />
+    </a>
+    <a href="/auth/facebook">
+        <img style="width:80%" src="/images/facebook-oauth.png" />
+    </a>
+<% } %>
+
+<% if (me.status == 'linked') { %>
+You have all ready used this code and are part of the production team.
+<% } %>
+
+<% if (me.status != 'linked' && me.status != 'sent') { %>
+This code is no longer valid.
+<% } %>
+
+
+<% } %>
+</div>

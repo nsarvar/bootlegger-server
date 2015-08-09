@@ -1,0 +1,505 @@
+
+<!-- <script src"https://raw.githubusercontent.com/balderdashy/angularSails/master/dist/ngsails.io.js"></script> -->
+<style>
+.status_ready
+{
+  background:#5CB85C;
+}
+
+.status_signedout
+{
+  background:silver;
+}
+
+.status_recording
+{
+  background:#D9534F;
+}
+
+.rec_ready
+{
+  display: none;
+}
+
+.rec_recording
+{
+  display: inline-block;
+}
+
+.rec_signedout
+{
+  display: none;
+}
+
+.angular-google-map-container { height: 500px; }
+
+.circle
+{
+  background:#5cb85c;
+  display:block;
+  width:50px;
+  height: 50px;
+  border-radius: 25px;
+  text-align:center;
+  font-size:18pt;
+  color:white;
+  position:relative;
+  display:inline-block;
+  margin:3px;
+  padding-top:8px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+
+.circle span
+{
+  position:absolute;
+  margin-top:42px;
+  color:#5cb85c;
+  font-size:8pt;
+  text-align: center;
+  left:0;
+  width:50px;
+  text-transform: uppercase;
+}
+
+.captured_at::before
+{
+  content: "\f017";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.displayName::before
+{
+  content: "\f007";
+  font-family:'FontAwesome';
+  margin-right:3px;
+
+}
+.gps::before
+{
+  content: "\f041";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.nicepath::before
+{
+
+   content: "\f1c8";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.clip_length::before
+{
+
+   content: "\f07e";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.meta{
+  display:block;
+  color:#999999;
+}
+
+.filesize::before
+{
+
+  content: "\f016";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.coverage::before
+{
+  content: "\f02c";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+.coverage::before
+{
+  content: "\f0c9";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+.phase::before
+{
+  content: "\f0cb";
+  font-family:'FontAwesome';
+  margin-right:3px;
+
+}
+.role::before
+{
+  content: "\f140";
+  font-family:'FontAwesome';
+  margin-right:3px;
+
+}
+
+.zoom::before
+{
+
+ content: "\f00e";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.shot::before
+{
+
+ content: "\f0c0";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.shot_meta::before
+{
+
+ content: "\f02b";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+.panel-small
+{
+  padding:0;
+}
+
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+}
+
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+  opacity:0;
+}
+
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+.highlighted
+{
+  border:1px red solid !important;
+}
+
+.user
+{
+  cursor: pointer;
+  margin-right:5px;
+  margin-bottom:5px;
+  border:1px transparent solid;
+}
+
+.mediaitem
+{
+  position:relative;
+}
+
+.allmeta
+{
+  /*box-shadow: 0 0 5px rgba(0,0,0,0.5);*/
+  overflow-y:hidden;
+  overflow-x:hidden;
+  height:120px;
+  padding:3px;
+}
+
+.mediaitem:hover .allmeta
+{
+  background: white;
+  overflow-y:visible !important;
+  height:inherit;
+  position:absolute;
+  z-index:2;
+  right:0;
+  top:0;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+video
+{
+  width:100%;
+  height:100%;
+  margin-bottom:-6px;
+}
+
+.pagination{
+  magin:0;
+}
+
+.time_text span
+{
+  opacity: 0.5;
+  color:white;
+  display:block;
+  text-align: center;
+  margin-top:18px;
+  overflow:hidden;
+}
+
+</style>
+<div ng-app="liveApp" ng-controller="Live" ng-cloak>
+<div class="page-header">
+  <h1 style="display:inline-block">Pre-Edit <small>Editing while you shoot</small>  </h1> <i ng-show="loading" class="fa fa-spinner fa-spin"></i>
+</div>
+
+
+<div class="modal fade"  data-show="true" id="playAll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="margin:auto auto;margin-top:10%;width:46%;">
+    <div class="modal-content" style="text-align:center;height:100%;width:100%;">
+      <div class="modal-body" id="videomodal" style="padding:0;">
+          <videogular vg-player-ready="onPlayerReady($API)" vg-native-controls="true">
+                <vg-media vg-src="sources">
+                </vg-media>
+          </videogular>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-xs-6">
+
+    <div class="well" style="position:relative;">
+  <button ng-click="clearFilters();log('clearfilter');" class="pull-right btn-link"><i class="fa fa-times"></i></button>  <label class="pull-right">Show only Uploaded <input ng-click="log('filteruploaded',{uploaded:hasvideo});"  type="checkbox" ng-model="hasvideo"/></label>
+  <br>
+  <label class="pull-right">Show Tagged for Edit
+    <input ng-click="log('filteredittagged',{uploaded:edit_tag});"  type="checkbox" ng-model="edit_tag" /></label>
+
+<div class="row">
+  <input class="input input-sm form-control" ng-model="searchterm.$" />
+      <div class="col-xs-4">
+              <strong class="col-xs-3 text-muted">Role</strong>
+           <div >
+                <label ng-repeat="role in roles">
+                  <input checklist-model="rolefilter" ng-click="log('filterrole',{role:role,checked:this.checked});" checklist-value="role" type="checkbox" autocomplete="off"><i class="fa fa-check" ng-show="_.contains(rolefilter,role)"></i> {{role}} &nbsp;
+                </label>
+
+              </div>
+
+                    <div>
+                <strong class="col-xs-3 text-muted">Phase</strong>
+                              <div >
+                        <label ng-repeat="c in phases">
+                          <input checklist-model="phasefilter" ng-click="log('filterphase',{phase:c,checked:this.checked});" checklist-value="c" type="checkbox" autocomplete="off">{{c}} &nbsp;
+                        </label>
+                      </div>
+
+                      </div>
+<div>
+          <strong class="col-xs-3 text-muted">Subject</strong>
+          <div class="btn-group">
+            <label ng-repeat="c in coverage">
+              <input checklist-model="coveragefilter" ng-click="log('filtercoverage',{coverage:c,checked:this.checked});" checklist-value="c" type="checkbox" autocomplete="off">{{c}} &nbsp;
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-1">
+        <strong class="text-muted">Shot</strong>
+      </div>
+ <div class="col-xs-5">
+      <div>
+
+          <div  >
+        <label ng-repeat="c in takenshots">
+          <input checklist-model="shotfilter" ng-click="log('filtershots',{shots:c,checked:this.checked});" checklist-value="c" type="checkbox" autocomplete="off">{{c}} &nbsp;
+        </label>
+      </div>
+      </div>
+      </div>
+
+</div>
+      <div class="row">
+        <div class="col-xs-3">
+          <strong class="col-xs-12 text-muted">Length ({{lengthfilter[0]}}s - {{lengthfilter[1]}}s)</strong>
+        </div>
+        <div class="col-xs-9">
+        <div ui-slider="{range:true}"
+          ng-click="log('filterlength',{min:lengthfilter[0],max:lengthfilter[1]});"
+          min="0"
+          max="50"
+          ng-model="lengthfilter"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3">
+          <strong class="col-xs-12 text-muted">Time Shot</strong>
+        </div>
+        <div class="col-xs-4">
+            <timepicker ng-click="log('filtertime',{from:timefilterfrom,to:timefilterto});" style="display:inline-block" ng-model="timefilterfrom" show-meridian="ismeridian">From</timepicker>
+          </div>
+          <div class="col-xs-4">
+            <timepicker ng-click="log('filtertime',{from:timefilterfrom,to:timefilterto});" style="display:inline-block" ng-model="timefilterto" show-meridian="ismeridian">To</timepicker>
+          </div>
+      </div>
+    </div>
+</div>
+
+<div class="col-xs-6">
+<tabset>
+<tab heading="All Clips  ({{filteredmedia.length}} of {{media.length}})" active="tabs.tab0">
+  
+<div style="display:block;text-align:center;">
+  <dir-pagination-controls></dir-pagination-controls>
+</div>
+
+<div style="height:440px;overflow-y:scroll">
+<div class="mediaitem col-sm-6" dir-paginate="m in filteredmedia = (media | filter:searchterm:false | hasVideoFilter:hasvideo | hasEditTag:edit_tag | rangeFilter:lengthfilter | timeFilter:{from:timefilterfrom, to:timefilterto} | checkFilter:{scope:this,name:'meta.role_ex.name', value:rolefilter} | checkFilter:{scope:this,name:'meta.shot_ex.name', value:shotfilter} | checkFilter:{scope:this,name:'meta.coverage_class_ex.name', value:coveragefilter} | areaFilter:{circle:circlefilter,filterbylocation:filterbylocation} | checkFilter:{scope:this,name:'meta.meta_phase.name', value:phasefilter} | filter:mapfilter) | itemsPerPage: 20" style="float:left;">
+      <div style="float:left;margin-bottom:10px;overflow:hidden" class="col-sm-6">
+
+        <a ng-show="m.path" href="#" ng-click="playThis(m)" style="position:relative;display:inline-block;" data-toggle="lightbox">
+          <img ng-show="m.thumb" style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
+          <div ng-hide="m.thumb" style="width:200px;height:120px;" ><div class="text-muted text-center"style="padding-top:20%;width:100%;height:100%;background:#f1f1f1">Thumbnail not uploaded
+          <span ng-show="m.deleted"><br>Deleted at {{m.deleted}}</span>
+          </div>
+
+      </div>
+          <img src="/images/download.png" style="position:absolute;left:5px;bottom:5px;"/>
+          <a ng-show="m.path" href="{{m.originalpath}}" style="position:absolute;right:10px;top:5px;"><i class="fa fa-download"></i></a>
+        </a>
+        <img ng-show="m.thumb && !m.path"  style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
+      <div ng-hide="m.thumb || m.path" style="width:200px;height:120px;"><div class="text-muted text-center"style="padding-top:20%;width:100%;height:100%;background:#f1f1f1">Thumbnail not uploaded <span ng-show="m.deleted"><br>Deleted at {{m.deleted}}</span></div></div>
+        <i class="fa" ng-class="{'fa-video-camera':m.meta.static_meta.media_type=='VIDEO', 'fa-photo':m.meta.static_meta.media_type=='PHOTO', 'fa-audio':m.meta.static_meta.media_type=='AUDIO'}" style="position:absolute;right:8px;bottom:2px;"></i>
+        <div style="position:absolute;left:9px; top:-2px;">
+           <button tooltip="Include in Sync" class="btn btn-link" style="color:orange;text-decoration:none;" ng-click="tag(m,$event)"><i style="color:orange;" class="fa" ng-class="{'fa-flag':m.meta.static_meta.edit_tag, 'fa-flag-o':m.meta.static_meta.edit_tag==undefined}"></i></button>
+         </div>
+         <div style="position:absolute;left:30px; top:-2px;">
+            <button ng-show="candelete" class="btn btn-link" style="color:red;text-decoration:none;" ng-click="removeclip(m,$event)"><i style="color:red;" class="fa fa-trash-o"></i></button>
+          </div>
+      </div>
+      <div class="col-sm-6 allmeta">
+          <span class="text-muted">
+            <span class="displayName" ng-click="setUser(m.created_by);log('filteruser',{user:m.created_by});" style="cursor:pointer;">{{m.user.profile.displayName}}</span>
+          </span>
+
+          <span ng-repeat="(key, value) in m.meta.static_meta"  ng-bind-html="format(key,value)">
+
+          </span>
+          <span ng-repeat="(key, value) in m.meta"  ng-bind-html="format(key,value)">
+
+          </span>
+      </div>
+    </div>
+    <!-- </div> -->
+    </div>
+  </tab>
+
+    <tab heading="Map View" active="tabs.tab1" select="fixMap()">
+      <button tooltip="re-center map" ng-click="fit();log('fit');" class="btn btn-link"><i class="fa fa-dot-circle-o fa-2x"></i></button> <label><input ng-click="log('filterbylocation',{filterbylocation:filterbylocation});" type="checkbox" ng-model="filterbylocation" /> Filter by location</label>
+    <ui-gmap-google-map zoom='map.zoom' center='map.center' bounds="map.bounds" events="map.events">
+          <ui-gmap-marker ng-repeat="m in media track by $index"
+                idKey='m.id'
+                click="setMapFilter(m.id);log('mappin',{media:m.id});"
+                coords='{latitude:m.meta.static_meta.gps_lat,longitude:m.meta.static_meta.gps_lng}'>
+          </ui-gmap-marker>
+          <ui-gmap-circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
+                    visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable" control="c.control" events="c.events"></ui-gmap-circle>
+    </ui-gmap-google-map>
+    </tab>
+</tabset>
+</div>
+
+
+<div class="clearfix"></div>
+
+<div class="row" style="overflow:hidden">
+  <div style="width:{{editlist.length*600}}px;text-align:right;scrollRight:{{editlist.length*600}}px;float:right;">
+    <div ng-repeat="edit in editlist" style="position:relative;overflow:hidden;width:{{edit.length/50}}px;background:silver;margin-right:3px;height:60px;display:inline-block;">
+      <div ng-show="edit.media.thumb" style="position:absolute;background-size:auto 60px;background-image:url({{edit.media.thumb}});background-repeat:repeat-x;width:100%;height:100%;"></div>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+
+</div>
+<!-- end of scope -->
+
+
+<style>
+#timeline .col-sm-12
+{
+  height:60px;
+}
+
+#timeline .col-sm-12.nametag
+{
+  background:#eee;
+  height:64px;
+  border-bottom:1px solid #bbb;
+}
+
+.mainrows
+{
+  height:60px;
+}
+
+#mover
+{
+  background:url(/images/timeline_b.png) repeat;
+  border-left: 1px solid #eee;
+  transition: margin-left 1s;
+  transition-timing-function: linear;
+  /*transition: margin-left 1s linear;*/
+}
+
+.indicator
+{
+margin-top:3px;
+height:56px;
+float:left;
+}
+
+.warning
+{
+  background: orange;
+  height: 100%;
+  float:left;
+}
+
+.live
+{
+  background: red;
+  height: 100%;
+  float:left;
+}
+
+.cursor
+{
+  margin-left:300px;
+  width: 2px;
+  background: black;
+  height: 100%;
+  position: absolute;
+  z-index: 20;
+}
+
+.shooting
+{
+  float:left;
+  background: green;
+  height: 100%;
+}
+
+.allocation_offset
+{
+  float:left;
+  background:silver;
+  margin-top:3px;
+  height:56px;
+}
+
+</style>
+<script>
+  $(function(){
+    $('.container').addClass('container-fluid').removeClass('container');
+});
+</script>

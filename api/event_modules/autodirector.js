@@ -9,6 +9,8 @@ var moment = require('moment');
 			var dist = [];
 			//changed to be uniform distribution weighting:#
 			var total = 0;
+			Log.verbose('autodirector','weights',module.exports.AllEvents[event.id].coverageweights);
+			
 			_.each(module.exports.AllEvents[event.id].coverageweights,function(c,i)
 			{
 				if (c.percentage !== undefined)
@@ -34,7 +36,7 @@ var moment = require('moment');
 				if (rand < cumm && done===false)
 				{
 					done = i;
-				}				
+				}
 			});
 
 			//no clear weight or no weight, so defaulting...
@@ -53,7 +55,7 @@ var moment = require('moment');
 			_.each(event.data.eventtype.roles,function(role){
 				if (role.id == user.role && !user.waitingforshotreply)
 				{
-					
+
 					//CALCULATE WHICH PERSON TO TAKE A SHOT OF
 					var coverage_direction = undefined;
 					var meta = undefined;
@@ -106,11 +108,11 @@ var moment = require('moment');
 					{
 						meta = module.exports.AllEvents[event.id].coverageweights[wantedcoverage].name;
 					}
-					
+
 					console.log("allowed shot ids: "+allowedshotids);
 
 					//reset rejection
- 
+
 					//filter for shots that are for this specific coverage class, or all of them
 					allshottypes = _.pluck(_.filter(event.data.eventtype.shot_types,function(el){
 							return (el.coverage_class == wantedcoverage);
@@ -123,7 +125,7 @@ var moment = require('moment');
 					if (allowedshotids.length == 0)
 					{
 						console.log("no shots, dont do coverage selection");
-						allowedshotids = allowedshotids = _.difference(allowedshotids,alreadyallocated);
+						allowedshotids = _.difference(role.shot_ids,alreadyallocated);
 						if (sid)
 							allowedshotids = _.without(allowedshotids,sid);
 					}
@@ -149,18 +151,27 @@ var moment = require('moment');
 								//do nothing...
 							}
 						}
+						else
+						{
+							allowedshotids = role.shot_ids;
+						}
 					}
 
 					console.log("shots to pick from: "+ allowedshotids);
+
 
 					/** PICK A RANDOM SHOT FROM THE ONES AVAILABLE **/
 					var shottosend = _.sample(allowedshotids);
 					user.shot = shottosend;
 					console.log("shot selected: "+user.shot);
 					/** TELL USER ABOUT THIS SHOT **/
+					user.meta = meta;
+					user.coverage_class = wantedcoverage;
 					User.publishUpdate(user.id,{getshot:user.shot, meta:meta, coverage_class:wantedcoverage});
 					user.waitingforshotreply = true;
+					Event.publishUpdate(event.id,{users:event.users,ucount:_.size(event.users)});
 					Log.logmore('autodirector',{msg:'shot allocation',eventid:event.id,userid:user.id,shot:user.shot,meta:meta});
+					
 				}
 			});
 		};
@@ -170,6 +181,7 @@ var moment = require('moment');
 module.exports = {
 	codename:'autodirector',
 	name:'Auto-Director',
+	description:'Coordinates participants in real-time for live events, e.g. concerts.',
 	AllEvents: {},
 	cameragap:1,
 	UserTimings:
@@ -194,7 +206,7 @@ module.exports = {
 					if (e.server == sails.hostname || !e.server || sails.multiserveronline==false)
 					{
 
-						console.log('starting event '+e.name);
+						Log.verbose('autodirector','autodirector starting event '+e.name);
 
 						//calc coverage classes:
 						var coverage = e.coverage_classes;
@@ -213,7 +225,7 @@ module.exports = {
 								if (m.meta.static_meta.coverage_class)
 									coverage[m.meta.static_meta.coverage_class].weight++;
 							});
-							
+
 							module.exports.AllEvents[e.id] = {
 								id : e.id,
 								data : e,
@@ -223,6 +235,7 @@ module.exports = {
 								coverageweights:coverage,
 								users:{}
 							}
+							//console.log(coverage);
 							module.exports.longpoll();
 						});
 					}
@@ -235,6 +248,7 @@ module.exports = {
 	{
 		if (module.exports.AllEvents[eventid] == undefined)
 		{
+			console.log("EVENTID: "+eventid);
 			Event.findOne(eventid).exec(function(err,e)
 			{
 				if (e.shoot_modules[module.exports.codename] == 1)
@@ -282,16 +296,16 @@ module.exports = {
 	//when a file has been uploaded
 	process:function(req,media)
 	{
+		//console.log("recalculate weights");
 		//console.log(media);
-		if (!media.path)
-		{
-			
+		//if (!media.path)
+		//{
 			//initial import
 			//META DATA CHECK
-			if (media.meta.static_meta.length < 11)
-			{
-				User.publishUpdate(media.meta.created_by,{msg:"It would be really helpful to have some extra information about your clips - try adding some!"});
-			}
+			// if (media.meta.static_meta.length < 11)
+			// {
+			// 	User.publishUpdate(media.meta.created_by,{msg:"It would be really helpful to have some extra information about your clips - try adding some!"});
+			// }
 
 			//calculate new coverage weights:
 			var eventid = media.event_id;
@@ -321,8 +335,8 @@ module.exports = {
 			//console.log(module.exports.AllEvents[eventid].coverageweights);
 			//CHECK FOR CLIP LENGTH -- too long or too short
 			//CHECK IF THIS PERSON KEEPS FILMING THE SAME THING
-		}
-		return;
+		//}
+		//return;
 	},
 
 	//only happens every so often (once a min)
@@ -341,7 +355,7 @@ module.exports = {
 				{
 
 				//console.log(e);
-				//compare event start time 
+				//compare event start time
 				var starttime = moment(e.starts + " " + e.starts_time,"DD-MM-YYYY h:mma");
 				var endtime = moment(e.ends + " " + e.ends_time,"DD-MM-YYYY h:mma");
 
@@ -349,11 +363,11 @@ module.exports = {
 				if (now > endtime)
 				{
 					//console.log("not in date");
-					if (module.exports.AllEvents[e.id] && module.exports.AllEvents[e.id].currentphase!='stopped')
-					{
-						module.exports.AllEvents[e.id].currentphase = 'stopped';
-						Event.publishUpdate(e.id,{phase:'stopped'});
-					}
+					// if (module.exports.AllEvents[e.id] && module.exports.AllEvents[e.id].currentphase!='stopped')
+					// {
+					// 	module.exports.AllEvents[e.id].currentphase = 'stopped';
+					// 	Event.publishUpdate(e.id,{phase:'stopped'});
+					// }
 				}
 				else
 				{
@@ -361,27 +375,27 @@ module.exports = {
 					var current = '';
 					var ruleset = '';
 					//for each ruleset, work out which phase the event is in:
-					_.each(e.eventtype.ruleset,function(i,k,l)
-					{
-						if (current=='')
-						{
-							//console.log('start: '+starttime.format('llll'));
-							//console.log('pre: '+i.pre_time);
-							//console.log('pre: '+starttime.subtract('m', i.pre_time).format('llll'));
+					// _.each(e.eventtype.ruleset,function(i,k,l)
+					// {
+					// 	if (current=='')
+					// 	{
+					// 		//console.log('start: '+starttime.format('llll'));
+					// 		//console.log('pre: '+i.pre_time);
+					// 		//console.log('pre: '+starttime.subtract('m', i.pre_time).format('llll'));
 
-							//if now > starts - pre
-							if (now > (starttime.subtract('m', i.pre_time)))
-							{
-								//console.log('within: '+i.direction_engine);
-								current = i.direction_engine;
-								ruleset = i.name;
-							}
-						}
-					});
+					// 		//if now > starts - pre
+					// 		if (now > (starttime.subtract('m', i.pre_time)))
+					// 		{
+					// 			//console.log('within: '+i.direction_engine);
+					// 			current = i.direction_engine;
+					// 			ruleset = i.name;
+					// 		}
+					// 	}
+					// });
 
 					if (current == '')
 					{
-						current = 'stopped';
+						current = 'timed';
 						//console.log('stopping as no direction');
 					}
 
@@ -397,7 +411,7 @@ module.exports = {
 						_.each(media, function(m)
 						{
 							//console.log(m);
-							if (m.meta.static_meta.coverage_class)
+							if (m.meta.static_meta.coverage_class && coverage[m.meta.static_meta.coverage_class])
 								coverage[m.meta.static_meta.coverage_class].weight++;
 						});
 
@@ -411,7 +425,7 @@ module.exports = {
 						if (module.exports.AllEvents[e.id] && module.exports.AllEvents[e.id].currentphase!=current)
 						{
 							//update data:
-							
+
 							module.exports.AllEvents[e.id].currentphase = current;
 							module.exports.AllEvents[e.id].ruleset = ruleset;
 							Event.publishUpdate(e.id,{phase:current,ruleset:ruleset});
@@ -443,7 +457,7 @@ module.exports = {
 				var event = module.exports.AllEvents[k];
 
 				//Check heartbeats
-				
+
 				_.each(event.users,function(u){
 					var mom = moment(u.lasthearbeat);
 					//console.log("checking heartbeat: "  + mom.diff(moment(),'seconds') +"s");
@@ -455,18 +469,22 @@ module.exports = {
 						delete event.users[u.id];
 
 						//check for a single users???
-						
+
 						//update rest of the state:
 						Event.publishUpdate(event.id,{users:event.users,ucount:_.size(event.users)});
 					}
 				});
 
+				//console.log("started: "+event.hasstarted);
+
 				if (event.hasstarted)
 				{
 					//if the event is in timed mode and there are more than 1 user:
+					//console.log("started");
+					//console.log(event.currentphase);
+
 					if (event.currentphase == 'timed' && _.size(event.users) > 1)
 					{
-
 						//CLOCK CALCULATION!
 						var maxuser = _.max(event.users, function(u){ return u.offset; });
 						var maxtime = maxuser.warning + maxuser.live + maxuser.length + module.exports.cameragap;
@@ -475,6 +493,7 @@ module.exports = {
 						{
 							event.clock = 0;
 						}
+						//console.log(event.clock);
 						Event.publishUpdate(event.id,{timer:event.clock});
 						event.clock++;
 
@@ -542,7 +561,7 @@ module.exports = {
 													i.extendedlive = true;
 													User.publishUpdate(i.id,{msg:"You have to keep on a little while, as there are no other people live at the moment."});
 												}
-												
+
 												if (userslive > 0 && i.extendedlive == true)
 												{
 													//recalculate exteded live valid:
@@ -590,7 +609,7 @@ module.exports = {
 									// }
 								}
 
-								
+
 								//WARINING: within the warning time window (urgent allocation)
 								if (myoffset > 0 && myoffset < (i.warning))
 								{
@@ -640,9 +659,9 @@ module.exports = {
 									{
 										var golive = true;
 										i.waitingforshotreply = false;
-									
+
 										//if they want to skip...
-										
+
 										if (i.skip)
 										{
 											Log.logmore('autodirector',{msg:'checking if skip is possible',userid:i.id});
@@ -1013,7 +1032,7 @@ module.exports = {
 				if (!confirmed && !doit)
 				{
 					Log.logmore('autodirector',{msg:'Take another role?',userid:user,role:role,eventid:event});
-					return res.json({status:'confirm',msg:'There are some angles not being covered, any chance you can take another role?'});	
+					return res.json({status:'confirm',msg:'There are some angles not being covered, any chance you can take another role?'});
 				}
 				else
 				{
@@ -1109,7 +1128,12 @@ module.exports = {
 	{
 		if (module.exports.AllEvents[event] != null)
 		{
-			console.log()
+			//console.log()
+			var shots = module.exports.AllEvents[event].data.eventtype.shot_types;
+
+			Event.publishUpdate(event,{shots:shots});
+			Event.publishUpdate(event,{phase:module.exports.AllEvents[event].currentphase});
+			//Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 			Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 			Event.publishUpdate(event,{phase:module.exports.AllEvents[event].currentphase,ruleset:module.exports.AllEvents[event].ruleset});
 		}
@@ -1160,7 +1184,7 @@ module.exports = {
 			//actually ready to start allocating roles (the user knows whats going on)
 			//sails.winston.info("un selecting role");
 			module.exports.AllEvents[event].users[user].role = -1;
-			module.exports.AllEvents[event].users[user].shot = undefined;  
+			module.exports.AllEvents[event].users[user].shot = undefined;
 			module.exports.AllEvents[event].users[user].status = 'new';
 			Log.logmore('autodirector',{msg:'unselecting role',userid:user,eventid:event});
 			Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
@@ -1192,6 +1216,7 @@ module.exports = {
 
 	eventpaused:function(event, user)
 	{
+		//console.log("try pause");
 		try
 		{
 			Log.logmore('autodirector',{msg:'event paused',userid:user,eventid:event});
@@ -1203,7 +1228,9 @@ module.exports = {
 				User.publishUpdate(u.id,{eventstarted:false});
 			});
 		}
-		catch (e) {}
+		catch (e) {
+			console.log(e);
+		}
 	},
 
 	changephase:function(event,phase)
@@ -1229,8 +1256,8 @@ updateevent:function(ev)
 		try
 		{
 			Log.logmore('autodirector',{msg:'update event',eventid:ev.id});
-			var e = ev;				
-			
+			var e = ev;
+
 			var direction = ev.leadlocation;
 
 			var allroles = ev.eventtype.roles;
@@ -1248,7 +1275,7 @@ updateevent:function(ev)
 			e.roles = allroles;
 			e.eventcss = ev.eventtype.eventcss;
 			e.ispublic = e.public;
-			
+
 			if (e.roleimg == undefined && ev.eventtype.roleimg != undefined)
 				e.roleimg = sails.config.S3_CLOUD_URL + ev.eventtype.roleimg;
 

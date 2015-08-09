@@ -1,0 +1,114 @@
+<h1>Developer API <small>Integrate with your App</small></h1>
+<p>Using the API, you can integrate with Bootlegger to create rich custom applications for commissioning, capture and management of media and meta-data.</p>
+<div class="well">
+	<strong>Some <em>Fine</em> Print</strong>
+	<ul>
+		<li>
+The Bootlegger platform is in ongoing development. Although we will make every effort to maintain a standard API, we cannot gaurentee 100% consistancy and uptime.
+</li>
+<li>
+We reserve the right to remove content from our services for any reason, and also to remove API access to users.
+</li>
+<li>
+However, we welcome any suggestions, comments or examples of using the API which you want to send us!
+</li>
+</div>
+
+<button class="btn btn-lg btn-success" style="display:none;" id="doit" onclick="signup();">Signup to use the API</button>
+
+<div class="input-group" id="live" style="display:none;">
+	<div class="input-group-btn">
+		<div>
+		<button class="btn btn-lg btn-success"  disabled><i class="fa fa-check"></i> You are Signed Up!</button>
+		<button class="btn btn-lg btn-success" onclick="refresh();"><i class="fa fa-refresh"></i> Refresh Key</button>
+	</div>
+	</div>
+	<input type="text" disabled class="form-control input-lg" value="" id="key" />
+</div>
+<button class="btn btn-lg btn-danger" style="display:none;" id="locked" disabled>Locked Out</button>
+<br>
+<a class="btn btn-lg btn-primary" href="/api/docs"><i class="fa fa-book"></i> View the API Docs</a>
+
+<a class="btn btn-lg btn-default" href="https://github.com/digitalinteraction/bootlegger-server">Bootlegger on GitHub <i class="fa fa-github"></i></a>
+
+<h2>Assets</h2>
+<p class="text-muted">'Right Click' and 'Save As' to get images</p>
+<div>
+	<img src="/images/brand/3d.png" style="height:120px;" class="list-group-item" /><br>
+	<img src="/images/brand/shadow.png" style="height:120px;" class="list-group-item" /><br>
+	<img src="/images/brand/black.png" style="height:120px;" class="list-group-item" /><br>
+	<img src="/images/brand/white.png" style="height:120px;" class="list-group-item" /><br>
+</div>
+<script>
+
+$(function()
+{
+	io.socket.get('/event/me',function(data){
+		//console.log(data);
+		if (!data.apiaccess)
+		{
+			$('#doit').show();
+			return;
+		}
+		if (data.apiaccess == 'live')
+		{
+			$('#live').show();
+			$('#key').val(data.apikey);
+		}
+		if (data.apiaccess == 'locked')
+		{
+			$('#locked').show();
+		}
+	});
+});
+
+function refresh()
+{
+	io.socket.get('/api/newkey',function(data)
+	{
+		io.socket.get('/event/me',function(data){
+		if (!data.apiaccess)
+		{
+			$('#doit').show();
+			return;
+		}
+		if (data.apiaccess == 'live')
+		{
+			$('#live').show();
+			$('#locked').hide();
+			$('#doit').hide();
+			$('#key').val(data.apikey);
+		}
+		if (data.apiaccess == 'locked')
+		{
+			$('#locked').show();
+		}
+	});
+	});
+}
+
+function signup()
+{
+	io.socket.get('/api/activate',function(data)
+	{
+		io.socket.get('/event/me',function(data){
+		if (!data.apiaccess)
+		{
+			$('#doit').show();
+			return;
+		}
+		if (data.apiaccess == 'live')
+		{
+			$('#live').show();
+			$('#locked').hide();
+			$('#doit').hide();
+			$('#key').val(data.apikey);
+		}
+		if (data.apiaccess == 'locked')
+		{
+			$('#locked').show();
+		}
+	});
+	});
+}
+</script>

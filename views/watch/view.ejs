@@ -1,0 +1,320 @@
+
+<style>
+
+.video
+{
+  background-repeat:no-repeat;
+  background-size:cover;
+  /*width:230px;
+  height:150px;*/
+  position:relative;
+  background-color:#eee;
+}
+
+.playlist .video
+{
+  width:150px;
+  height:90px;
+}
+
+.vid_tmp
+{
+  width:255px;
+  height:155px;
+  background:silver;
+  display:inline-block;
+}
+
+.container-fluid{
+  padding:10px;
+}
+
+.playlist
+{
+/*min-height:250px;*/
+}
+.allmedia
+{
+  width:100%;
+  display: block;
+  z-index:0;
+}
+
+.allmedia .rembtn
+{
+  display:none;
+}
+
+.allmedia ul
+{
+  list-style-type: none;
+  margin:0;
+  padding: 0;
+}
+
+.allmedia li
+{
+  /*float: left;*/
+  margin:2px;
+  cursor: pointer;
+  display:inline-block;
+  /*height:20px;*/
+}
+
+.playlist .video
+{
+  cursor:pointer;
+}
+
+video{
+  /*height:220px;*/
+  /*width:391px;*/
+  margin-bottom:-5px;
+  height:100%;
+  width:100%;
+}
+
+.circle
+{
+  background:#5cb85c;
+  display:block;
+  width:50px;
+  height: 50px;
+  border-radius: 25px;
+  text-align:center;
+  font-size:18pt;
+  color:white;
+  position:relative;
+  display:inline-block;
+  margin:3px;
+  padding-top:8px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+
+.circle span
+{
+  position:absolute;
+  margin-top:42px;
+  color:#5cb85c;
+  font-size:8pt;
+  text-align: center;
+  left:0;
+  width:50px;
+  text-transform: uppercase;
+}
+
+
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+}
+
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+  opacity:0;
+}
+
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+#videomodal video{
+  width:100%;
+  height:100%;
+}
+
+
+@media (min-width: 1199px) {
+  .playlist.affix {
+    width:974px !important;
+    background:white;
+    padding-top:20px;
+    margin-top:-20px;
+  }
+}
+
+@media (min-width: 776px) {
+  .playlist.affix {
+    width:808px;
+    background:white;
+    padding-top:20px;
+    margin-top:-20px;
+  }
+}
+
+@media (max-width: 775px) {
+  .playlist.affix {
+    width:100%;
+    background:white;
+    left:15px;
+    padding-top:20px;
+    margin-top:-20px;
+  }
+}
+</style>
+
+<div ng-app="watchApp" ng-controller="Media as controller" ng-cloak>
+
+<script type="text/ng-template" id="media.html">
+<div class="panel panel-default" style="margin:0;">
+  <div popover="{{format(m)}}" popover-popup-delay="200" popover-append-to-body="true" popover-trigger="mouseenter" popover-placement="bottom" class="video" ng-click="playThis(m)">
+<img class="thumb_img" style="width:100%;" ng-src="{{m.thumb}}" />
+<i class="fa" ng-class="{'fa-video-camera':m.meta.static_meta.media_type=='VIDEO', 'fa-photo':m.meta.static_meta.media_type=='PHOTO', 'fa-audio':m.meta.static_meta.media_type=='AUDIO'}" style="position:absolute;right:2px;bottom:2px;"></i>
+  <button style="position:absolute;right:0;top:0;" class="rembtn btn btn-link" ng-click="remove(m)"><i class="fa fa-times"></i></button>
+
+ <div style="position:absolute;left:2px; bottom:2px;">
+    <button class="btn btn-link" style="color:orange;text-decoration:none;" ng-click="star(m,$event)"><i style="color:orange;" class="fa" ng-class="{'fa-star':m.stars[username], 'fa-star-o':m.stars[username]==undefined || m.stars[username]==false}"></i> {{size(m.stars)}}</button>
+  </div>
+  <i class="fa fa-play" style="font-size:35pt;padding-top:17%;color:white;position:absolute;top:0;left:0;padding-left:43%;text-align:center;" ng-if="isplaying==m"></i>
+  </div>
+  </div>
+</script>
+<div style="position:relative">
+<div data-spy="affix" data-offset-top="145" class="row playlist" style="top:20px;z-index:1000;">
+
+<!--   <div style="text-align:center;" class="col-md-2 hidden-xs hidden-sm">
+  <a href="#" ng-click="share()" class="btn btn-lg btn-primary">Share Your Best Bits</a>
+
+  </div> -->
+
+  <!-- <div style="text-align:center;position:fixed;bottom:15px;left:10px;" ng-show="false">
+    <div class="circle">{{totals.mine}} <span>I Shot</span></div>
+    <div class="circle">{{totals.total}} <span>Total</span></div>
+    <div class="circle">{{totals.mins}} <span>Mins</span></div>
+    <div class="circle">{{totals.people}} <span>People</span></div>
+  </div> -->
+
+    <div class="col-md-8">
+          <div class="panel panel-info playlist" >
+              <div class="panel-heading" style="padding:0;height:auto">
+                <h4 style="display:inline-block;margin-top:5px;margin-left:5px;margin-bottom:0;"><span style="color:#357ebd" tooltip-popup-delay="300" tooltip="Select any clip below to play and add to your own playlist"><i class="fa fa-list-ul" ></i> Playlist <i style="color:silver" class="fa fa-question-circle"></i></span></h4>
+
+                <button ng-click="playall()" class="btn btn-sm btn-success pull-right">Lights Down Mode <i class="fa fa-desktop"></i></button>
+                <button ng-click="makeedit()" class="btn btn-sm btn-primary pull-right" ng-show="playlist.length>1 && canshare" style="margin-right:10px;">Share My Edit <i class="fa fa-share"></i></button>
+                <button ng-click="makeedit()" class="btn btn-sm btn-primary pull-right" ng-show="playlist.length>1 && !canshare" style="margin-right:10px;">Make an Edit <i class="fa fa-film"></i></button>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body" style="margin:0;padding:0;">
+                 <div class="playlist" ui-sortable="{ 'placeholder':'vid_tmp', 'ui-floating': true, 'axis': 'x' }" ng-model="playlist" style="margin:0;padding:0;overflow-y:hidden;overflow-x:scroll;height:120px;white-space: nowrap;">
+                   <div ng-repeat="m in playlist track by $index" ng-include=" 'media.html' " style="display:inline-block;margin:3px;"></div>
+                 </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <input class="form-control" ng-model="edit.title" required placeholder="Your Micro-Edit Title"/>
+              </div>
+              <div class="col-sm-6">
+                <input class="form-control" ng-model="edit.description" placeholder="A description"/>
+              </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4" style="text-align:center;">
+        <div class="panel panel-default" style="width:auto;height:auto;padding:0;margin:0;display:inline-block;" id="videopanel">
+          <videogular vg-player-ready="controller.onPlayerReady($API)" vg-complete="onCompleteVideo()" vg-native-controls="true">
+                <vg-media vg-src="sources">
+                </vg-media>
+          </videogular>
+        </div>
+
+    </div>
+<div class="clearfix"></div>
+<div class="row" style="text-align:center;margin-bottom:10px;">
+  <div class="col-xs-12">
+            <div class="btn-group">
+                <label class="btn btn-primary" ng-model="search.created_by" btn-radio=" '{{username}}' ">My Shots</label>
+                <label class="btn btn-primary" ng-model="search.created_by" btn-radio="">Everyone's Shots</label>
+            </div>
+            <div class="btn-group">
+                <label class="btn btn-primary" ng-model="order_filter" btn-radio="'meta.static_meta.captured_at'">Sort by Time</label>
+                <label class="btn btn-primary" ng-model="order_filter" btn-radio="sizeM">Best Bits First</label>
+                <label class="btn btn-primary" ng-model="order_filter" btn-radio="'order'">Random</label>
+            </div>
+      </div>
+    </div>
+</div>
+
+</div>
+
+
+<div class="allmedia" style="text-align:center;">
+  <span us-spinner="{radius:10, width:4, length: 10}"></span>
+<ul>
+    <li class="animate-repeat col-xs-6 col-sm-3" style="margin:0;padding:0;" ng-style="{'min-height':findLargest()+'px'}"  ng-repeat="m in media | filter:{thumb:'!undefined', path:'!undefined'} | isMine:search.created_by | orderBy:order_filter as filtered">
+      <div style="width:100%;height:100%;" ng-include=" 'media.html' "></div>
+    </li>
+</ul>
+<h3 class="text-muted" ng-show="filtered.length==0">You have not uploaded any videos yet, but you can watch other contributions...</h3>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="modal fade"  data-show="true" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="margin:auto auto;margin-top:10%;">
+    <div class="modal-content" style="text-align:center;">
+      <div class="modal-body">
+        <h1>We have collected all the footage from this shoot.</h1>
+          <h2>You can <span style="color:yellowgreen"><i class="fa fa-play fa-6x" ></i> play</span>, <span style="color:orange"><i class="fa fa-star fa-6x" ></i> like</span> and <span style="color:#357ebd"><i class="fa fa-list-ul fa-6x" ></i> playlist</span> what you and others have filmed.</h2>
+      </div>
+      <div class="modal-footer" style="text-align:center;">
+        <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" >Great, Thanks!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade"  data-show="true" id="share" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="margin:auto auto;margin-top:10%;">
+    <div class="modal-content" style="text-align:center;">
+      <div class="modal-body">
+        <h1>Your micro-edit of this shoot will be ready shortly...</h1>
+        <h2>You can view <span ng-show="canshare">and share</span> your edit at<br> <a href="{{sharelink}}">{{sharelink}}</a></h2>
+          <div ng-show="canshare" class="addthis_sharing_toolbox"></div>
+      </div>
+      <div class="modal-footer" style="text-align:center;">
+        <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal">Great, Thanks!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade"  data-show="true" id="playAll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="margin:auto auto;margin-top:10%;width:60%;">
+    <div class="modal-content" style="text-align:center;">
+      <div class="modal-body" id="videomodal" style="padding:0;margin-right:-1px;">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div ng-hide="publicview" class="alert alert-info">The shoot organiser has set permissions so that you can only see what you captured.</div>
+
+
+<script type="text/javascript">
+var addthis_share = {
+   url: "choose.com",
+   title: "My Micro-Cut"
+}
+var addthis_config = addthis_config||{};
+addthis_config.data_track_addressbar = false;
+addthis_config.data_track_clickback = false;
+</script>
+
+</div>
+<!-- </div> -->
+<!-- Go to www.addthis.com/dashboard to customize your tools -->
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-550c037118e0ae97" async="async"></script>
+<script type="text/javascript">
+// Call this function once the rest of the document is loaded
+function loadAddThis() {
+    addthis.init()
+}
+</script>

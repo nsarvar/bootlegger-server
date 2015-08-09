@@ -1,0 +1,143 @@
+/* Navbar */
+
+.navbar {
+    background-color: transparent; /*rgba(0, 0, 0, 0.2)*/
+    border-width: 0;
+    z-index: 998;
+}
+
+.navbar .navbar-brand {
+    padding: 10px 10px;
+    -webkit-transition: all 200ms linear;
+    -moz-transition: all 200ms linear;
+    -o-transition: all 200ms linear;
+    -ms-transition: all 200ms linear;
+    transition: all 200ms linear;
+}
+
+.navbar .navbar-nav>li {
+    -webkit-transition: all 200ms linear;
+    -moz-transition: all 200ms linear;
+    -o-transition: all 200ms linear;
+    -ms-transition: all 200ms linear;
+    transition: all 200ms linear;
+}
+
+.navbar .navbar-nav>li>a {
+	border-bottom: transparent 3px solid;
+    color: #fff;
+    font-size: 14px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-align: center;
+
+    -webkit-transition: all 200ms linear;
+    -moz-transition: all 200ms linear;
+    -o-transition: all 200ms linear;
+    -ms-transition: all 200ms linear;
+    transition: all 200ms linear;
+}
+
+.navbar .navbar-brand img {
+    height: 50px;
+    margin: 0px
+}
+
+.navbar-toggle {
+    margin: 20px;
+}
+
+.navbar .navbar-toggle {
+	border-color: #999;
+}
+
+.navbar.solid-background .navbar-toggle:focus, .navbar.solid-background .navbar-toggle:hover {
+	background-color: #f9f9f9;
+}
+
+.navbar.solid-background .navbar-toggle .icon-bar {
+	background-color: #000;
+}
+
+.navbar .navbar-collapse, .navbar .navbar-form {
+	border-color: rgba(0, 0, 0, 0.3);
+}
+
+.navbar .google-oauth a:hover {
+	opacity: 0.8;
+}
+
+.navbar .google-oauth img {
+	height: 40px
+}
+
+@media (min-width: 768px) {
+
+    .navbar .navbar-nav {
+        float: right;
+    }
+
+    .navbar .navbar-nav>li {
+        padding: 20px 0px;
+    }
+
+    .navbar.solid-background .navbar-nav>li {
+        padding: 10px 0px;
+    }
+
+	.navbar .navbar-nav>li>a:hover {
+		border-color: #fff;
+		cursor: pointer;
+	}
+
+	.navbar.solid-background .navbar-nav>li>a:hover {
+		border-color: #0088aa;
+		cursor: pointer;
+	}
+
+	.navbar .google-oauth a {
+		padding: 7px 5px;
+	}
+
+	.navbar .google-oauth a:hover {
+		border-color: transparent !important;
+	}
+
+	.navbar.solid-background .google-oauth a {
+		padding: 5px 5px;
+	}
+
+	.navbar.solid-background .navbar-brand img {
+	    height: 50px;
+	    margin: 0px
+	}
+
+}
+
+@media (min-width: 992px) {
+
+    .navbar .navbar-nav>li {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+}
+
+
+.navbar {
+    background-color: transparent;
+    -webkit-transition: all 200ms linear;
+    -moz-transition: all 200ms linear;
+    -o-transition: all 200ms linear;
+    -ms-transition: all 200ms linear;
+    transition: all 200ms linear;
+}
+
+.navbar.solid-background {
+    background-color: rgba(255, 255, 255, 1.0);
+    border-bottom: #e1e1e1 1px solid;
+}
+
+.navbar.solid-background .navbar-nav>li>a{
+	color: #000;
+}

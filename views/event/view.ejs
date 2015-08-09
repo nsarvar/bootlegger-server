@@ -1,12 +1,23 @@
 
-
 <style>
-@media (max-width: 1199px) {
+
+@media (min-width: 992px) {
+    .popover{
+      width:227px;
+    }
+}
+
+@media (min-width:1199px) {
+    .popover{
+      width:300px;
+    }
+}
+
+
+@media (max-width: 992px) {
   .popover {
     display: none !important;
   }
-
-
 
   .col-md-8
   {
@@ -64,6 +75,19 @@ input[readonly] {
 {
   max-width:inherit;
 }
+
+.placeholder
+{
+  height:4em;
+  background: silver;
+}
+
+.phaseitem
+{
+  cursor: move;
+}
+
+#editor {overflow-y:scroll; max-height:300px;min-height:300px;}
 </style>
 
 <div class="thispage">
@@ -88,25 +112,24 @@ This page will include phase editing and template updates. Stay tuned!
 <br>
 		<div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
         <div class="arrow"></div>
-        <h3 class="popover-title">Event Settings</h3>
+        <h3 class="popover-title">Shoot Settings</h3>
         <div class="popover-content">
-          <p>Basic information about your event that will help Bootlegger to keep track of the action.</p>
+          <p>Basic information about your shoot that will help Bootlegger to keep track of the action.</p>
         </div>
     </div>
 
-
-<div class="form-horizontal col-sm-8"  style="float:left;">
+<div class="form-horizontal col-md-8"  style="float:left;">
   <div class="form-group">
     <div class="row">
-      <label for="inputEmail2" class="col-sm-4 control-label">Event Starts on</label>
+      <label for="inputEmail2" class="col-sm-4 control-label" >Shoot Starts on</label>
       <div class="col-sm-4">
-        <div class="input-group input-group-lg" id="dp3" >
-              <input name="starts" class="col-sm-4 form-control datepicker" size="16" type="text" data-date-format="dd-mm-yyyy" value="<%= event.starts %>">
+        <!-- <div class="input-group input-group-lg" id="dp3" > -->
+              <input name="starts" class="col-sm-4 form-control datepicker input-lg" size="16" type="text" data-date-format="dd-mm-yyyy" value="<%= event.starts %>" readonly required>
               <!-- <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
-            </div>
+            <!-- </div> -->
       </div>
-      <div class="col-sm-1" style="width:50px;">
-        <h2 style="margin:0;padding:0;"> at </h2>
+      <div class="col-sm-1 text-center">
+        <label style="margin:0;padding:0;"> at </label>
       </div>
       <div class="col-sm-2">
             <input name="starts_time" class="input-lg col-sm-2 form-control" size="5" type="text" onblur="updatestarttime()" value="<%= event.starts_time %>">
@@ -117,69 +140,231 @@ This page will include phase editing and template updates. Stay tuned!
 
   <div class="form-group">
     <div class="row">
-    <label for="inputEmail4" class="col-sm-4 control-label">Event Finishes on</label>
-    <div class="col-sm-4">
-      <div class="input-group input-group-lg" id="dp4" >
-            <input name="ends" class="col-sm-4 form-control datepicker" size="16" type="text" value="<%= event.ends %>" data-date-format="dd-mm-yyyy">
+      <label for="inputEmail4" class="col-sm-4 control-label">Shoot Finishes on</label>
+      <div class="col-sm-4">
+        <!-- <div class="input-group input-group-lg" id="dp4" > -->
+            <input name="ends" class="col-sm-4 form-control datepicker input-lg" size="16" type="text" value="<%= event.ends %>"  data-date-format="dd-mm-yyyy" readonly required>
             <!-- <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
-          </div>
-    </div>
-    <div class="col-sm-1" style="width:50px;">
-      <h2 style="margin:0;padding:0;"> at </h2>
+          <!-- </div> -->
+      </div>
+    <div class="col-sm-1 text-center" >
+      <label style="margin:0;padding:0;"> at </label>
     </div>
     <div class="col-sm-2">
           <input name="ends_time" class="input-lg col-sm-2 form-control" size="5" type="text" onblur="updateendtime()" value="<%= event.ends_time %>">
         </div>
   </div>
-
+  <div class="row">
+    <div class="text-muted text-info col-sm-8 col-sm-offset-4" style="display:block;">This shoot is built on the <%- event.eventtype.name %> template.</div>
+  </div>  
 </div>
 <div class="row">
-  <form action="/event/image/<%- event.id %>" method="post" enctype="multipart/form-data">
-    <label class="col-sm-4 control-label">Event Icon
-<% if (event.icon) { %>
-      <img src="<%-event.icon%>" style="width:50px;height:50px;"/>
-      <%}%>
-    </label>
-    
-
-  <div class="col-sm-4">
-
+  <form action="/event/image/<%- event.id %>?apikey=<%- apikey%>" method="post" enctype="multipart/form-data">
+    <label class="col-sm-4 control-label" data-delay="300" data-toggle="tooltip" title="Loads an icon that contributors will see when they log into the mobile app">Shoot Icon <i style="color:silver" class="fa fa-question-circle"></i></label>
+  <div class="col-sm-6">
+   
 
   <div class="fileinput fileinput-new" data-provides="fileinput">
-    <div class="fileinput-new thumbnail" style="width: 110px; height: 110px;" >
+    <div class="fileinput-new thumbnail" style="width: 60px; height: 60px;float:left;" >
       <img data-src="holder.js/100%x100%" alt="...">
     </div>
-    <div class="fileinput-preview fileinput-exists thumbnail" style="width: 100px; height: 100px;overflow:hidden;">
-      
+    <div class="fileinput-preview fileinput-exists thumbnail" style="width: 60px; height: 60px;overflow:hidden;float:left;">
+
     </div>
-    <div>
-      <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span class="fileinput-exists">Change</span><input type="file" name="image"></span>
-      <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+    <div style="float:right;width:10px;">
+      <span class="btn btn-link btn-file"><span class="fileinput-new"><i class="fa fa-folder-open"></i></span><span class="fileinput-exists"><i class="fa fa-folder-open"></i></span><input type="file" name="image" required></span>
+      <a href="/event/clearicon/<%- event.id %>?apikey=<%- apikey%>" class="btn btn-link" data-toggle="tooltip" title="remove icon"><i class="fa fa-times"></i></a>
+      <!--<a href="#" class="btn btn-link fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i></a>-->
     </div>
+    
+    
   </div>
-
- 
-
 </div>
-<div class="col-sm-4">
- <button type="submit" class="btn btn-primary">Upload Image</button>
-  </div>
+<!--
+ <button type="submit" class="btn btn-primary">Upload Image</button>-->
 </form>
 </div>
 
-  <% if (user.currentevent != event.id) { %>
+<div class="row">
+  <form action="/event/background/<%- event.id %>?apikey=<%- apikey%>" method="post" enctype="multipart/form-data">
+    <label class="col-sm-4 control-label" data-delay="300" data-toggle="tooltip" title="Loads a background that contributors will see when they log into the mobile app">Tile Background <i style="color:silver" class="fa fa-question-circle"></i></label>
+  <div class="col-sm-6">
+   
+
+  <div class="fileinput fileinput-new" data-provides="fileinput">
+    <div class="fileinput-new thumbnail" style="width: 150px; height: 60px;float:left;" >
+      <img data-src="holder.js/100%x100%" alt="...">
+    </div>
+    <div class="fileinput-preview fileinput-exists thumbnail" style="width: 150px; height: 60px;overflow:hidden;float:left;">
+
+    </div>
+    <div style="float:right;width:10px;">
+      <span class="btn btn-link btn-file"><span class="fileinput-new"><i class="fa fa-folder-open"></i></span><span class="fileinput-exists"><i class="fa fa-folder-open"></i></span><input type="file" name="image" required></span>
+      <a href="/event/clearbackground/<%- event.id %>?apikey=<%- apikey%>" class="btn btn-link" data-toggle="tooltip" title="remove background"><i class="fa fa-times"></i></a>
+      <!--<a href="#" class="btn btn-link fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i></a>-->
+    </div>
+    
+  </div>
+</div>
+
+<!--
+ <button type="submit" class="btn btn-primary">Upload Image</button>-->
+</form>
+</div>
+
+<div class="row">
+         
+            <div style="position:relative;background:url(/images/event_back.png);background-size:cover;width:350px;height:86px;border-radius:3px;margin:auto auto; margin-bottom:10px;overflow:hidden;box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);">
+             <% if (event.iconbackground) { %>
+                  <img src="<%-event.iconbackground %>" style="position:absolute;width:100%;height:100%;top:0;left:0;"/>
+                <% } %>
+                  <div style="background:rgba(0,0,0,0.3);position:absolute;width:100%;height:100%;top:0;left:0;"></div>                  
+               <% if (event.icon) { %>
+                <img src="<%-event.icon%>" style="position:absolute;left:15px;top:15px;width:60px;height:60px;display:inline-block;margin-right:5px;"/>
+              <%} else {%>
+                <div style="position:absolute;width:60px;height:60px;padding-top:14px;left:18px;top:10px;display:inline-block;float:left;margin-right:5px;color:white;"><i class="fa fa-calendar-o fa-3x"></i></div>
+              <% } %>
+              <div style="position:absolute;color:white;font-size:14pt;left:85px;top:9px;">
+              <%- event.name %>  
+              </div>
+               
+            </div>  
+  </div>
+
+  <!--<% if (user.currentevent != event.id) { %>
  <div class="form-group">
-    <label for="inputEmail5" class="col-sm-6 control-label">This event is not your default</label>
-    <button class="btn btn-link" id="makedefault" onclick="makedefault()">Make This Event My Default</button>
+    <label for="inputEmail5" class="col-sm-6 control-label">This shoot is not your default</label>
+    <button class="btn btn-link" id="makedefault" onclick="makedefault()">Make This Shoot My Default</button>
    </div>
 <%} else { %>
 <div >
-<label for="inputEmail5" class="col-sm-6 col-sm-offset-4">This event is your default event</label>
+<label for="inputEmail5" class="col-sm-6 col-sm-offset-4">This is your default shoot</label>
    </div>
-<% } %>
+<% } %>-->
+  
+</div>
 
-<div class="text-muted col-sm-8 col-sm-offset-4" style="display:block;">This event is built on the <%- event.eventtype.name %> template.</div>
 
+<div class="clearfix"></div>
+<div class="page-header">
+<h1>Privacy, Sharing and Access</h1>
+</div>
+<div class="popover right publicbox" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+    <div class="arrow"></div>
+    <h3 class="popover-title">Media Releases</h3>
+    <div class="popover-content">
+      <p>Think carefully about your media release. This is what participants who contribute to your shoot will be signing up to. It needs to clearly state what information you are collecting, what you are using it for and who owns the content. It also needs to reflect the settings below on who can contribute and view footage.</p>
+    </div>
+    </div>
+
+<div class="pull-left form-horizontal col-md-8">
+  <div>
+    <label class="control-label"  data-delay="300" data-toggle="tooltip" title="Terms and conditions for participants to sign up to for the shoot">Media Release <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+      <div class="btn-group">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+          <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+          <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+          <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+          </ul>
+      </div>
+      <div class="btn-group">
+        <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
+        <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
+        <a class="btn" data-edit="strikethrough" title="Strikethrough"><i class="fa fa-strikethrough"></i></a>
+        <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
+      </div>
+      <div class="btn-group">
+        <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></a>
+        <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></a>
+      </div>
+      <div class="btn-group">
+        <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
+        <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
+        <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
+        <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
+      </div>
+      <!--<div class="btn-group">
+		  <a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="fa fa-link"></i></a>
+		    <div class="dropdown-menu input-append">
+			    <input class="form-control" placeholder="URL" type="text" data-edit="createLink"/>
+			    <button class="btn" type="button">Add</button>
+        </div>
+        <a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="icon-cut"></i></a>
+
+      </div>-->
+      <div class="btn-group">
+        <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="icon-undo"></i></a>
+        <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="icon-repeat"></i></a>
+      </div>
+    </div>
+  <div id="editor" class="form-control">
+ <%- event.release %>
+  </div>
+  <button class="btn btn-success pull-right" onclick="updaterelease();">Update</button>
+</div>
+<div class="clearfix"></div>
+
+<br>
+
+<div class="row"  style="margin-bottom:5px;">
+  <div class="col-xs-5 col-sm-3">
+  <div  id="groupevent" >
+    <input class="make-switch" name="groupevent" type="checkbox" <%= event.groupevent ? "checked" : ""%>/>
+  </div>
+</div>
+  <div class="col-xs-7 col-sm-9">
+    <label data-delay="300" data-toggle="tooltip" data-html="true" title="Shoots with this option enabled will be listed together under then name of the account that created the shoot <strong>(<%- event.ownedby_user.profile.displayName %>)</strong> for participants. Without this option, this shoot will appear in the main list of shoots.">Group this Shoot as Part of a Larger Event <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <!-- <a href="#tooltip" data-toggle="popover" data-html="true" data-content="Shoots with this option enabled will be listed together under then name of the account that created the shoot <strong>(<%- event.ownedby_user.profile.displayName %>)</strong> for participants. Without this option, this shoot will appear in the main list of shoots."></a> -->
+    <!-- <p>Shoots with this option enabled will be listed together under then name of the account that created the shoot <strong>(<%- event.ownedby_user.profile.displayName %>)</strong> for participants. Without this option, this shoot will appear in the main list of shoots.</p> -->
+  </div>
+
+  </div>
+
+<div class="row"  style="margin-bottom:5px;">
+  <div class="col-xs-5 col-sm-3">
+    <div id="publicevent">
+      <input class="make-switch" name="publicevent" type="checkbox" <%= event.public ? "checked" : ""%>/>
+    </div>
+  </div>
+  <div class="col-xs-7 col-sm-9">
+    <label data-delay="300" data-toggle="tooltip" title="Turning this on allows any member of the public with the Bootlegger app to join and contribute to your shoot. If disabled, you can specifically invite contributors to get involved by sending them an invite link below.">Anyone Can Contribute <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <!-- <a href="#tooltip" data-toggle="popover" data-html="true" data-content="Turning this on allows any member of the public with the Bootlegger app to join and contribute to your shoot. If disabled, you can specifically invite contributors to get involved by sending them an invite link below."><i class="fa fa-question-circle"></i></a> -->
+    <!-- <p>Turning this on allows any member of the public with the Bootlegger app to join and contribute to your shoot. If disabled, you can specifically invite contributors to get involved by sending them an invite link below.</p> -->
+</div>
+  <p></p>
+</div>
+
+<div class="row" style="margin-bottom:5px;">
+  <div class="col-xs-5 col-sm-3">
+    <div  id="viewevent" >
+      <input class="make-switch" name="viewevent" type="checkbox" <%= event.publicview ? "checked" : ""%>/>
+    </div>
+  </div>
+  <div class="col-xs-7 col-sm-9">
+    <label data-delay="300" data-toggle="tooltip" title="If enabled, anyone who <strong>contriibutes</strong> to your shoot can view and micro-edit their, and everyone eles's videos. If disabled, contributors can only playback their own footage." data-html="true">Contributors Can View All Footage <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <!-- <a href="#tooltip" data-toggle="popover" data-html="true" data-content="If enabled, anyone who <strong>contriibutes</strong> to your shoot can view and micro-edit their, and everyone eles's videos. If disabled, contributors can only playback their own footage."><i class="fa fa-question-circle"></i></a> -->
+
+    <!-- <p>If enabled, anyone who <strong>contriibutes</strong> to your shoot can view and micro-edit their, and everyone eles's videos. If disabled, contributors can only playback their own footage.</p> -->
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-5 col-sm-3">
+  <div  id="publicshare" >
+    <input class="make-switch" name="publicshare" type="checkbox" <%= event.publicshare ? "checked" : ""%>/>
+  </div>
+</div>
+  <div class="col-xs-7 col-sm-9">
+    <label data-delay="300" data-toggle="tooltip" title="If enabled, contributors can share their micro-edits on social media, allowing them the to post videos as links. If disabled, this feature is not possible." data-html="true">Footage can be Shared on Social Media <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <!-- <a href="#tooltip" data-toggle="popover" data-html="true" data-content="If enabled, contributors can share their micro-edits on social media, allowing them the to post videos as links. If disabled, this feature is not possible."><i class="fa fa-question-circle"></i></a> -->
+
+    <!-- <p>If enabled, contributors can share their micro-edits on social media, allowing them the to post videos as links. If disabled, this feature is not possible.</p> -->
+  </div>
+
+  </div>
+</div>
 </div>
 
 <div class="clearfix"></div>
@@ -195,25 +380,7 @@ This page will include phase editing and template updates. Stay tuned!
         </div>
 
       <div class="form-horizontal col-md-8" style="float:left;">
-        <div class="form-group col-sm-6">
-          <label class="col-sm-7 control-label" for="publicevent">Anyone Can Contribute</label>
-        <div class="make-switch" id="publicevent" style="margin-top:10px;">
-          <input  name="publicevent" type="checkbox" <%= event.public ? "checked" : ""%>/>
-        </div>
-      </div>
-        <div class="form-group col-sm-6">
-        <label class="col-sm-7 control-label" for="viewevent">Contributors Can View All Footage</label>
-        <div class="make-switch" id="viewevent" style="margin-top:10px;">
-          <input  name="viewevent" type="checkbox" <%= event.publicview ? "checked" : ""%>/>
-        </div>
-        </div>
 
-        <div class="form-group col-sm-6">
-        <label class="col-sm-7 control-label" for="publicshare">Footage can be Shared on Social Media</label>
-        <div class="make-switch" id="publicshare" style="margin-top:10px;">
-          <input  name="publicshare" type="checkbox" <%= event.publicshare ? "checked" : ""%>/>
-        </div>
-        </div>
 
         <div class="clearfix"></div>
         <ul id="eventcodes" class="list-group loading publicbox" style="<%= event.public ? "display:none;" : ""%>">
@@ -222,12 +389,14 @@ This page will include phase editing and template updates. Stay tuned!
 
       </div>
 
+
+
 <div class="clearfix"></div>
       <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
         <div class="arrow"></div>
         <h3 class="popover-title">Administrators</h3>
         <div class="popover-content">
-          <p>Is there anyone who needs access to this screen or who will be responsible for editing the content after the event?</p>
+          <p>Is there anyone who needs access to this screen or who will be responsible for editing the content after the shoot?</p>
         </div>
         </div>
 
@@ -240,11 +409,11 @@ This page will include phase editing and template updates. Stay tuned!
 
 
 <div class="page-header">
-  <h1>Event Meta-Data</h1>
+  <h1>Shoot Meta-Data</h1>
 </div>
     <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
         <div class="arrow"></div>
-        <h3 class="popover-title">Event Meta-Data</h3>
+        <h3 class="popover-title">Shoot Meta-Data</h3>
         <div class="popover-content">
           <p>Your event may have specific people, objects or targets that you need captured. Enter a indentifying description here so that your crew can find them during the shoot. The performers at this event will probably be arranged in a particular layout. Enter the best matching description of where the artists will be when looking at the stage to help guide your camera crew to the best shots.</p>
         </div>
@@ -258,7 +427,7 @@ This page will include phase editing and template updates. Stay tuned!
 </div>
 </div>
 
-<div class="clearfix"></div>
+<!-- <div class="clearfix"></div>
 <div class="page-header">
   <h1>Shoot Phases</h1>
 </div>
@@ -272,11 +441,11 @@ This page will include phase editing and template updates. Stay tuned!
 
 
 
- <div class="form-horizontal col-md-8" style="float:left;">
+ <div class="form-horizontal col-md-8 pull-left">
 <div id="phases" class="list-group loading">
 
 </div>
-</div>
+</div> -->
 
 <% if (event.eventtype.roleimg) { %>
 <div class="clearfix"></div>
@@ -291,12 +460,12 @@ This page will include phase editing and template updates. Stay tuned!
         </div>
         </div>
 
- <div class="form-horizontal col-md-8" style="float:left;">
-<form action="/event/map/<%- event.id %>" method="post" enctype="multipart/form-data">
+ <div class="form-horizontal col-md-8 pull-left" >
+<form action="/event/map/<%- event.id %>?apikey=<%-apikey %>" method="post" enctype="multipart/form-data">
             <div class="input-group">
                 <span class="input-group-btn">
                     <span class="btn btn-primary btn-file">
-                        Browse&hellip; <input type="file" name="map">
+                        Browse&hellip; <input type="file" name="map" required>
                     </span>
                 </span>
                 <input type="text" class="form-control" readonly>
@@ -306,9 +475,13 @@ This page will include phase editing and template updates. Stay tuned!
             </div>
 </form>
 <div class="panel" id="map" style="position:relative;">
-<img id="roleimg" src="<%- event.eventtype.roleimg %>" style="width:100%;opacity:0.6;"/>
+  <% if (event.eventtype.roleimg === true || typeof event.eventtype.roleimg == 'undefined') { %>
+  <img id="roleimg" src="holder.js/100%x200" style="width:100%;height:200px;opacity:0.6;"/>
+  <% } else { %>
+  <img id="roleimg" src="<%- event.eventtype.roleimg %>" style="width:100%;opacity:0.6;"/>
+<% } %>
 <% _.each(event.eventtype.roles,function(r) { %>
-<i class="draggable label label-primary" data-role="<%- r.id %>" data-x="<%- r.position[0] %>" data-y="<%- r.position[1] %>" style="cursor:move;"><%- r.name %></i>
+<i class="draggable label label-primary" data-role="<%- r.id %>" data-x="<%- (r.position)?r.position[0]:0 %>" data-y="<%- (r.position)?r.position[1]:0 %>" style="cursor:move;"><%- r.name %></i>
 <% }); %>
 </div>
 </div>
@@ -319,7 +492,7 @@ This page will include phase editing and template updates. Stay tuned!
 
 
 <div class="clearfix"></div>
-<div class="col-sm-12">
+<div class="col-sm-12 text-center">
 <button type="button" class="btn btn-danger" data-toggle="collapse" data-target="#dang">
   <i class="glyphicon glyphicon-warning-sign"></i> Dangerous Advanced Options
 </button>
@@ -328,7 +501,7 @@ This page will include phase editing and template updates. Stay tuned!
 <div id="dang" class="collapse">
 
 
-<div class="page-header exclude" style="margin-top:15px;">
+<!-- <div class="page-header exclude" style="margin-top:15px;">
 <h1>Production Modules</h1>
 </div>
         <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
@@ -339,39 +512,39 @@ This page will include phase editing and template updates. Stay tuned!
         </div>
         </div>
         <div class="col-md-8" style="float:left;">
-
+ --><!--
 <div class="list-group">
  <a href="#" class="list-group-item active">Shoot Phase Modules</a>
   <% _.each(event.shoot_modules,function(v,k){ %>
     <div class="list-group-item">
 <div class="form-group">
           <label class="col-sm-4 control-label" for="publicevent"><%=k%></label>
-        <div class="make-switch multi" id="<%=k%>">
-          <input cat="shoot_modules" name="<%=k%>" value="1" type="checkbox" <%= v ? "checked" : ""%>/>
+        <div  id="<%=k%>">
+          <input class="make-switch multi" cat="shoot_modules" name="<%=k%>" value="1" type="checkbox" <%= v ? "checked" : ""%>/>
         </div>
         </div>
   </div>
    <% });%>
-</div>
+</div> -->
 
-<div class="list-group">
+<!-- <div class="list-group">
  <a href="#" class="list-group-item active">Post Production Modules</a>
   <% _.each(event.post_modules,function(v,k){ %>
     <div class="list-group-item">
 <div class="form-group">
           <label class="col-sm-4 control-label" for="publicevent"><%=k%></label>
-        <div class="make-switch multi" id="<%=k%>">
-          <input cat="post_modules" name="<%=k%>" value="1" type="checkbox" <%= v ? "checked" : ""%>/>
+        <div  id="<%=k%>">
+          <input class="make-switch multi" cat="post_modules" name="<%=k%>" value="1" type="checkbox" <%= v ? "checked" : ""%>/>
         </div>
         </div>
   </div>
    <% });%>
 
-</div>
+</div> -->
 
-</div>
+<!-- </div> -->
 <!-- <div class="clearfix"></div> -->
-<!-- 
+<!--
 <div>
 <div class="page-header">
 <h1>Offline Use</h1>
@@ -395,43 +568,57 @@ This page will include phase editing and template updates. Stay tuned!
 </div> -->
 
 <div class="clearfix"></div>
-
-<a href="/event/remove/<%= event.id %>" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i> Delete This Event Forever</a>
+<br><br>
+<div class="col-xs-12 text-center">
+  <a href="/event/remove/<%= event.id %>" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i> Delete This Shoot Forever</a>
+</div>
 
 </div>
 
 <script id="codes-template" type="text/x-handlebars-template">
-  <a class="list-group-item active" href="#">Invited Team Members (for non-public events)</a>
+  <a class="list-group-item active" href="#" data-delay="300" data-toggle="tooltip" title="Invites contributors to the production team via the mobile app">Participant Invites <i style="color:silver" class="fa fa-question-circle"></i></a>
   {{#each codes}}
-  <li class="list-group-item"><span class="badge">{{this.status}}</span> {{this.number}}</li>
+  <li class="list-group-item"><span class="badge pull-left">{{this.status}}</span>&nbsp;
+
+    {{#if this.uid}}
+    <strong>{{this.user.profile.displayName}}</strong>
+    {{/if}}
+
+     <span class="text-muted">{{this.number}} {{this.email}}</span>
+
+     <button style="padding:3px;" onclick="remcode({{this.code}})" class="btn btn-link pull-right"><i class="fa fa-minus"></i></button>
+     {{#unless this.uid}}
+     <button style="padding:3px;" onclick="resendcode({{this.code}})" class="btn btn-link pull-right"><i class="fa fa-refresh"></i></button>
+     {{/unless}}
+     </li>
   {{else}}
   <li class="list-group-item"><span class="text-mute">no codes sent</span></li>
   {{/each}}
   <div class="list-group-item">
-  <label class="col-sm-4 control-label" for="number">A Mobile Number</label>
-<div class="input-group" style="width:250px;">
-  			<input type="telephone" id="number" class="form-control" placeholder="+443448957464" required="true"/>
-  			<span class="input-group-btn">
-  			<button class="btn" onclick="addcode();">Add</button>
-  			</span>
+  <label class="col-sm-3 control-label" for="number">Contact Info.</label>
+        <input type="email" id="email" class="form-control" style="display:inline-block;width:30%" placeholder="dave@bootlegger.tv"/>
+  			<input type="tel" id="number" class="form-control" style="display:inline-block;width:30%" placeholder="+443448957464" />
+  			<button class="btn" onclick="addcode();" style="display:inline-block;">Add</button>
  </div>
   </div>
 </script>
 
 <script id="coverage-template" type="text/x-handlebars-template">
-  
-<a class="list-group-item active" href="#">Event Meta-Data</a>
+
+<div class="list-group-item active" data-delay="300" data-toggle="tooltip" title="Allows you to identify by name, specific people or objects that you’d like your contributors to capture .">Shoot Meta-Data <i style="color:silver" class="fa fa-question-circle"></i></div>
   {{#each coverage_classes}}
   {{setIndex @key}}
   <div class="list-group-item">
-    <div class="form-group" style="margin:0">
-    <label class="col-sm-2">{{this.name}}</label> 
-      <div class="col-sm-10">
-        
-        {{#each this.items}}
-        <div class="row">
-          <span class="col-sm-3">{{this.name}}</span>
+    
+    <span class="col-sm-2"><strong>{{this.name}}</strong></span>
+    <div class="col-sm-10">
 
+        {{#each this.items}}
+        <div style="border-bottom:1px solid #efefef;display:block;clear:both;padding-bottom:5px;margin-top:5px;margin-bottom:5px;margin-right:-32px;">
+          <!--<div class="col-xs-12">-->
+          <div style="min-width:100px;display:inline-block;">{{this.name}}</div>
+          <!--</div>
+      <div class="col-sm-7 text-center">-->
           <div class="btn-group" data-toggle="buttons" style="margin-left:20px;">
             <label class="btn btn-primary btn-xs leadlocation {{checked this 'Left'}}">
               <input type="radio" i1="{{../index}}" i2="{{@index}}" name="leadlocation" value="Left"> Left
@@ -443,32 +630,35 @@ This page will include phase editing and template updates. Stay tuned!
               <input type="radio" i1="{{../index}}" i2="{{@index}}" name="leadlocation" value="Right"> Right
             </label>
           </div>
+          
+           <button class="btn btn-link pull-right" style="margin-right:15px;padding:3px;" onclick="removecoverage({{../index}},{{@index}})"><i class="fa fa-minus"></i></button>
+        <!--</div>-->
 
-
-          <button class="btn btn-link" onclick="removecoverage({{../index}},{{@index}})"><i class="glyphicon glyphicon-minus"></i></button>
+        
         </div>
         {{/each}}
 
         <input class="form-control addcov" rel="{{@key}}" placeholder="enter new meta" />
       </div>
-    </div>
+    <div class="clearfix"></div>
   </div>
   {{else}}
-  <div class="list-group-item"><span class="text-mute">no meta-data needed for this event</span></div>
+  <div class="list-group-item"><span class="text-mute">no meta-data needed for this shoot</span></div>
   {{/each}}
 </script>
 
 <script id="phase-template" type="text/x-handlebars-template">
-<a class="list-group-item active" href="#">Event Phases</a>
+<a class="list-group-item active" href="#">Shoot Phases</a>
   {{#each phases}}
-  <div class="list-group-item">
-          {{#unless roles}}<button class="btn btn-link" onclick="removephase({{@index}})"><i class="glyphicon glyphicon-minus"></i></button> {{this.name}}{{else}}{{this.name}} <span class="pull-right text-muted">assigned by the template</span>{{/unless}}
+  <div class="list-group-item phaseitem">
+  <span class="description hidden">{{description}}</span>
+          {{#unless roles}}<button class="btn btn-link" onclick="removephase({{@index}})"><i class="glyphicon glyphicon-minus"></i></button> <span class="name">{{this.name}}</span>{{else}}<span class="name">{{this.name}}</span><span class="roles hidden">{{roles}}</span> <span class="pull-right text-muted">assigned by the template</span>{{/unless}}
   </div>
-  
+
   {{else}}
-  <div class="list-group-item"><span class="text-mute">no phases needed for this event</span></div>
+  <div class="list-group-item last"><span class="text-mute">no phases needed for this shoot</span></div>
   {{/each}}
-<div class="list-group-item">
+<div class="list-group-item last">
   <label class="col-sm-4 control-label" for="number">Add a New Phase</label>
   <div class="input-group" style="width:250px;">
         <input type="text" id="phasea" class="form-control" placeholder="phase" required="true"/>
@@ -480,23 +670,23 @@ This page will include phase editing and template updates. Stay tuned!
 </script>
 
 <script id="admins-template" type="text/x-handlebars-template">
-<a class="list-group-item active" href="#">Event Administrators</a>
+<a class="list-group-item active" href="#" data-delay="300" data-toggle="tooltip" title="Adds users who can edit the shoot settings via the website">Shoot Administrators <i style="color:silver" class="fa fa-question-circle"></i></a>
   {{#each this}}
   <div class="list-group-item">
-    {{this.name}}
+    {{this.name}} <button style="padding:3px;" onclick="removeadmin('{{this.id}}')" class="btn btn-link pull-right"><i class="fa fa-minus"></i></button>
   </div>
   {{else}}
-  <div class="list-group-item"><span class="text-mute">only you have access to this event</span></div>
+  <div class="list-group-item"><span class="text-mute">only you have access to this shoot</span></div>
   {{/each}}
     <div class="list-group-item">
   <label class="col-sm-4 control-label" for="number">Add a New Admin</label>
-  <div class="input-group" style="width:250px;">
+  <div class="input-group cold-xs-12 col-sm-7">
         <input type="email" id="admina" class="form-control" placeholder="email" required="true"/>
         <span class="input-group-btn">
         <button class="btn" onclick="addadmin();">Add</button>
         </span>
   </div>
-        
+  <div class="text-warning text-center"><i class="fa fa-info"></i> Currently, you can only add users with accounts already in Bootlegger.</div>
 </script>
 
 <script>
@@ -520,16 +710,16 @@ $(document).on('change', '.btn-file :file', function() {
 
 $(document).ready( function() {
     $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-        
+
         var input = $(this).parents('.input-group').find(':text'),
             log = numFiles > 1 ? numFiles + ' files selected' : label;
-        
+
         if( input.length ) {
             input.val(log);
         } else {
             if( log ) alert(log);
         }
-        
+
     });
 });
 
@@ -545,11 +735,11 @@ $(function() {
             $(this).css('top',$(this).data('y') * imgheight);
           });
 
-          $( ".draggable" ).draggable({ 
+          $( ".draggable" ).draggable({
             containment: "parent",
             scroll:false,
             cursor: "move",
-            stop: function(ev, ui) { 
+            stop: function(ev, ui) {
               //dragging stopped -- calculate and update:
               var token = $(ui.helper[0]);
 
@@ -561,18 +751,22 @@ $(function() {
 
 
               //$('#roleimg').width
-            } 
+            }
           });
     }).each(function() {
       if(this.complete) $(this).load();
-    });      
+    });
 });
 
 var codestemplate;
 var coveragetemplate;
 var adminstemplate;
 var phasetemplate;
-$(function(){
+//$(function(){
+
+function bootlegger_init(){
+
+    $(".make-switch").bootstrapSwitch();
 
     $('[name=starts]').datepicker().on('changeDate', function(ev){
         updatestart(ev.date);
@@ -582,30 +776,35 @@ $(function(){
         updateend(ev.date);
       });
 
-    $('#publicevent').on('switch-change', function (e, data) {
-        var value = data.value;
-        updatepublic(data.value);
+    $('#publicevent').on('switchChange.bootstrapSwitch', function (e, data) {
+        var value = data;
+        updatepublic(data);
     });
 
-    $('#viewevent').on('switch-change', function (e, data) {
-        var value = data.value;
-        updateview(data.value);
+    $('#groupevent').on('switchChange.bootstrapSwitch', function (e, data) {
+        var value = data;
+        updategroup(data);
     });
 
-    $('#publicshare').on('switch-change', function (e, data) {
-        var value = data.value;
-        updateshare(data.value);
+    $('#viewevent').on('switchChange.bootstrapSwitch', function (e, data) {
+        var value = data;
+        updateview(data);
     });
 
-    $('.make-switch.multi').on('switch-change', function (e, data) {
-        var value = data.value;
-        var el = $(data.el);
-        updatemulti(el.attr('cat'),el.attr('name'),data.value);
+    $('#publicshare').on('switchChange.bootstrapSwitch', function (e, data) {
+        var value = data;
+        updateshare(data);
+    });
+
+    $('.make-switch.multi').on('switchChange.bootstrapSwitch', function (e, data) {
+        var value = data;
+        var el = $(this);
+        updatemulti(el.attr('cat'),el.attr('name'),data);
     });
 
 		var source = $("#codes-template").html();
     codestemplate = Handlebars.compile(source);
-    
+
     source = $("#coverage-template").html();
     coveragetemplate = Handlebars.compile(source);
 
@@ -615,8 +814,8 @@ $(function(){
     source = $("#phase-template").html();
     phasetemplate = Handlebars.compile(source);
 
-	io.socket.on('connect',function()
-	{
+	//io.socket.on('connect',function()
+	//{
 		  io.socket.get('/event/updates/<%= event.id%>', function(response){
       		//console.log(response);
     	});
@@ -624,16 +823,19 @@ $(function(){
     	io.socket.get('/event/codes/<%= event.id%>', function(response){
     		//console.log(response);
       		$('#eventcodes').html(codestemplate(response));
+            $('[data-toggle="tooltip"]').tooltip();
     	});
 
       io.socket.get('/event/admins/<%= event.id%>', function(response){
         //console.log(response);
           $('#admins').html(adminstemplate(response));
+            $('[data-toggle="tooltip"]').tooltip();
       });
 
       io.socket.get('/event/coverage/<%= event.id%>', function(response){
         //console.log(response);
           $('#coverage_classes').html(coveragetemplate(response));
+            $('[data-toggle="tooltip"]').tooltip();
 
           $('.addcov').keyup(function (e) {
             var code = e.keyCode || e.which;
@@ -643,6 +845,12 @@ $(function(){
               addcoverage($(this).attr('rel'));
             }
           });
+          
+          $('.addcov').blur(function (e) {
+            addcoverage($(this).attr('rel'));
+          });
+          
+          
 
           $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
             //radio button changed (left, right, center)
@@ -659,6 +867,7 @@ $(function(){
       io.socket.get('/event/phases/<%= event.id%>', function(response){
         //console.log(response);
           $('#phases').html(phasetemplate(response));
+            $('[data-toggle="tooltip"]').tooltip();
 
           $('.addphase').keyup(function (e) {
             var code = e.keyCode || e.which;
@@ -669,23 +878,61 @@ $(function(){
             }
           });
       });
-	});
-
-});
+	//});
+}
+//});
 
 function addcode()
 {
-	if ($('#number').val()!='')
+	if ($('#number').val()!='' || $('#email').val()!='')
 	{
-  	io.socket.post('/event/addcode/',{id:'<%= event.id%>', number: $('#number').val()}, function (response) {
+  	io.socket.post('/event/addcode/',{id:'<%= event.id%>', number: $('#number').val(),email:$('#email').val()}, function (response) {
 
   	  io.socket.get('/event/codes/<%= event.id%>', function(response){
       		//console.log(response);
         		$('#eventcodes').html(codestemplate(response));
+              $('[data-toggle="tooltip"]').tooltip();
       	});
   	});
 	}
 }
+
+function resendcode(code)
+{
+  	io.socket.post('/event/resendcode/',{id:'<%= event.id%>', code:code}, function (response) {
+
+  	  io.socket.get('/event/codes/<%= event.id%>', function(response){
+      		//console.log(response);
+        		$('#eventcodes').html(codestemplate(response));
+              $('[data-toggle="tooltip"]').tooltip();
+      	});
+  	});
+}
+
+function removeadmin(user)
+{
+  io.socket.post('/event/removeadmin/',{id:'<%= event.id%>', userid:user}, function (response) {
+
+    io.socket.get('/event/admins/<%= event.id%>', function(response){
+        //console.log(response);
+          $('#admins').html(adminstemplate(response));
+            $('[data-toggle="tooltip"]').tooltip();
+      });
+  });
+}
+
+function remcode(code)
+{
+  io.socket.post('/event/remcode/',{id:'<%= event.id%>', code:code}, function (response) {
+
+    io.socket.get('/event/codes/<%= event.id%>', function(response){
+        //console.log(response);
+          $('#eventcodes').html(codestemplate(response));
+            $('[data-toggle="tooltip"]').tooltip();
+      });
+  });
+}
+
 
 function addadmin()
 {
@@ -696,6 +943,7 @@ function addadmin()
       io.socket.get('/event/admins/<%= event.id%>', function(response){
           //console.log(response);
             $('#admins').html(adminstemplate(response));
+              $('[data-toggle="tooltip"]').tooltip();
         });
     });
   }
@@ -710,6 +958,7 @@ function addphase()
       io.socket.get('/event/phases/<%= event.id%>', function(response){
           //console.log(response);
             $('#phases').html(phasetemplate(response));
+              $('[data-toggle="tooltip"]').tooltip();
         });
     });
   }
@@ -723,39 +972,47 @@ function removephase(index)
     io.socket.get('/event/phases/<%= event.id%>', function(response){
           //console.log(response);
             $('#phases').html(phasetemplate(response));
+              $('[data-toggle="tooltip"]').tooltip();
         });
   });
 }
 
 function addcoverage(index)
 {
-  //alert($('[rel='+index+']').val());
-  io.socket.post('/event/addcoverage/<%= event.id %>',{index:index,item:$('[rel='+index+']').val()},function(response)
+  if ($('[rel='+index+']').val().length > 0)
   {
-    $('[rel='+index+']').val('');
-    showok('Updated Meta-Data',$('[rel='+index+']'));
-    io.socket.get('/event/coverage/<%= event.id%>', function(response){
-        //console.log(response);
-          $('#coverage_classes').html(coveragetemplate(response));
-
-          $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
-            //radio button changed (left, right, center)
-            //alert($(this).val());
-            var i1 = $(this).attr("i1");
-            var i2 = $(this).attr("i2");
-            io.socket.post('/event/updatedirection/<%= event.id %>',{parentindex:i1, index: i2, direction:$(this).val()},function(response)
-            {
-              showok('Lead Location Updated',$('[rel='+i1+']'));
+   //alert($('[rel='+index+']').val());
+    io.socket.post('/event/addcoverage/<%= event.id %>',{index:index,item:$('[rel='+index+']').val()},function(response)
+    {
+      $('[rel='+index+']').val('');
+      showok('Updated Meta-Data',$('[rel='+index+']'));
+      io.socket.get('/event/coverage/<%= event.id%>', function(response){
+          //console.log(response);
+            $('#coverage_classes').html(coveragetemplate(response));
+              $('[data-toggle="tooltip"]').tooltip();
+  
+            $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
+              //radio button changed (left, right, center)
+              //alert($(this).val());
+              var i1 = $(this).attr("i1");
+              var i2 = $(this).attr("i2");
+              io.socket.post('/event/updatedirection/<%= event.id %>',{parentindex:i1, index: i2, direction:$(this).val()},function(response)
+              {
+                showok('Lead Location Updated',$('[rel='+i1+']'));
+              });
             });
-          });
-
-          $('.addcov').keyup(function (e) {
-            var code = e.keyCode || e.which;
-            if (code === 13)
+  
+            $('.addcov').keyup(function (e) {
+              var code = e.keyCode || e.which;
+              if (code === 13)
+                addcoverage($(this).attr('rel'));
+            });
+             $('.addcov').blur(function (e) {
               addcoverage($(this).attr('rel'));
-          });
-      });
-  });
+            });
+        });
+    });
+  }
 }
 
 function removecoverage(index, index1)
@@ -766,6 +1023,7 @@ function removecoverage(index, index1)
     io.socket.get('/event/coverage/<%= event.id%>', function(response){
         //console.log(response);
           $('#coverage_classes').html(coveragetemplate(response));
+            $('[data-toggle="tooltip"]').tooltip();
 
           $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
             //radio button changed (left, right, center)
@@ -805,20 +1063,39 @@ function updateend(d)
   });
 }
 
+function validateTime(time) {
+    var re = /\d{1,2}([apAP][mM]){1}/;
+    return re.test(time);
+}
+
 function updatestarttime()
 {
-  io.socket.post('/event/edit/<%= event.id %>',{starts_time:$('[name=starts_time]').val()},function(response)
+  if (validateTime($('[name=starts_time]').val()))
   {
-    showok('Event Start Time Updated',$('[name=starts_time]'));
-  });
+    io.socket.post('/event/edit/<%= event.id %>',{starts_time:$('[name=starts_time]').val()},function(response)
+    {
+      showok('Event Start Time Updated',$('[name=starts_time]'));
+    });
+  }
+  else
+  {
+    showok('Invalid Time Entered',$('[name=starts_time]'));
+  }
 }
 
 function updateendtime()
 {
-  io.socket.post('/event/edit/<%= event.id %>',{ends_time:$('[name=ends_time]').val()},function(response)
+   if (validateTime($('[name=ends_time]').val()))
   {
-    showok('Event End Time Updated',$('[name=ends_time]'));
-  });
+    io.socket.post('/event/edit/<%= event.id %>',{ends_time:$('[name=ends_time]').val()},function(response)
+    {
+      showok('Event End Time Updated',$('[name=ends_time]'));
+    });
+  }
+  else
+  {
+    showok('Invalid Time Entered',$('[name=ends_time]'));
+  }
 }
 
 
@@ -832,7 +1109,15 @@ function updatepublic(val)
       $('.publicbox').show();
     else
       $('.publicbox').hide();
-  }); 
+  });
+}
+
+function updategroup(val)
+{
+  io.socket.post('/event/edit/<%= event.id %>',{groupevent:val},function(response)
+  {
+    showok('Updated grouping choice',$('#groupevent'));
+  });
 }
 
 function updateview(val)
@@ -840,15 +1125,24 @@ function updateview(val)
   io.socket.post('/event/edit/<%= event.id %>',{publicview:val},function(response)
   {
     showok('Updated public viewing footage',$('#viewevent'));
-  }); 
+  });
 }
+
+function updaterelease()
+{
+  io.socket.post('/event/edit/<%= event.id %>',{release:$('#editor').cleanHtml()},function(response)
+  {
+    showok('Updated Participant Release',$('#editor'));
+  });
+}
+
 
 function updateshare(val)
 {
   io.socket.post('/event/edit/<%= event.id %>',{publicshare:val},function(response)
   {
     showok('Updated sharing options',$('#publicshare'));
-  }); 
+  });
 }
 
 function updatemulti(cat,name,val)
@@ -859,11 +1153,11 @@ function updatemulti(cat,name,val)
     //console.log($(this));
     obj[cat][$(this).attr('name')] = this.checked ? 1 : 0;;
   });
- 
+
   io.socket.post('/event/edit/<%= event.id %>',obj,function(response)
   {
     showok('Updated '+name,$('#'+name));
-  }); 
+  });
 }
 
 function makedefault()
@@ -871,7 +1165,7 @@ function makedefault()
   io.socket.post('/event/makedefault/<%= event.id %>',{},function(response)
   {
     showok('Made this event the default',$('#makedefault'));
-  }); 
+  });
 }
 
 $(function(){
@@ -880,6 +1174,34 @@ $(function(){
   {
     $('#myModal').modal('show');
   }
+
+  $('#editor').wysiwyg();
+
+  $( "#phases" ).sortable({
+    placeholder: "placeholder",
+    items: "div:not(.active,.last)",
+    stop: function( event, ui ) {
+
+      var thephases = $('.phaseitem');
+      var all = [];
+      $.each(thephases,function()
+      {
+        var obj = {
+          name:$('.name',this).text(),
+          description:$('.description',this).text(),
+          roles:$('.roles',this).text()
+        };
+        if (obj.roles=='')
+          delete obj.roles;
+        all.push(obj);
+      });
+      //console.log(all);
+      io.socket.post('/event/edit/<%= event.id %>',{phases:all},function(response)
+      {
+         showok('Phases Updated!',$('#phases'));
+      });
+    }
+  });
   //localStorage["halma.game.in.progress"]
   //bootstro.start();
 });
@@ -903,7 +1225,6 @@ function tour()
     <div class="modal-content" style="text-align:center;">
       <div class="modal-body">
         <h1>Welcome to Your first film shoot</h1>
-        
       </div>
       <div class="modal-footer" style="text-align:center;">
         <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal" onclick="tour();">Take the Tour...</button>

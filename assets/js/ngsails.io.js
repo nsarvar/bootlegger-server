@@ -295,6 +295,10 @@ angular.module('angularSails.io', [])
 
             SailsSocket.prototype.get = function (url, data) {
 
+                if (!data)
+                    data = {};
+
+                data.apikey = apikey;
 
                 return this._request({
                     method: 'get',
@@ -305,13 +309,9 @@ angular.module('angularSails.io', [])
 
             SailsSocket.prototype.post = function (url, data) {
 
-                return this._request({
-                    method: 'post',
-                    url: url,
-                    data: data
-                });
-            };
-            SailsSocket.prototype.post = function (url, data) {
+                if (!data)
+                    data = {};
+                data.apikey = apikey;
 
                 return this._request({
                     method: 'post',
@@ -319,6 +319,14 @@ angular.module('angularSails.io', [])
                     data: data
                 });
             };
+            // SailsSocket.prototype.post = function (url, data) {
+
+            //     return this._request({
+            //         method: 'post',
+            //         url: url,
+            //         data: data
+            //     });
+            // };
             SailsSocket.prototype['delete'] = function (url, data) {
 
                 return this._request({

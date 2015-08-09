@@ -4,16 +4,63 @@
 {
 	height:500px;
 }
+
+.label
+{
+	cursor: pointer;
+}
 </style>
 <div class="page-header">
   <h1>Event Logs
   </h1>
 </div>
 
-<div ng-app="logApp">
-  <div ng-controller="Log">
-  	<span us-spinner="{radius:10, width:4, length: 10}"></span>
-    <div ui-grid="gridOptions" class="myGrid" ui-grid-pagination ui-grid-move-columns ui-grid-resize-columns ></div>
 
+
+<div ng-app="logApp" ng-cloak>
+  <div ng-controller="Log">
+
+		<div>
+			<p>Current Filter:
+				<span style="margin-right:3px;" class="label label-warning" ng-repeat="(key,val) in filterObject">{{key}} is {{val}} <i class="fa fa-times" ng-click="remfilter(key)"></i></span>
+			</p>
+		</div>
+
+		<div class="alert alert-info" ng-show="theid">This is the log for a specific shoot.</div>
+
+		<input class="form-control input-lg" type="text" placeholder="search..." ng-model="filterObject.$" />
+		<br>
+  	<span us-spinner="{radius:10, width:4, length: 10}"></span>
+
+		<dir-pagination-controls template-url="/dirPagination.tpl.html" class="pull-right"></dir-pagination-controls>
+		<div class="clearfix"></div>
+		<ul class="list-group">
+		<li class="list-group-item" dir-paginate="log in alldata | filter:filterObject | orderBy:orderObject | itemsPerPage: 100">
+			<div class="row">
+			<div class="col-sm-2" style="padding-right:0;padding-left:4px;">
+				<i ng-show=" log.level=='error' " style="cursor: pointer;" ng-click="filterObject.level='error' " class="fa fa-fw fa-warning pull-left text-danger"></i>
+				<i ng-show=" log.level=='info' " style="cursor: pointer;" class="fa fa-info fa-fw pull-left text-info" ng-click="filterObject.level='info' "></i>
+				<i ng-show=" log.level=='verbose' " style="cursor: pointer;" class="fa fa-expand fa-fw pull-left text-info" ng-click="filterObject.level='verbose' "></i>
+				<small><span class="text-muted pull-left">{{log.timestamp | date:'medium'}}</span></small>
+
+
+			</div>
+			<div class="col-sm-6">{{log.message}}<br>
+					<span ng-show="log.meta.user_id" ng-click="filterObject.meta.user_id=log.meta.user_id " class="label label-info" style="cursor: pointer;"><i  class="fa fa-user fa-fw" ng-click="filterObject.level='verbose' "></i>{{log.meta.user_id}}</span>
+
+			</div>
+
+			<div class="col-sm-4">
+			<!-- <span class="label label-default pull-left"><i class="fa fa-user"></i> {{log.userid}}</span> -->
+				<span class="label label-warning pull-left"  ng-click="filterObject.meta.module=log.meta.module "> {{log.meta.module}}</span>
+
+				<span class="text-muted">{{log.msg}}</span>
+				<i class="fa fa-code pull-right" tooltip="{{log}}"></i>
+				  <span ng-click="filterObject.hostname=log.hostname" ng-hide="filterObject.hostname" class="label label-info pull-right">{{log.hostname}}</span>
+			</div>
+		</div>
+		</li>
+	</ul>
+		<dir-pagination-controls template-url="/dirPagination.tpl.html" class="pull-right"></dir-pagination-controls>
   </div>
 </div>

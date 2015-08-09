@@ -3,7 +3,7 @@ exports.sendMessage = function(platform,deviceid,title,msg,uploadid, advert) {
 	{
 		var GCM = require('gcm').GCM;
 
-		var apiKey = 'AIzaSyCVY8qaGUDSItAXOAMrpmn_cpl2aAj8Npc';
+		var apiKey = sails.config.gcmkey;
 		var gcm = new GCM(apiKey);
 
 		var message = {

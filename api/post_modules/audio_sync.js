@@ -4,297 +4,351 @@ var uploaddir = "/upload/";
 var fs = require('fs-extra');
 var FFmpeg = require('fluent-ffmpeg');
 var moment = require('moment');
+var framerate = 29.9;
+var uuid = require('node-uuid');
 
-function process_files(ev)
+function genedl(req,event,callback)
 {
-	console.log("processing " + ev.id);
+
 	var tmpdir = path.normalize(path.dirname(require.main.filename) + uploaddir);
-
-	//start ffmpeg:
-
-	Media.find({event_id:ev.id}).exec(function(err,media)
-	{
-		//for each media, add to list:
-		var async = require('async');
-		var calls = [];
-
-		var valid = [];
-		_.each(media, function(m)
-		{
-			console.log("checking "+m);
-			if (m.path != undefined && fs.existsSync(tmpdir + m.path))
+	//get the processed edl for an event
+	User.find({}).exec(function(err,users)
+    {
+		//	console.log(event);
+		Event.findOne(event).exec(function(err,ev){
+			//order by captured at (in case no offset)
+			if (!ev)
 			{
-				console.log("adding to conversion list");
-				valid.push(tmpdir + m.path + ".wav");
-				calls.push(function(callback) {
-					//add to queue:
-					console.log('converting '+ tmpdir + m.path);
-					if (!fs.existsSync(tmpdir + m.path + '.wav'))
+				return callback("No Event Found");
+			}
+			Media.find({event_id:event}).exec(function(err, allmedia){
+				//console.log(err);
+				process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+				//console.log(allmedia);
+				var request = require('request');
+				var j = request.jar();
+				var cookiesigned = require('cookie-signature');
+				var signed = cookiesigned.sign(req.signedCookies['sails.sid'],req.secret);
+				signed = "s:" + signed;
+				var cookie = request.cookie('sails.sid='+signed);
+				var url = sails.config.master_url;
+
+				j.setCookie(cookie, url);
+				request({url: sails.config.master_url+ '/media/directorystructure/'+event+'/?template='+req.param('template')+'&apikey='+req.session.CURRENT_API_KEY , jar: j}, function (err,resp,body) {
+
+					//console.log(err);
+					if (err)
 					{
-						var command = new FFmpeg({ source: tmpdir + m.path})
-						.on('error', function(err) {
-			        		console.log('Cannot process video: ' + err.message);
-			        		callback(null,m);
-			    		})
-			    		.on('end', function() {
-			        		console.log('Processing finished successfully');
-			        		//adjust progress:
-			        		callback(null,m);
-			        	})
-			        	.saveToFile(tmpdir + m.path + '.wav');
-		        	}
-		        	else
-		        	{
-		        		callback(null,m);
-		        	}
-				});
-			}
-			//path
-		});
+						return res.json({msg:err},500);
+					}
 
-		calls.push(function(cb) {
-			//do matlab processing:
-			var esc = require('shell-escape');
-			var exec = require('child_process').exec;
-			//TODO -- pass arguments
-			
-			var args = {groundTruthPath:ev.audio, clips:valid};
-			console.log(esc([JSON.stringify(args)]));
-			var filename = tmpdir + "input_" + ev.id + ".json";
-			fs.writeFileSync(filename, JSON.stringify(args));
+					//console.log(body);
 
-			exec(path.normalize(path.dirname(require.main.filename)) + '/sync_audio/SyncClips "'+filename+'"', function callback(error, stdout, stderr){
-			    // result
-			    if (error)
-			    {
-			    	console.log(error);
-			    	cb(error);
-			    }
-			    else
-			    {
-			    	 Event.findOne(ev.id).exec(function(err,e)
-				    {
-				    	e.audio_progress = 100;
-				    	e.save(function(err)
-				    	{
-				    		genedl(ev.id,function(done)
-					    	{
-					    		console.log("done edl generation");
-								cb(null,e);
-					    	});
-				    	});
-				    });
-			    }			   
+					var media = JSON.parse(body);
+
+					//console.log(body);
+					//group all the media into their respective paths and top level:
+					var paths = [];
+					mappaths(media,'',paths);
+
+					//console.log(media);
+
+					//console.log(bins);
+					
+					if (paths.length == 0)
+					{
+						//no media, return blank
+						return callback("");
+					}
+					
+					var masterid = 1;
+					//map media object against path (to get extra info)
+					_.each(paths,function(p){
+						p.media = _.find(allmedia,{'id':p.id});
+						p.uuid = uuid.v4();
+						p.masterclipid = "masterclipid-"+masterid;
+						p.clipitemid = "clipitem-"+masterid;
+						p.fileid = "fileid-"+masterid;
+						var durations = p.media.meta.static_meta.clip_length.split(':');
+				  		var duration = (parseFloat(durations[0]) / 3600) + (parseFloat(durations[1]) / 60) + parseFloat(durations[2]);
+						p.duration = duration;
+						masterid++;
+					});
+					//sort
+					
+					var bins = genbins(media);
+					
+					var sorted = _.sortBy(paths,function(p){
+						return moment(p.media.meta.static_meta.captured_at+':00','DD-MM-YYYY hh:mm:ss.SS a Z');
+					});
+
+					var smallest = moment(sorted[0].media.meta.static_meta.captured_at+':00','DD-MM-YYYY hh:mm:ss.SS a Z');
+
+					//calculate offsets:
+					_.each(sorted,function(m)
+					{
+
+						if (m.media.meta.static_meta.clip_length) //if it is a video
+						{
+							if (m.media.offset == undefined)//not been auto synced / had an offset applied...
+							{
+								var mom = moment(m.media.meta.static_meta.captured_at+':00','DD-MM-YYYY hh:mm:ss.SS a Z');
+								//console.log(mom);
+								m.offset = (mom.diff(smallest,'seconds',true)); //need this in seconds
+							}
+						}
+					});
+
+					//group by contributor
+					var grouped = _.groupBy(sorted,function(u)
+					{
+						return u.media.created_by;
+					});
+
+					fs.readFile('assets/apple_xml/FCP.xml', 'utf8', function (err,data) {
+					  if (err) {
+					    return console.log(err);
+					  }
+						//replace name in the sequence
+					  data = data.replace(/%%sequencename%%/gi,ev.name);
+
+					  var mediafortrack = "";
+					  var audiofortracks = "";
+					  //var audios = "";
+					  var trackmaster = fs.readFileSync('assets/apple_xml/VideoTrack_FCP.xml', 'utf8');
+					  var audiomaster = fs.readFileSync('assets/apple_xml/AudioTrack_FCP.xml', 'utf8');
+					  var clipmaster = fs.readFileSync('assets/apple_xml/ClipItem.xml', 'utf8');
+					  var audioclipmaster = fs.readFileSync('assets/apple_xml/AudioClipItem.xml', 'utf8');
+
+					  var totalduration = 0;
+					  var alltracks = "";
+					  var allaudiotracks = "";
+					  //var mediatracks = {};
+
+					  //for each track / media
+					  
+					  var j = 0;
+				  	_.each(grouped,function(clips,group)
+					  {
+					  		mediafortrack = "";
+					  		//audiotracks = "";
+						  	_.each(clips,function(m,p) //each clip in track
+						  	{
+							  	if (m.media.meta.static_meta.clip_length && m.offset!=undefined)
+							  	{
+								  	var t = clipmaster;
+								  	t = t.replace(/%%id%%/gi,j + "-" + p);
+								  	t = t.replace(/%%path%%/gi,'file:///'+(m.path + '/' + m.local));
+								  	t = t.replace(/%%name%%/gi,m.local);
+								  	t = t.replace(/%%start%%/gi,(m.offset)*framerate);
+								  	t = t.replace(/%%end%%/gi,(m.offset + m.duration)*framerate);
+									t = t.replace(/%%inpoint%%/gi,(m.inpoint)?(m.inpoint*framerate):0); 
+								  	t = t.replace(/%%outpoint%%/gi,((m.outpoint)?m.outpoint:m.duration)*framerate);
+									t = t.replace(/%%duration%%/gi,m.duration*framerate);
+								  	t = t.replace(/%%audioid%%/gi,j + "-a-" + p);
+								  	t = t.replace(/%%trackindex%%/gi,j+1);
+								  	mediafortrack += t;
+
+								  	var a = audioclipmaster;
+								  	a = a.replace(/%%id%%/gi,j + "-" + p);
+								  	a = a.replace(/%%audioid%%/gi,j + "-a-" + p);
+								  	a = a.replace(/%%path%%/gi,'file:///'+(m.path + '/' + m.local));
+								  	a = a.replace(/%%out%%/gi,m.duration*framerate);
+								  	a = a.replace(/%%name%%/gi,m.local);
+								  	a = a.replace(/%%start%%/gi,(m.offset*framerate));
+								  	a = a.replace(/%%end%%/gi,(m.offset + m.duration)*framerate);
+									a = a.replace(/%%inpoint%%/gi,(m.inpoint)?(m.inpoint*framerate):0); 
+								  	a = a.replace(/%%outpoint%%/gi,((m.outpoint)?m.outpoint:m.duration)*framerate);
+									a = a.replace(/%%duration%%/gi,m.duration*framerate);
+								  	a = a.replace(/%%trackindex%%/gi,j+1);
+								  	audiofortracks += a;
+
+								  	totalduration = Math.max(m.offset + m.duration, totalduration);
+								  }
+							  });//end of each clip in track
+
+					  	  thistrack = trackmaster;
+					  	  thistrack = thistrack.replace(/%%track%%/gi,mediafortrack);
+					  	  var user = _.find(users, {'id': group});
+
+						  if (!user)
+					  	  {
+					  	  	thistrack = thistrack.replace(/%%trackname%%/gi,group);
+					  	  }
+					  	  else
+					  	  {
+					  	  	thistrack = thistrack.replace(/%%trackname%%/gi,user.profile.displayName);
+					  	  }
+
+					  	  alltracks += thistrack;//add track to file
+						  thisaudiotrack = audiomaster;
+					  	  thisaudiotrack = thisaudiotrack.replace(/%%track%%/gi,audiofortracks);
+					  	  allaudiotracks += thisaudiotrack;//add audio track to file
+					  	  j++;
+					  });//each grouped track (user)
+
+					  var liveeditfilter = _.filter(sorted,function(s){
+						 return s.media.edits; 
+					  });
+					  
+					  //check for an edit track...
+					  
+					  //map edits and 
+					  
+					  //sort edits by created_at					  
+					  
+					  var editedclips = [];
+					  _.each(liveeditfilter,function(l)
+					  {
+						 _.each(l.media.edits,function(edit){
+							 var clip = l;
+							 clip.inpoint = edit.inpoint;
+							 clip.outpoint = edit.outpoint;
+							 editedclips.push(clip);
+						 }) 
+					  });
+					  
+					  //console.log(editedclips);
+					  
+					  if (liveeditfilter.length>0)
+					  {
+						    //TODO -- add track with clips that have been edited (in/out points from live edit)
+							mediafortrack = "";
+							audiofortracks = "";
+					  		//audiotracks = "";
+						  	_.each(editedclips,function(m,p) //each clip in track
+						  	{
+							  	if (m.media.meta.static_meta.clip_length && m.offset!=undefined)
+							  	{
+								  	var t = clipmaster;
+								  	t = t.replace(/%%id%%/gi,j + "-" + p);
+								  	t = t.replace(/%%path%%/gi,'file:///'+(m.path + '/' + m.local));
+								  	t = t.replace(/%%name%%/gi,m.local);
+								  	t = t.replace(/%%start%%/gi,(m.offset)*framerate + (m.inpoint*framerate));
+								  	t = t.replace(/%%end%%/gi,(m.offset + m.duration)*framerate);
+									t = t.replace(/%%inpoint%%/gi,(m.inpoint)?(m.inpoint*framerate):0); 
+								  	t = t.replace(/%%outpoint%%/gi,(m.offset + m.duration + m.inpoint - m.outpoint)*framerate);
+									t = t.replace(/%%duration%%/gi,m.duration*framerate);
+								  	t = t.replace(/%%audioid%%/gi,j + "-a-" + p);
+								  	t = t.replace(/%%trackindex%%/gi,j+1);
+								  	mediafortrack += t;
+
+								  	var a = audioclipmaster;
+								  	a = a.replace(/%%id%%/gi,j + "-" + p);
+								  	a = a.replace(/%%audioid%%/gi,j + "-a-" + p);
+								  	a = a.replace(/%%path%%/gi,'file:///'+(m.path + '/' + m.local));
+								  	a = a.replace(/%%out%%/gi,m.duration*framerate);
+								  	a = a.replace(/%%name%%/gi,m.local);
+								  	a = a.replace(/%%start%%/gi,(m.offset*framerate));
+								  	a = a.replace(/%%end%%/gi,(m.offset + m.duration + m.inpoint - m.outpoint)*framerate);
+									a = a.replace(/%%inpoint%%/gi,m.inpoint*framerate); 
+								  	a = a.replace(/%%outpoint%%/gi,m.outpoint*framerate);
+									a = a.replace(/%%duration%%/gi,m.duration*framerate);
+								  	a = a.replace(/%%trackindex%%/gi,j+1);
+								  	audiofortracks += a;
+
+								  	totalduration = Math.max(m.offset + m.duration, totalduration);
+								  }
+							  });//end of each clip in track
+
+					  	  thistrack = trackmaster;
+					  	  thistrack = thistrack.replace(/%%track%%/gi,mediafortrack);
+					  	  thistrack = thistrack.replace(/%%trackname%%/gi,'Live-to-Tape Edit');
+
+					  	  //alltracks += thistrack;//add track to file
+						  thisaudiotrack = audiomaster;
+					  	  thisaudiotrack = thisaudiotrack.replace(/%%track%%/gi,audiofortracks);
+					  	  //allaudiotracks += thisaudiotrack;//add audio track to file
+					  	  j++;
+					  }
+					  
+					  //WRAPPING IT UP:
+					  var uuid = require('node-uuid');
+					  data = data.replace(/%%uuid%%/gi,uuid.v4());
+					  data = data.replace(/%%projecttitle%%/gi,ev.name);
+
+					  data = data.replace(/%%videotracks%%/gi,alltracks);
+					  data = data.replace(/%%audiotracks%%/gi,allaudiotracks);
+					  data = data.replace(/%%sequenceduration%%/gi,(totalduration*framerate));			
+					  data = data.replace(/%%date%%/gi,new Date());		
+					  data = data.replace(/%%bins%%/gi,bins);		    
+					  
+					  //send the data back...
+					  callback(data);
+					});//fcp
+				});//media
 			});
-		});
+		});//event
+	});//users
+}
 
-		console.log("valid:" + valid);
-
-		async.series(calls, function(err, result) {
-			console.log("done audio processing");
-			if (err)
-			{
-				 Event.findOne(ev.id).exec(function(err,e)
-			    {
-			    	e.audio_progress = -1;
-			    	e.save(function(err)
-			    	{
-			    	});
-			    });
-			}
-		});		
+function mappaths(data,path,init)
+{
+	//console.log(data);
+	_.each(data,function(e,k){
+		//console.log(k);
+		// console.log(e);		
+		if (e.local)
+		{
+			e.path = path;
+			init.push(e);
+		}
+		else
+		{
+			mappaths(e,path + '/' + k,init);
+		}
 	});
 }
 
-function genedl(event,callback)
+function genbins(data)
 {
-	var tmpdir = path.normalize(path.dirname(require.main.filename) + uploaddir);
-	//get the processed edl for an event
+	var output = "";
+	_.each(data,function(e,k){
+		if (e.local)
+		{
+			// output+="<clip>";
+				// output+="<name>" + e.path + '/' + e.local + "</name>";
+				// output+= "<masterclipid>masterclip-1</masterclipid>";
+				// output+= "<ismasterclip>TRUE</ismasterclip>";
+				// output+="<duration>" + (e.duration * framerate) + "</duration>";
+				// output+="<rate>"+framerate+"</rate>";
+				// output+="<file>";
+				// 	output+="<duration>" + (e.duration * framerate) + "</duration>";
+				// 	output+="<rate>"+framerate+"</rate>";
+				// 	output+="<pathurl>file:///" + e.path + '/' + e.local + "</pathurl>";					
+				// output+="</file>";	
+			// output+="</clip>";
+			output+='<clip id="'+e.masterclipid+'" explodedTracks="true" frameBlend="FALSE">						<uuid>'+e.uuid+'</uuid>						<masterclipid>'+e.masterclipid+'</masterclipid>						<ismasterclip>TRUE</ismasterclip>						<duration>'+(e.duration*framerate)+'</duration>						<rate>							<timebase>29.9</timebase>							<ntsc>TRUE</ntsc>						</rate>						<in>0</in>						<out>'+(e.duration*framerate)+'</out>						<name>'+e.local+'</name>						<media>							<video>								<track>									<clipitem id="'+e.clipitemid+'" frameBlend="FALSE">										<masterclipid>'+e.masterclipid+'</masterclipid>										<name>'+e.local+'</name>										<rate>											<timebase>29.9</timebase>											<ntsc>FALSE</ntsc>										</rate>										<alphatype>straight</alphatype>										<pixelaspectratio>square</pixelaspectratio>										<anamorphic>FALSE</anamorphic>										<file id="'+e.fileid+'">											<name>'+e.local+'</name>											<pathurl>file://localhost/'+e.path + '/' + e.local+'</pathurl>											<rate>												<timebase>29.9</timebase>												<ntsc>FALSE</ntsc>											</rate>											<timecode>												<rate>													<timebase>29.9</timebase>													<ntsc>FALSE</ntsc>												</rate>												<string>00;00;00;00</string>												<frame>0</frame>												<displayformat>DF</displayformat>											</timecode>											<media>												<video>													<samplecharacteristics>														<rate>															<timebase>29.9</timebase>															<ntsc>FALSE</ntsc>														</rate>														<width>1920</width>														<height>1080</height>														<anamorphic>FALSE</anamorphic>														<pixelaspectratio>square</pixelaspectratio>														<fielddominance>none</fielddominance>													</samplecharacteristics>												</video>											</media>										</file>									</clipitem>								</track>							</video>						</media>						<logginginfo>							<description></description>							<scene></scene>							<shottake></shottake>							<lognote></lognote>						</logginginfo>						<labels>							<label2>Lavender</label2>						</labels>					</clip>';
+			
+		}
+		else
+		{
+			output+="<bin><name>"+k+"</name><labels><label2>Mango</label2></labels><children>" + genbins(e) + "</children></bin>";
+		}
+	});
 
-	User.find({}).exec(function(err,users)
-    {
-		Event.findOne(event).exec(function(err,ev){
-
-			//get media
-			//order by captured at (in case no offset)
-			Media.find({event_id:event},function(err, medias){
-
-				//load assets master file
-				fs.readFile('assets/FCP.xml', 'utf8', function (err,data) {
-				  if (err) {
-				    return console.log(err);
-				  }
-				  
-				  data = data.replace(/%%sequencename%%/gi,ev.name);
-
-				  var tracks = "";
-				  var audiotracks = "";
-				  //var audios = "";
-				  var trackmaster = fs.readFileSync('assets/VideoTrack_FCP.xml', 'utf8');
-				  var audiomaster = fs.readFileSync('assets/AudioTrack_FCP.xml', 'utf8');
-				  var clipmaster = fs.readFileSync('assets/ClipItem.xml', 'utf8');
-				  var audioclipmaster = fs.readFileSync('assets/AudioClipItem.xml', 'utf8');
-
-				  //console.log(medias);
-				  //var i = 0;
-				  var totalduration = 0;
-				  var alltracks = "";
-				  var allaudiotracks = "";
-				  var mediatracks = {};
-
-				  //mediatracks.push([]);
-				  //check for overlaps???
-		
-				  var smallest;
-				  //find smallest date:
-				  smallest = moment(_.min(medias, function(m)
-			    	{
-				  		return moment(m.createdAt);
-				  	}).createdAt);
-				  //console.log("smallest: " + smallest.format('LLLL'));
-
-				  //var trackid = 0;
-				  _.each(medias,function(m)
-				  {
-				  	if (m.meta.static_meta.clip_length)
-				  	{
-				  		if (m.offset == undefined)
-				  		{
-				  			var mom = moment(m.createdAt);
-
-				  			m.offset = (mom.diff(smallest,'seconds',true)); //need this in seconds
-				  			//console.log("offset: "+m.offset);
-				  			//console.log("clip length: "+m.meta.static_meta.clip_length / 1000);
-				  		}
-
-				  		if (mediatracks[m.created_by] == undefined)
-				  			mediatracks[m.created_by] = [];
-
-				  		mediatracks[m.created_by].push(m);
-				  	}
-				  });
-
-				  //console.log("tracks: "+mediatracks);
-
-				  //for each track / media
-				  var framerate = 30.3;
-				  var j = 0;
-			  	  _.each(mediatracks,function(tt)
-				  {
-				  	tracks = "";
-				  	audiotracks = "";
-				  	//console.log(tt);
-				  	_.each(tt,function(m,p)
-				  	{
-
-					  	if (m.meta.static_meta.clip_length && m.offset!=undefined)
-					  	{
-
-					  		 m.meta.role_ex = ev.eventtype.roles[m.meta.static_meta.role];
-				             m.user = _.findWhere(users, {id: m.created_by});
-				              //console.log(m.meta.static_meta.shot);
-				              //console.log(_.findWhere(ev.eventtype.shot_types,{id:m.meta.static_meta.shot}));
-			                 m.meta.shot_ex = ev.eventtype.shot_types[m.meta.static_meta.shot];
-				              if (!m.meta.shot_ex)
-				                m.meta.shot_ex = {name:'Unknown'};
-
-				              //console.log(ev.coverage_classes);
-
-				              m.meta.coverage_class_ex = ev.coverage_classes[m.meta.static_meta.coverage_class];
-				              if (m.meta.coverage_class_ex==undefined)
-				              {
-				                m.meta.coverage_class_ex = {name:"Unknown"};
-				              }
-
-					  		var timestamp = m.meta.static_meta.captured_at.split(' ');
-					  		m.path =  timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_' + m.user.profile.displayName + ".mp4";
-
-
-					  		var durations = m.meta.static_meta.clip_length.split(':');
-					  		var duration = (parseFloat(durations[0]) / 3600) + (parseFloat(durations[1]) / 60) + parseFloat(durations[2]);
-
-						  	var t = clipmaster;
-						  	t = t.replace(/%%id%%/gi,j + "-" + p);
-						  	t = t.replace(/%%path%%/gi,(m.path || m.name));
-						  	t = t.replace(/%%name%%/gi,(m.path || m.name));
-						  	t = t.replace(/%%start%%/gi,(m.offset)*framerate);
-						  	t = t.replace(/%%end%%/gi,(m.offset + duration)*framerate);
-						  	t = t.replace(/%%duration%%/gi,duration*framerate);
-						  	t = t.replace(/%%audioid%%/gi,j + "-a-" + p);
-						  	t = t.replace(/%%trackindex%%/gi,j+1);
-						  	tracks += t;
-
-						  	var a = audioclipmaster;
-						  	a = a.replace(/%%id%%/gi,j + "-" + p);
-						  	a = a.replace(/%%audioid%%/gi,j + "-a-" + p);
-						  	a = a.replace(/%%path%%/gi,(m.path || m.name));
-						  	a = a.replace(/%%out%%/gi,duration*framerate);
-						  	a = a.replace(/%%name%%/gi,(m.path || m.name));
-						  	a = a.replace(/%%start%%/gi,(m.offset*framerate));
-						  	a = a.replace(/%%end%%/gi,(m.offset + duration)*framerate);
-						  	a = a.replace(/%%duration%%/gi,duration*framerate);
-						  	a = a.replace(/%%trackindex%%/gi,j+1);
-						  	audiotracks += a;
-
-						  	totalduration = Math.max(m.offset + duration, totalduration);
-						  }
-					  });
-
-				  	  thistrack = trackmaster;
-				  	  thistrack = thistrack.replace(/%%track%%/gi,tracks);
-				  	  var user = _.findWhere(users, {id: tt[0].created_by});
-				  	  if (user == undefined)
-				  	  	user = tt[0].created_by;
-				  	  if (user.profile != undefined)
-				  	  {
-				  	  	thistrack = thistrack.replace(/%%trackname%%/gi,user.profile.displayName);
-				  	  }
-				  	  else
-				  	  {
-				  	  	thistrack = thistrack.replace(/%%trackname%%/gi,user);
-				  	  }
-				  	  alltracks += thistrack;
-
-					  thisaudiotrack = audiomaster;
-				  	  thisaudiotrack = thisaudiotrack.replace(/%%track%%/gi,audiotracks);
-				  	  allaudiotracks += thisaudiotrack;
-				  	  j++;
-				  });//each tracks
-
- 				  //data = data.replace('%%audiotracks%%',audios);
- 				  
-				  data = data.replace(/%%videotracks%%/gi,alltracks);
-				  data = data.replace(/%%audiotracks%%/gi,allaudiotracks);
-				  data = data.replace(/%%sequenceduration%%/gi,(totalduration*framerate));
-
-				  //write to file:
-				  fs.writeFileSync(tmpdir + ev.id + ".xml", data);
-
-				  callback(data);
-
-				  //res.send(data);
-				});//fcp
-			});//media
-		});//event
-	});//users
+	return output;
 }
 
 module.exports = {
 
 	codename:'audio_sync',
+	name:'Auto Audio Synchronisation',
+	description:'Auto syncronises content given a master audio track, e.g. for live recordings.',
 
 	init:function()
 	{
 		//do nothing for now...
-		process.env.LD_LIBRARY_PATH = "/usr/local/MATLAB/MATLAB_Compiler_Runtime/v80/bin/glnxa64/:/usr/local/MATLAB/MATLAB_Compiler_Runtime/v80/runtime/glnxa64";
+
 	},
 
 	getedl:function(event,req,res)
 	{
 		//console.log("done");
-		genedl(event,function(data){
-			res.setHeader('Content-disposition', 'attachment; filename=EDL.xml');
+		genedl(req,event,function(data){
+			res.setHeader('Content-disposition', 'attachment; filename='+event+"_template_" + req.param('template') + '.xml');
 			res.setHeader('Content-type', 'text/xml');
+			
 			res.send(data);
 		});
 	},
@@ -307,18 +361,18 @@ module.exports = {
 
 	progress:function(event,req,res)
 	{
-		Event.findOne(event).exec(function(err,m){
-			if (!err && m!=undefined && m.audio_progress != undefined)
-			{
+		Event.findOne(event).exec(function(err,u)
+    {
 
-				//open file and get progress + update the db
-				res.json({progress:m.audio_progress});
-			}
-			else
-			{
-				res.json({progress:-1});
-			}
-		});
+      if (!u.audiosynccancel==true && u.audiosync && (u.audiosync.status!='cancelled') && (u.audiosync.status!='done') && !(u.audiosynccancel==true && u.audiosync.status=='queue'))
+      {
+        return res.json(u.audiosync);
+      }
+      else
+      {
+        return res.json({msg:'Not currently audio syncing.',stopped:true});
+      }
+    });
 	},
 
 	upload:function(event,req,res)
@@ -329,50 +383,77 @@ module.exports = {
 		//console.log(req.files);
 		if (req.file('file') != undefined)
 		{
-			req.file('file').upload(function(err,files){
+			req.file('file').upload({
+				maxBytes:99999999999,
+				adapter: require('skipper-s3'),
+  			key: sails.config.AWS_ACCESS_KEY_ID,
+  			secret: sails.config.AWS_SECRET_ACCESS_KEY,
+  			bucket: sails.config.S3_BUCKET,
+				//dirname: 'audiosync'
+			},function(err,files){
+				//console.log(err);
+				//console.log(files[0]);
+				if (err)
+				{
+					req.session.flash = {msg:err};
+					return res.redirect('/post');
+				}
+
+				if (files.length != 1)
+				{
+					req.session.flash = {msg:'No file given'};
+					return res.redirect('/post');
+				}
 
 				var filename = files[0].filename;
 
 				var tmp = files[0].fd;
 
-				fs.copySync(tmp,tmpdir + filename);
-			
+				//fs.copySync(tmp,tmpdir + filename);
+
 				Event.findOne(event).exec(function(err,m){
 
 					if (!err && m!=undefined)
 					{
 						//console.log(m);
-						m.audio = tmpdir + filename;
-						m.audio_progress = 0;
+						// m.audiosync.audio = tmpdir + filename;
+						m.audiosync = {msg:'In Queue',status:'queue',percentage:0};
+						m.audiosynccancel = false;
 						m.save(function(err){
 							//process file...
-							process_files(m);
+							var config = {};
+							config.event = event;
+							config.audiofile = tmp;
+							config.user_id = req.session.passport.user.id;
+
+							Editor.audiosync(config);
+							console.log('done upload');
+							req.session.flash = "Audio File Uploaded!";
+							return res.redirect('/post');
 						});
 					}
 					else
 					{
 						console.log("err: " + err);
+						return res.redirect('/post');
 					}
 				});
-				console.log('done upload');
-				req.session.flash = "Done Upload";
-				res.redirect('/post');
 			});
-			
+
 		}
 		else
 		{
-			res.redirect('/post');
+			return res.redirect('/post');
 		}
 	},
 
 	reset:function(event,req,res)
 	{
 		Event.findOne(event).exec(function(err,m){
-
 			if (!err && m!=undefined)
 			{
-				m.audio_progress = -1;
+				m.audiosynccancel = true;
+				req.session.flash = {msg:'Audio Processing Cancelled'};
 				m.save(function(err){
 					res.redirect('/post');
 				});

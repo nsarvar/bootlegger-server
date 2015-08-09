@@ -4,8 +4,11 @@ module.exports = function(req, res, next) {
 
 //console.log(req);
 	if (Utility.getRequestAction(req))
+	{
     	res.locals.page = req.options.controller;
-    
+		res.locals.action = req.options.action;
+	}
+
 	if (req.session.passport.user)
 	{
 		res.locals.user = req.session.passport.user;
@@ -15,6 +18,7 @@ module.exports = function(req, res, next) {
 	{
 		res.locals.user = null;
 	}
+
 
 	//console.log("flash policy for " + res.locals.page);
 	//res.locals.dropbox = req.session.passport.dropbox;
@@ -30,10 +34,10 @@ module.exports = function(req, res, next) {
 	res.locals.notonthisserver = false;
 	res.locals.flash = {};
 
-	if (!req.isSocket && !req.session.ismobile)
+	breakme: if (!req.isSocket && !req.session.ismobile)
 	{
 		//console.log("is socket");
-		 if(!req.session.flash) return next();
+		 if(!req.session.flash) break breakme;
 
 		 res.locals.flash = _.clone(req.session.flash);
 
@@ -61,10 +65,28 @@ module.exports = function(req, res, next) {
 
 		 //console.log(res.locals.flash);
 
-	}	
-	else 
+	}
+	else
 	{
 		res.locals.flash = false;
 	}
-	return next();
+
+	if (req.session.passport.user)
+	{
+			Media.find({created_by:req.session.passport.user.id}).exec(function(err,media)
+			{
+			 var events = _.pluck(media,'event_id');
+
+			 Event.find(events).sort('starts DESC').exec(function(err,all)
+			 {
+				 //console.log(all);
+				 res.locals.myevents=all;
+				 return next();
+			 });
+		 });
+ 	}
+ else
+ {
+ 	return next();
+ }
 };

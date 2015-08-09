@@ -18,10 +18,11 @@ module.exports.bootstrap = function (cb) {
 
 	sails.winston = require('winston');
 	sails.winston.remove(sails.winston.transports.Console);
-	sails.winston.add(sails.winston.transports.Console, {colorize: true});
+	sails.winston.add(sails.winston.transports.Console, {colorize: true, level: 'info' });
     require('winston-mongodb').MongoDB;
 
     sails.winston.add(sails.winston.transports.MongoDB, {
+			level:'verbose',
     	host     : sails.config.db_host,
         port     : sails.config.db_port,
         username : sails.config.db_user,
@@ -32,10 +33,12 @@ module.exports.bootstrap = function (cb) {
         //handleExceptions: true
     });
 
-    sails.winston.info("Connected to MongoDB on "+sails.config.db_host);
+  Log.info('bootstrap',"Connected to MongoDB on "+sails.config.db_host);
 
     //sails.winston.remove(sails.winston.transports.Console);
-	sails.winston.info('started',{local:sails.localmode});
+	Log.info('bootstrap','started',{local:sails.localmode});
+
+	//Log.error('bootstrap','test',{arg1:'testarg1'});
 
 	//load init data:
 	Shot.find({}).exec(function(err, shots){
@@ -43,7 +46,7 @@ module.exports.bootstrap = function (cb) {
 		{
 			Shot.create(JSON.parse(fs.readFileSync('assets/data/allshots.json'))).exec(function(err,done)
 			{
-				sails.winston.info('Init Shots');
+				Log.info('bootstrap','Init Shots');
 			});
 		}
 		else
@@ -53,24 +56,23 @@ module.exports.bootstrap = function (cb) {
 				//console.log('assets/data/images/'+s.image);
 				if (!fs.existsSync('assets/data/images/'+s.image))
 				{
-					sails.winston.error('Missing Large ' + s.image);
+					Log.error('bootstrap','Missing Large ' + s.image);
 				}
 
 				if (!fs.existsSync('assets/data/icons/'+s.icon))
 				{
-					sails.winston.error('Missing Small ' + s.icon);
+					Log.error('bootstrap','Missing Small ' + s.icon);
 				}
 			});
 		}
 	});
 
 	EventTemplate.find({}).exec(function(err, evs){
-
 		if (evs.length == 0)
 		{
 			EventTemplate.create(JSON.parse(fs.readFileSync('assets/data/alltemplates.json'))).exec(function(err,done)
 			{
-				sails.winston.info('Init Templates');
+				Log.info('bootstrap','Init Templates');
 			});
 		}
 	});
@@ -99,6 +101,7 @@ module.exports.bootstrap = function (cb) {
 	var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 	var LocalStrategy = require('passport-local').Strategy;
 	var FacebookStrategy = require('passport-facebook').Strategy;
+  var TwitterStrategy = require('passport-twitter').Strategy;
 	var DropboxOAuth2Strategy = require('passport-dropbox-oauth2').Strategy;
 
 
@@ -109,7 +112,7 @@ module.exports.bootstrap = function (cb) {
 	    User.findOne({ localcode: password }, function(err, user) {
     		//console.log("logged in");
     		//console.log(user);
-    		return done(err, user);	      	
+    		return done(err, user);
 	    });
 	  }
 	));
@@ -123,17 +126,28 @@ module.exports.bootstrap = function (cb) {
     callbackURL: sails.config.master_url+'/auth/dropbox_return'
 	  },
 	  function(req, accessToken, refreshToken, profile, done) {
-    	//var currentuser = req.session.passport;
-    	console.log(req.session);
-
+			Log.info('dropbox','Login',{user_id:req.session.passport.user.id});
     	req.session.passport.user.dropbox = {};
     	req.session.passport.user.dropbox.id = profile.id;
     	req.session.passport.user.dropbox.refreshToken = refreshToken;
     	req.session.passport.user.dropbox.accessToken = accessToken;
-
     	return done(null, req.session.passport.user);
 	  }
 	));
+
+	// passport.use(new TwitterStrategy ({
+	//     consumerKey: sails.config.TWITTER_APP_ID,
+  //   	consumerSecret: sails.config.TWITTER_APP_SECRET,
+  //   	callbackURL: sails.config.master_url+'/auth/twitter_return',
+	//   },
+	//   function(token, tokensecret,profile,done) {
+	//   	//console.log(profile);
+	// 		//profile._json.picture = profile.photos[0].value;
+	//     User.findOrCreate({ uid: String(profile.id) },{ uid: String(profile.id), profile:profile }, function(err, user) {
+	//       	return done(err, user);
+	//     });
+	//   }
+	// ));
 
 	passport.use(new GoogleStrategy ({
 	    clientID: sails.config.google_clientid,
@@ -142,8 +156,26 @@ module.exports.bootstrap = function (cb) {
 	  },
 	  function(token, tokensecret,profile,done) {
 	  	//console.log(profile);
+	    profile._json.picture = profile.photos[0].value.replace('?sz=50','');
 	    User.findOrCreate({ uid: String(profile.id) },{ uid: String(profile.id), profile:profile }, function(err, user) {
+				 	Log.info('google','Login',{user_id:profile.id});
 	      	return done(err, user);
+	    });
+	  }
+	));
+
+	passport.use(new FacebookStrategy ({
+	    clientID: sails.config.FACEBOOK_APP_ID,
+    	clientSecret: sails.config.FACEBOOK_APP_SECRET,
+    	callbackURL: sails.config.master_url+'/auth/facebook_return',
+			profileFields: ['id', 'name','picture.type(small)', 'emails', 'displayName'],
+	  },
+	  function(token, tokensecret,profile,done) {
+			//console.log(profile);
+			Log.info('facebook','Login',{user_id:profile.id});
+			profile._json.picture = 'http://graph.facebook.com/'+profile.id+'/picture';
+	    User.findOrCreate({ uid: String(profile.id) },{ uid: String(profile.id), profile:profile }, function(err, user) {
+						return done(err, user);
 	    });
 	  }
 	));
@@ -151,7 +183,7 @@ module.exports.bootstrap = function (cb) {
 	passport.serializeUser(function (user, done) {
 	  done(null, user);
 	});
-	 
+
 	passport.deserializeUser(function (user, done) {
 	    done(null, user);
 	});
@@ -160,7 +192,7 @@ module.exports.bootstrap = function (cb) {
 	sails.localmode = false;
 	if (_.contains(process.argv, '--local'))
 	{
-		sails.winston.info("** Bootlegger is running in LOCAL mode on "+myIP()+" and broadcasting to local devices **");		
+		Log.info('bootstrap',"** Bootlegger is running in LOCAL mode on "+myIP()+" and broadcasting to local devices **");
 		sails.localmode = true;
 		sails.localport = 80;
 		//broadcast udp so we can find this server...
@@ -170,9 +202,9 @@ module.exports.bootstrap = function (cb) {
 		var dgram = require('dgram');
 
 		var client = dgram.createSocket("udp4");
-		
+
 		client.on("error", function (err) {
-    		sails.winston.error("Socket error: " + err);
+    	Log.error('bootstrap',"Socket error: " + err);
 		});
 
 		client.on("listening", function () {
@@ -182,7 +214,7 @@ module.exports.bootstrap = function (cb) {
 		    setInterval(function(){
 		    	//console.log('.');
 	    		client.send(message, 0, message.length, 1338, broadcastAddress);
-		    }, 3*1000); 
+		    }, 3*1000);
 		});
 
 		client.bind(1338);
@@ -191,26 +223,26 @@ module.exports.bootstrap = function (cb) {
 		sails.eventmanager.init(null,function(){
 			cb();
 		});
-		
+
 	}
 	else
 	{
 		//not local -- tell the central server to reload events:
-		sails.winston.info("Signing on with Multi-Control Server");
+		Log.info('bootstrap',"Signing on with Multi-Control Server");
 		sails.hostname = sails.config.hostname + ':' + sails.config.port;
-		sails.winston.info("Current Hostname is "+sails.hostname);
+		Log.info('bootstrap',"Current Hostname is "+sails.hostname);
 		var req = require('request');
 		req({url:sails.config.multiserver + '/alive/?id='+sails.hostname,timeout:300},function(err){
 			if (!err)
 			{
 				sails.multiserveronline = true;
-				sails.winston.info("signed on to multi-server at "+sails.config.multiserver);
+			Log.info('bootstrap',"signed on to multi-server at "+sails.config.multiserver);
 
 			}
 			else
 			{
 				sails.multiserveronline = false;
-				sails.winston.error("can't connect to multi-server at "+sails.config.multiserver,err);
+				Log.error('bootstrap',"can't connect to multi-server at "+sails.config.multiserver,err);
 			}
 			//startup the event manager:
 			sails.eventmanager = require('./eventmanager.js');
@@ -219,9 +251,4 @@ module.exports.bootstrap = function (cb) {
 			});
 		});
 	}
-
-
-  
 };
-
-

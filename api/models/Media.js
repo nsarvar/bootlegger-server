@@ -6,75 +6,251 @@
  *
  */
 var path = require('path');
+var urlencode = require('urlencode');
 module.exports = {
+
+  getnicejson : function(req,res,eventid,cb)
+  {
+  	  User.find({}).exec(function(err,users)
+      {
+          Event.findOne(eventid,function(err,ev){
+          //	console.log(err);
+            //console.log(ev);
+
+          	if (!ev || err)
+      			{
+      				return res.json({msg:'cannot find shoot'},500);
+      			}
+
+      		  var criteria = {'event_id':eventid};
+
+      		  if (req.param('limit'))
+      		  	criteria.limit = req.param('limit');
+
+    	      if (req.param('skip'))
+      		  	criteria.skip = req.param('skip');
+
+
+            Media.find(criteria).sort('createdAt').exec(function(err,data)
+            {
+              //for each media, go through and fill in ids:
+              _ = require('lodash');
+              _.each(data,function(m)
+              {
+                //role, shot coverage class
+                if (m.meta.static_meta.meta_phase)
+                {
+                	m.meta.phase_ex = ev.phases[m.meta.static_meta.meta_phase];
+                }
+
+                if (!m.meta.phase_ex)
+                {
+                  m.meta.phase_ex={name:'Unknown'};
+                }
+
+                if (m.meta.static_meta.role)
+                {
+  	        	      m.meta.role_ex = ev.eventtype.roles[m.meta.static_meta.role];
+    	      		}
+    	      		else
+    	      		{
+    	      			m.meta.role_ex={name:'Unknown'};
+    	      		}
+
+                var uuu = _.findWhere(users, {id: m.created_by});
+                m.user = {profile:{displayName:'Anon'}};
+
+                if (uuu)
+                {
+                	m.user = {profile:{displayName:uuu.profile.displayName}};
+                	//privacy:
+                	if (uuu.permissions)
+                	{
+                		if (uuu.permissions[ev.id])
+                		{
+                			m.user = {profile:{displayName:'Anon'}};
+                		}
+                	}
+                }
+                //console.log(m.meta.static_meta.shot);
+                //console.log(_.findWhere(ev.eventtype.shot_types,{id:m.meta.static_meta.shot}));
+                if (m.meta.static_meta.shot)
+                {
+              	  m.meta.shot_ex = ev.eventtype.shot_types[m.meta.static_meta.shot];
+            	  }
+                if (!m.meta.shot_ex)
+                  m.meta.shot_ex = {name:'Unknown'};
+
+          	  if (m.meta.static_meta.coverage_class)
+          	  {
+          	    m.meta.coverage_class_ex = ev.coverage_classes[m.meta.static_meta.coverage_class];
+        		  }
+              if (!m.meta.coverage_class_ex)
+              {
+                m.meta.coverage_class_ex = {name:"Unknown"};
+              }
+
+                var timestamp = m.meta.static_meta.captured_at.split(' ');
+                var ext = '.mp4';
+                if (m.path)
+                {
+                	ext = path.extname(m.path);
+                }
+                else if (m.meta.static_meta.local_filename)
+                {
+                  ext = path.extname(m.meta.static_meta.local_filename);
+                }
+
+                var uu = "unknown";
+  	  			if (m.user)
+  		  			uu = m.user.profile.displayName;
+
+  			  //m.meta.static_meta.nicepath = urlencode(timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.static_meta.role_ex.name + '_' + m.meta.static_meta.shot_ex.name + '_' + m.meta.static_meta.coverage_class_ex.name + '_' + uu + path.extname(m.path))
+
+            var isgood = (m.meta.static_meta.edit_tag)?'_GOOD':''; 
+
+  			       m.meta.static_meta.nicepath = urlencode((timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.role_ex.name + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_'  + uu + isgood + ext).replace(/ /g,'_'));
+
+                //m.meta.static_meta.nicepath = filename;
+                if (m.path)
+                {
+                	m.originalpath = sails.config.S3_CLOUD_URL + m.path;
+                	m.lowres = sails.config.S3_TRANSCODE_URL + m.path;
+                	m.path = sails.config.S3_CLOUD_URL + m.path;
+                	m.filename = m.path;
+                }
+
+                if (m.thumb)
+                {
+                	m.originalthumb = m.thumb;
+                  m.thumb = sails.config.S3_CLOUD_URL + escape(m.originalthumb);
+            	  }
+            	  //console.log(m);
+              });//end each
+              cb(data);
+            });
+          });
+        });
+  },
 
   attributes: {
     nicify:function(cb)
     {
-    	var thismedia = this;
+    	var m = this;
     	//console.log(this);
-    	Event.findOne(thismedia.event_id).exec(function(err,ev)
-    	{	
-    		User.findOne(thismedia.created_by).exec(function(err,user)
+    	Event.findOne(m.event_id).exec(function(err,ev)
+    	{
+    		if (ev)
     		{
-				//console.log(thismedia.meta);
+	    		//console.log(ev);
+	    		User.findOne(m.created_by).exec(function(err,user)
+	    		{
 
-    			thismedia.meta.static_meta.role_ex = ev.eventtype.roles[thismedia.meta.static_meta.role];
-		         thismedia.user = user;
-		          //console.log(m.meta.static_meta.shot);
-		          //console.log(_.findWhere(ev.eventtype.shot_types,{id:m.meta.static_meta.shot}));
-		         thismedia.meta.static_meta.shot_ex = ev.eventtype.shot_types[thismedia.meta.static_meta.shot];
-		          if (!thismedia.meta.static_meta.shot_ex)
-		            thismedia.meta.static_meta.shot_ex = {name:'Unknown'};
+	    			_ = require('lodash');
+              
+                //role, shot coverage class
+                if (m.meta.static_meta.meta_phase)
+                {
+                	m.meta.phase_ex = ev.phases[m.meta.static_meta.meta_phase];
+                }
 
-		          //console.log(ev.coverage_classes);
+                if (!m.meta.phase_ex)
+                {
+                  m.meta.phase_ex={name:'Unknown'};
+                }
 
-		          thismedia.meta.static_meta.coverage_class_ex = ev.coverage_classes[thismedia.meta.static_meta.coverage_class];
-		          if (thismedia.meta.static_meta.coverage_class_ex==undefined)
-		          {
-		            thismedia.meta.static_meta.coverage_class_ex = {name:"Unknown"};
-		          }
+                if (m.meta.static_meta.role)
+                {
+  	        	      m.meta.role_ex = ev.eventtype.roles[m.meta.static_meta.role];
+    	      		}
+    	      		else
+    	      		{
+    	      			m.meta.role_ex={name:'Unknown'};
+    	      		}
 
-		          if (thismedia.meta.static_meta.meta_phase && ev.phases)
-		          {
-			          thismedia.meta.static_meta.meta_phase = ev.phases[thismedia.meta.static_meta.meta_phase];
-			          if (thismedia.meta.static_meta.meta_phase==undefined)
-			          {
-			            delete thismedia.meta.static_meta.meta_phase;
-			          }
-		  		  }
+                //var uuu = _.findWhere(users, {id: m.created_by});
+                m.user = {profile:{displayName:'Anon'}};
 
-		  		var timestamp = thismedia.meta.static_meta.captured_at.split(' ');
-		  		var uu = "unknown";
-		  		if (thismedia.user)
-		  			uu = thismedia.user.profile.displayName;
+                if (user)
+                {
+                	m.user = {profile:{displayName:user.profile.displayName}};
+                	//privacy:
+                	if (user.permissions)
+                	{
+                		if (user.permissions[ev.id])
+                		{
+                			m.user = {profile:{displayName:'Anon'}};
+                		}
+                	}
+                }
+                //console.log(m.meta.static_meta.shot);
+                //console.log(_.findWhere(ev.eventtype.shot_types,{id:m.meta.static_meta.shot}));
+                if (m.meta.static_meta.shot)
+                {
+              	  m.meta.shot_ex = ev.eventtype.shot_types[m.meta.static_meta.shot];
+            	  }
+                if (!m.meta.shot_ex)
+                  m.meta.shot_ex = {name:'Unknown'};
 
-      			thismedia.meta.static_meta.nicepath = timestamp[1].replace(':','-').replace(':','-') + '_' + thismedia.meta.static_meta.shot_ex.name + '_' + thismedia.meta.static_meta.coverage_class_ex.name + '_' + uu + path.extname(thismedia.path);
+          	  if (m.meta.static_meta.coverage_class)
+          	  {
+          	    m.meta.coverage_class_ex = ev.coverage_classes[m.meta.static_meta.coverage_class];
+        		  }
+              if (!m.meta.coverage_class_ex)
+              {
+                m.meta.coverage_class_ex = {name:"Unknown"};
+              }
 
-		  		delete thismedia.meta.static_meta.coverage_class;
-		  		delete thismedia.meta.static_meta.role;
-		  		delete thismedia.meta.static_meta.shot;
+                var timestamp = m.meta.static_meta.captured_at.split(' ');
+                var ext = '.mp4';
+                if (m.path)
+                {
+                	ext = path.extname(m.path);
+                }
+                else if (m.meta.static_meta.local_filename)
+                {
+                  ext = path.extname(m.meta.static_meta.local_filename);
+                }
 
+                var uu = "unknown";
+  	  			if (m.user)
+  		  			uu = m.user.profile.displayName;
 
-		  		if (thismedia.path)
-		  		{
-		  			thismedia.originalpath = thismedia.path;
-		  			thismedia.path = sails.config.S3_TRANSCODE_URL + thismedia.path.replace(sails.config.S3_TRANSCODE_URL,'');
-		  		}
-		  		if (thismedia.thumb)
-		  		{
-		  			thismedia.originalthumb = thismedia.thumb;
-		  			thismedia.thumb = sails.config.S3_CLOUD_URL + thismedia.thumb.replace(sails.config.S3_CLOUD_URL,'');
-		  		}
-		  		cb();
-    		});
+  			  //m.meta.static_meta.nicepath = urlencode(timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.static_meta.role_ex.name + '_' + m.meta.static_meta.shot_ex.name + '_' + m.meta.static_meta.coverage_class_ex.name + '_' + uu + path.extname(m.path))
+var isgood = (m.meta.static_meta.edit_tag)?'_GOOD':''; 
+
+  			m.meta.static_meta.nicepath = urlencode((timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.role_ex.name + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_' + uu + isgood + ext).replace(/ /g,'_'));
+
+                //m.meta.static_meta.nicepath = filename;
+                if (m.path)
+                {
+                	m.originalpath = sails.config.S3_CLOUD_URL + m.path;
+                	m.lowres = sails.config.S3_TRANSCODE_URL + m.path;
+                	m.path = sails.config.S3_CLOUD_URL + m.path;
+                	m.filename = m.path;
+                }
+
+                if (m.thumb)
+                {
+                	m.originalthumb = m.thumb;
+                  m.thumb = sails.config.S3_CLOUD_URL + escape(m.originalthumb);
+            	  }
+			  		cb();
+          });
+			}
+			else
+			{
+				//no event found -- do nothing...
+				cb();
+			}
     	});
+
     }
   },
 
   afterCreate:function(newlyInsertedRecord, cb)
   {
-  	Log.logModel('Media',newlyInsertedRecord.id);
+  	Log.logModel('Media',{msg:'created',id:newlyInsertedRecord.id});
   	cb();
   },
 

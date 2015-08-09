@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xmeml>
+<xmeml version="4">
+	<bin>
+		<name>%%projecttitle%%</name>
+		<labels>
+			<label2>Mango</label2>
+		</labels>
+		<children>
+			%%bins%%
+		</children>
+	</bin>
+	
+	<!--<sequence id="sequence-1">
+		<uuid>%%uuid%%</uuid>
+		<duration>%%sequenceduration%%</duration>
+		<rate>
+			<timebase>29.9</timebase>
+			<ntsc>FALSE</ntsc>
+		</rate>
+		<name>%%sequencename%%</name>
+		<media>
+			<video>
+		        <format>
+		          <samplecharacteristics>
+		            <rate>
+		              <timebase>29.9</timebase>
+		              <ntsc>FALSE</ntsc>
+		            </rate>
+		            <codec>
+		              <name>Apple ProRes 422</name>
+		              <appspecificdata>
+		                <appname>Final Cut Pro</appname>
+		                <appmanufacturer>Apple Inc.</appmanufacturer>
+		                <appversion>7.0</appversion>
+		                <data>
+		                  <qtcodec>
+		                    <codecname>Apple ProRes 422</codecname>
+		                    <codectypename>Apple ProRes 422</codectypename>
+		                    <codectypecode>apcn</codectypecode>
+		                    <codecvendorcode>appl</codecvendorcode>
+		                    <spatialquality>1024</spatialquality>
+		                    <temporalquality>0</temporalquality>
+		                    <keyframerate>0</keyframerate>
+		                    <datarate>0</datarate>
+		                  </qtcodec>
+		                </data>
+		              </appspecificdata>
+		            </codec>
+		            <width>1920</width>
+		            <height>1080</height>
+		            <anamorphic>FALSE</anamorphic>
+		            <pixelaspectratio>square</pixelaspectratio>
+		            <fielddominance>none</fielddominance>
+		            <colordepth>24</colordepth>
+		          </samplecharacteristics>
+		        </format>
+        %%videotracks%%        
+			</video>
+			<audio>
+				<format>
+					<samplecharacteristics>
+						<depth>16</depth>
+						<samplerate>48000</samplerate>
+					</samplecharacteristics>
+				</format>
+				<outputs>
+					<group>
+						<index>1</index>
+						<numchannels>1</numchannels>
+						<downmix>0</downmix>
+						<channel>
+							<index>1</index>
+						</channel>
+					</group>
+					<group>
+						<index>2</index>
+						<numchannels>1</numchannels>
+						<downmix>0</downmix>
+						<channel>
+							<index>2</index>
+						</channel>
+					</group>
+				</outputs>
+        		%%audiotracks%%        
+			</audio>
+		</media>
+		<timecode>
+			<rate>
+				<timebase>29.9</timebase>
+				<ntsc>FALSE</ntsc>
+			</rate>
+			<string>00:00:00:00</string>
+			<frame>0</frame>
+			<displayformat>NDF</displayformat>
+		</timecode>
+	</sequence>-->
+</xmeml>

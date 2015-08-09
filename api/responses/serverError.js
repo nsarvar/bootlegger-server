@@ -26,6 +26,7 @@ module.exports = function serverError (data, options) {
   res.locals.event = false;
   res.locals.flash = false;
   res.locals.notonthisserver = false;
+  res.locals.apikey = '';
 
   // Log error to console
   if (data !== undefined) {
@@ -36,13 +37,18 @@ module.exports = function serverError (data, options) {
   // Only include errors in response if application environment
   // is not set to 'production'.  In production, we shouldn't
   // send back any identifying information about errors.
-  if (sails.config.environment === 'production') {
-    data = undefined;
-  }
+
+
+  //console.log("**** "+req.is());
 
   // If the user-agent wants JSON, always respond with JSON
-  if (req.wantsJSON) {
-    return res.jsonx(data);
+  if (req.wantsJSON || req.param('apikey')) {
+    //console.log("returning now");
+    return res.json({error:data.toString()});
+  }
+
+  if (sails.config.environment === 'production') {
+    data = undefined;
   }
 
   // If second argument is a string, we take that to mean it refers to a view.
@@ -53,12 +59,12 @@ module.exports = function serverError (data, options) {
   // Otherwise try to guess an appropriate view, or if that doesn't
   // work, just send JSON.
   if (options.view) {
-    return res.view(options.view, { data: data });
+    return res.view(options.view, { data: data,_layoutFile:null });
   }
 
   // If no second argument provided, try to serve the default view,
   // but fall back to sending JSON(P) if any errors occur.
-  else return res.view('500', { data: data }, function (err, html) {
+  else return res.view('500', { data: data,_layoutFile:null }, function (err, html) {
 
     // If a view error occured, fall back to JSON(P).
     if (err) {
@@ -72,9 +78,11 @@ module.exports = function serverError (data, options) {
       else {
         sails.log.warn('res.serverError() :: When attempting to render error page view, an error occured (sending JSON instead).  Details: ', err);
       }
+      console.log('sending jsonx');
       return res.jsonx(data);
     }
 
+    console.log('sending');
     return res.send(html);
   });
 

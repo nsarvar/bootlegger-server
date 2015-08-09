@@ -15,68 +15,133 @@
 module.exports.policies = {
 
   // Default policy for all controllers and actions
-  // (`true` allows public access) 
+  // (`true` allows public access)
   //'*': true,
 
     //'*': ['flash','authenticated'],
-    '*': ['flash','authenticated'],
+    '*': ['flash','authenticated','apikeygen','apiauth'],
+
+    'api':
+    {
+        //'*':'api_key',
+        '*':['apiauth'],
+        'signup':['authenticated','flash','apikeygen'],
+        'activate':'authenticated',
+        'newkey':'authenticated',
+        'getkey':'authenticated',
+        'revokeapi':['authenticated','superadmin'],
+        'unrevokeapi':['authenticated','superadmin']
+    },
 
     'event':
     {
-    	'view':['authenticated','hasevents','isowner','flash'],
-    	'update':['authenticated','isowner','flash'],
-    	'addcode':['authenticated','isowner','flash'],
-    	'makedefault':['authenticated','isowner','flash'],
-    	'updatecoverage':['authenticated','isowner','flash'],
-    	'edit':['authenticated','isowner','flash'],
-        'server':true,
-        'admin':['superadmin','flash'],
-        'kill':['superadmin','flash'],
-        'triggeradd':true
+    	'view':['authenticated','hasevents','isowner','flash','apikeygen'],
+    	'update':['authenticated','isowner','flash','apiauth'],
+    	'addcode':['authenticated','isowner','flash','apiauth'],
+      'remcode':['authenticated','isowner','flash','apiauth'],
+      'resendcode':['authenticated','isowner','flash','apiauth'],
+    	'makedefault':['authenticated','isowner','flash','apiauth'],
+    	'updatecoverage':['authenticated','isowner','flash','apiauth'],
+    	'edit':['authenticated','isowner','flash','apiauth'],
+      'admins':['authenticated','isowner','apiauth'],
+      'remove':['authenticated','isowner','apiauth'],
+      'coverage':['authenticated','isowner','apiauth'],
+      'phases':['authenticated','isowner','apiauth'],
+      'codes':['authenticated','isowner','apiauth'],
+      'addcoverage':['authenticated','isowner','apiauth'],
+      'addadmin':['authenticated','isowner','apiauth'],
+      'removecoverage':['authenticated','isowner','apiauth'],
+      'updatedirection':['authenticated','isowner','apiauth'],
+      'changetitle':['authenticated','isowner','apiauth'],
+      'server':true,
+      'list':['superadmin','apiauth'],
+      'addevent':['flash','eventlimit','apiauth'],
+      'admin':['superadmin','flash','apikeygen'],
+      'kill':['superadmin','flash','apiauth'],
+      'map':['authenticated','isowner','apiauth'],
+      'image':['apiauth','authenticated','isowner'],
+      'imagebackground':['apiauth','authenticated','isowner'],
+      'triggeradd':true,
+      'changephase':['authenticated','isowner','apiauth'],
+      'addphase':['authenticated','isowner','apiauth'],
+      'removephase':['authenticated','isowner','apiauth'],
+      'pause':['authenticated','isowner','apiauth'],
+      'admin_users':['superadmin','flash','apiauth'],
+      'admin_events':['superadmin','flash','apiauth'],
+      'removeuser':['superadmin','apiauth'],
+      'removeadmin':['authenticated','isowner','apiauth'],
+      'dashboard':['authenticated','apikeygen','flash']
     },
 
     'watch':
     {
-        'index':['authenticated','viewonly','flash'],
-        'shortlink':true
+        'view':['authenticated','viewonly','flash','apikeygen'],
+        'shortlink':true,
+        'index':['authenticated','apikeygen','flash'],
+        'newedit':['authenticated','viewonly','apiauth'],
+        'list':['authenticated','flash','apikeygen'],
+        'mymedia':['authenticated','apiauth']
     },
 
     'shoot':
     {
-        'index':['flash','authenticated','hasevents','isowner']
+        'index':['flash','authenticated','hasevents','isowner','apikeygen'],
+        'liveedit':['flash','authenticated','hasevents','isowner','apikeygen'],
+        'preedit':['flash','authenticated','hasevents','isowner','apikeygen'],
+        'sendmessage':['authenticated','isowner','apiauth']
     },
 
     'commission':
     {
-        '*':['flash','authenticated'],
-        'index':['flash','authenticated','hasevents','isowner']
+        '*':['flash','authenticated','isowner','apiauth'],
+        'example':['authenticated'],
+        'new':['flash','authenticated','apikeygen'],
+        'index':['flash','authenticated','hasevents','isowner','apikeygen'],
+        'savetooriginal':['flash','authenticated','superadmin','apiauth'],
+        'addshot':['authenticated','superadmin','apiauth']
     },
 
     'post':
     {
-        'document':true,
-         'index':['flash','authenticated','hasevents','isowner'],
-         'remind':['flash','authenticated','isowner'],
-         'broadcast':['flash','authenticated','superadmin']
+         '*':['flash','authenticated','isowner','apiauth'],
+         'index':['flash','authenticated','hasevents','isowner','apikeygen'],
+         'broadcast':['flash','authenticated','superadmin'],
+         'document':['authenticated','isowner','apiauth'],
+         'module':['authenticated','isowner','flash','apikeygen']
     },
 
     'media':
     {
-        'upload':true,
-        'uploadthumb':true
+        'nicejson':['authenticated','viewonly','apiauth'],
+        'directorystructure':['authenticated','isowner','apiauth'],
+        'remove':['authenticated','isowner','apiauth'],
+        'rm_tag':['authenticated','isowner','apiauth'],
+        'add_tag':['authenticated','isowner','apiauth'],
+        'transcode':['superadmin'],
+        'availableoutputs':['authenticated','isowner','apiauth'],
+        'transcodefile':['authenticated','apiauth']
     },
 
     'log':
     {
-        '*':['superadmin','flash']
+        '*':['superadmin','flash'],
+        'all':['superadmin','flash','apikeygen'],
+        'view':['authenticated','flash','isowner','apikeygen']
     },
 	// whitelist the auth controller
+
 	'auth':
 	{
 		'*': ['flash',true],
-		'local_login':true,
+    'terms':['flash','apikeygen',true],
+    'privacy':['flash','apikeygen',true],
+    'join':['flash','apikeygen',true],
+    'joincomplete':['flash','apikeygen',true],
+    'changename':['authenticated'],
 		'localcode':'authenticated',
-        'dropbox':'authenticated',
-        'setprivacy':'authenticated'
+    'dropbox':'authenticated',
+    'setprivacy':'authenticated',
+    'apilogin':'apiauth',
+    'howtobootleg':['apikeygen','flash',true]
 	}
 };

@@ -31,6 +31,7 @@ module.exports = function notFound (data, options) {
   res.locals.event = false;
   res.locals.flash = false;
   res.locals.notonthisserver = false;
+  res.locals.apikey='';
   // Log error to console
   if (data !== undefined) {
     sails.log.verbose('Sending 404 ("Not Found") response: \n',data);
@@ -45,8 +46,8 @@ module.exports = function notFound (data, options) {
   }
 
   // If the user-agent wants JSON, always respond with JSON
-  if (req.wantsJSON) {
-    return res.jsonx(data);
+  if (req.wantsJSON || req.param('apikey')) {
+    return res.jsonx({error:data.toString()});
   }
 
   // If second argument is a string, we take that to mean it refers to a view.

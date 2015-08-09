@@ -13,6 +13,12 @@ module.exports = {
   	/* e.g.
   	nickname: 'string'
   	*/
-    
+
   },
+  afterCreate:function(newlyInsertedRecord, cb)
+  {
+  	Log.logModel('EventTemplate',{msg:'created',id:newlyInsertedRecord.id});
+  	cb();
+  },
+
 };

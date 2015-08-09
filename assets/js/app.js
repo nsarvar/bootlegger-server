@@ -1,85 +1,33 @@
-//$(function(){
-
-  //(function (io) {
-
-  // as soon as this file is loaded, connect automatically, 
-  //var socket = io.connect();
-  // if (typeof console !== 'undefined') {
-  //   log('Connecting to Sails.js...');
-  // }
-
-  io.socket.on('connect', function socketConnected() {
-    //log('Connected.');
-    //window.socket = io.socket;
-    // Listen for Comet messages from Sails
-    // socket.on('message', function messageReceived(message) {
-
- //     io.socket.on('message',function(msg)
- //     {
- //      //console.log(msg);
- //     });
-
- // io.socket.on('event',function(msg)
- //     {
- //      console.log(msg);
- //     });
-
- //  io.socket.on('user',function(msg)
- //     {
- //      //console.log(msg);
- //     });
-
-    //   //log('New comet message received :: ', message);
-
-
-    // });
-  //window.socket = io.socket;
-
-
-    //list my events for all pages
-    io.socket.get('/event/myevents',function(resp){
-      //console.log(resp);
-      if (eventlisttemplate!=undefined)
-      {
-        $('#eventlist').html(eventlisttemplate(resp));
-        $('.dropdown input, .dropdown label').click(function(e) {
-          e.stopPropagation();
-        });
-      }
-    });
-
-    //register for log events:
-    io.socket.get('/log/subscribe', function(response){
-      //do somthing with log event:
-    });
-
-  });
-
-
-  // Expose connected `socket` instance globally so that it's easy
-  // to experiment with from the browser console while prototyping.
-  
-
-  // Simple log function
-  // function log () {
-  //   if (typeof console !== 'undefined') {
-  //     console.log.apply(console, arguments);
-  //   }
-  // }
-
-//});
-
-//(
-  //window.io
-//);});
-
 var eventlisttemplate;
 $(function()
 {
+
+    var items = '';
+    $('#mainbody .page-header:not(.exclude) h1').each(function(){
+      $(this).before('<a name="'+$(this).clone().children().remove().end().text().toString().replace(/[\s,]+/g,'_').toLowerCase()+'"></a>');
+      items += '<li class="hidden-xs"><a href="#'+$(this).clone().children().remove().end().text().toString().replace(/[\s,]+/g,'_').toLowerCase()+'">' + $(this).clone().children().remove().end().text() + '</a></li>';
+    });
+    if (items.length>0)
+      $('.mainmenu.active').after('<div class="list-group-item hidden-xs"><ul class="sublist">' + items + '</ul></div>');
+
+  $('a[href*=#]:not([href=#])').click(function() {
+    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+      if (target.length) {
+        $('html,body').animate({
+          scrollTop: target.offset().top
+        }, 1000);
+        return false;
+      }
+    }
+  });
+  
   //build handlebars templates
   var source = $("#eventlist-template").html();
   eventlisttemplate = Handlebars.compile(source);
-  
+
+
   $('.datepicker').datepicker().on('changeDate', function(ev){
     $(this).datepicker('hide');
   });
@@ -94,6 +42,56 @@ $(function()
     content:$('#cast_content')
   });
 
+  $('.fileinput').on('change.bs.fileinput',function(e,o){
+    var form = $(this).closest('form');
+    form.submit();
+  });
+
+  $('[data-toggle="tooltip"]').tooltip();
+  $('[data-toggle="popover"]').popover();
+
+  //list my events for all pages
+  io.socket.get('/event/myevents',function(resp){
+    //console.log(resp);
+    if (eventlisttemplate!=undefined)
+    {
+      var events = _.filter(resp,function(e){
+        if (!e.status)
+        {
+          var tmp = [];
+          tmp = _.filter(e.events,function(f)
+            {
+              return f.status == 'OWNER'; 
+            });  
+           e.events = tmp;
+           return e.events.length > 0;
+        }
+        else
+        {
+          return e.status == 'OWNER';  
+        }
+      })
+      
+      
+      $('.eventlist').html(eventlisttemplate(events));
+      $('.dropdown input, .dropdown label').click(function(e) {
+        e.stopPropagation();
+      });
+    }
+  });
+
+  //register for log events:
+  io.socket.get('/log/subscribe', function(response){
+    //do somthing with log event:
+  });
+
+
+  //fire any other init functions:
+  
+  if (typeof(bootlegger_init)!='undefined')
+  {
+    bootlegger_init();
+  }
 });
 
 function showok(msg,obj)
@@ -120,20 +118,20 @@ function edittitle()
     editingtitle = true;
     //var w = $('#title span').width() + 150;
     //console.log(w);
-    oldtitle = $('#title').replaceWith('<input id="title" class="form-control" style="font-weight:100;line-height: 1.1;margin-top:19px;margin-bottom:10px;font-family:Segoe UI Light,Helvetica Neue,Segoe UI,Segoe WP,sans-serif;font-size:30px;padding:0px;margin-left:-2px;" type="text" value="'+$('#title').text().trim()+'" />');
-    $('#title').on('keydown',function(key)
+    oldtitle = $('.thetitle').replaceWith('<input class="thetitle form-control" style="width:50%;font-weight:100;height:40px;line-height: 1.1;margin-top:19px;margin-bottom:10px;font-family:Open Sans,Helvetica Neue,Segoe UI,Segoe WP,sans-serif;font-size:30px;padding:0px;margin-left:-2px;" type="text" value="'+$('.thetitle > span').text().trim()+'" />');
+    $('.thetitle').on('keydown',function(key)
     {
       if (key.which == 13)
       {
-        var newval = $('#title').val();
+        var newval = $('.thetitle').val();
         //console.log(newval);
-        if (newval.length > 6)
+        if (newval.length > 4)
         {
           editingtitle = false;
-          $('#title').replaceWith(oldtitle);
-          $('#title span').text(newval);
+          $('.thetitle').replaceWith(oldtitle);
+          $('.thetitle span').text(newval);
           io.socket.post('/event/changetitle/',{title:newval}, function (response) {
-            showok('Updated',$('#title'));
+            showok('Title Updated',$('.thetitle'));
           });
         }
       }

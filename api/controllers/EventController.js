@@ -9,82 +9,257 @@ var urlencode = require('urlencode');
 var path = require('path');
 var fs = require('fs');
 var lwip = require('lwip');
+var _ = require('lodash');
+
+function phonenumber(inputtxt)  
+{  
+  var phoneno = /^\+?([0-9]{6,})$/;  
+  if(inputtxt.match(phoneno))  
+        {  
+      return true;  
+        }  
+      else  
+        {  
+        //alert("message");  
+        return false;  
+        }  
+}  
+
+function ValidateEmail(inputText)  
+{  
+var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;  
+if(inputText.match(mailformat))  
+{  
+return true;  
+}  
+else  
+{  
+return false;  
+}  
+}  
 
 module.exports = {
 
 	admin:function(req,res)
 	{
 		//lists all events and their current status, allows removal / stopping of events...
-		Event.find({},function(err,events){
-			res.view({events:_.groupBy(events,'server')});	
+		// Event.find({},function(err,events){
+		res.view();
+		// });
+	},
+
+	admin_events:function(req,res)
+	{
+		User.find({}).exec(function(err,users){
+			// console.log(users);
+		Media.find({}).exec(function(err,allmedia){
+
+				var med_grp = _.groupBy(allmedia,'event_id');
+
+				Event.find({},function(err,events){
+					_.each(events,function(ev){
+						ev.totalmedia = _.size(med_grp[ev.id]);
+						ev.lasttouched = _.max(_.pluck(med_grp[ev.id],'createdAt'));
+						ev.participants = _.size(_.unique(_.pluck(med_grp[ev.id],'created_by')));
+						ev.users = _.map(ev.ownedby,function(u)
+						{
+							return _.find(users,{'id':u});
+						});
+						ev.totalfilesize = _.sum(_.map(med_grp[ev.id],function(g){
+							return g.meta.static_meta.filesize;
+						})) / 1024.0;
+
+					});
+					return res.json({events:_.groupBy(events,'server')});
+				});
 		});
+	});
+	},
+
+	admin_users:function(req,res)
+	{
+		Edits.find({}).exec(function(err,edits){
+		Media.find({}).exec(function(err,allmedia){
+
+				var med_grp = _.groupBy(allmedia,'event_id');
+
+				Event.find({},function(err,events){
+
+					//group by user:
+					_.each(events,function(ev){
+						ev.totalmedia = _.size(med_grp[ev.id]);
+						ev.lasttouched = _.max(_.pluck(med_grp[ev.id],'createdAt'));
+						ev.participants = _.size(_.unique(_.pluck(med_grp[ev.id],'created_by')));
+						ev.totalfilesize = _.sum(_.map(med_grp[ev.id],function(g){
+							return g.meta.static_meta.filesize;
+						})) / 1024.0;
+					});
+
+						User.find({},function(err,users){
+
+							_.each(users,function(u){
+								u.events = _.filter(events,function(e){
+									return _.contains(e.ownedby,u.id);
+								});
+
+								u.owned = _.size(u.events);
+								u.created = _.size(_.filter(allmedia,{'created_by':u.id}));
+								u.participatedin = _.size(_.unique(_.pluck(_.filter(allmedia,{'created_by':u.id}),'event_id')));
+								u.edits = _.size(_.find(edits,{'user_id':u.id}));
+							});
+
+							return res.json({users:users});
+						});
+				});
+		});
+	});
+	},
+
+	removeuser:function(req,res)
+	{
+		//find user
+		User.findOne(req.params.id).exec(function(err,user){
+			//remove all personal info
+
+			user.profile = {_json:{picture:''},emails:[{value:'no-reply@anon.com'}],displayName:'Deleted User',name:{givenName:'Deleted User'}};
+			user.deleted = {by:req.session.passport.user.id,on:new Date()};
+			user.name = 'Deleted User';
+			user.pushcode = '';
+			user.platform = '';
+			user.currentevent = '';
+			user.save(function(err,done){
+				//console.log(done);
+				req.session.flash = {msg:'User Removed'};
+					return res.redirect('/event/admin');
+			});
+		});
+	},
+
+	dashboard:function(req,res)
+	{
+		if (req.session.joincode)
+		{
+			if (req.session.joincode.status == 'sent')
+			{
+				//do join
+				Event.findOne(req.session.joincode.eventid).exec(function(err,event){
+					//find the code that matches this:
+					//console.log(event);
+					if (event != null)
+					{
+						_.each(event.codes,function(c){
+							if (c.code == req.session.joincode.code)
+							{
+								c.uid = req.session.passport.user.id;
+								c.status = 'linked';
+							}
+						});
+						event.save(function()
+					{
+						delete req.session.joincode;
+							return res.view('auth/joincomplete');
+						});
+					}
+					else {
+						delete req.session.joincode;
+
+						return res.view('auth/joincomplete');
+					}
+				});
+
+			}
+			else {
+				delete req.session.joincode;
+
+					return res.view('auth/joincomplete');
+			}
+		}
+		else
+		{	
+			if (req.session.ismobile || req.wantsJSON)
+			{
+				if (req.session.isios == true)
+				{
+					//get signed cookie:
+					var cookiesigned = require('cookie-signature');
+					var signed = cookiesigned.sign(req.signedCookies['sails.sid'],req.secret);
+	
+					signed = "s:" + signed;
+					//console.log(urlencode(signed));
+					if (req.session.api)
+					{
+						return res.json({session:'sails.sid=' + signed,msg:'Logged In OK'});
+					}
+					else
+					{
+						return res.redirect('bootlegger://success/?'+urlencode(signed));
+					}
+				}
+				else
+				{
+					console.log("trying to render event view");
+					return res.view('event/mobileok.ejs',{
+					  _layoutFile: '../mobileapp.ejs'
+					});
+				}
+			}
+			else
+			{
+				//console.log(req.params);
+	
+				//set to default event
+				//render view:
+				return res.view();
+			}
+		}
 	},
 
 	index:function(req,res)
 	{
-		return res.redirect('/event/view');
+		return res.redirect('/dashboard');
 	},
 
 	view:function(req,res)
 	{
 		//console.log(sails.express);
 		//console.log(req.signedCookies['sails.sid']);
+		var lookupid = req.session.event || req.session.passport.user.currentevent;
+		//console.log(lookupid);
 
-		if (req.session.ismobile || req.wantsJSON)
+		//if event is explicitally set in GET
+		if (req.params.id)
 		{
-			if (req.session.isios == true)
-			{
-				//get signed cookie:
-				var cookiesigned = require('cookie-signature');
-				var signed = cookiesigned.sign(req.signedCookies['sails.sid'],req.secret);
-				
-				signed = "s:" + signed;
-				//console.log(urlencode(signed));
-				return res.redirect('bootlegger://success/?'+urlencode(signed));
-			}
-			else
-			{
-				//console.log("trying to render event view");
-				return res.view('event/mobileok.ejs',{
-				  _layoutFile: '../mobileapp.ejs'
-				});
-			}
+			lookupid = req.params.id;
 		}
-		else
-		{
-			//console.log(req.params);
 
-			//set to default event
-			var lookupid = req.session.event || req.session.passport.user.currentevent;
-			//console.log(lookupid);
+		req.session.event = lookupid;
 
-			//if event is explicitally set in GET
-			if (req.params.id)
+		//event config screen -- module selection for the event
+		//console.log(lookupid);
+		Event.findOne(lookupid).exec(function(err,event){
+			if (event == undefined)
 			{
-				lookupid = req.params.id;
+				console.log("no event found view page "+lookupid);
+				//req.session.flash = {err:"Event not found"};
+				return res.redirect('/commission/new');
 			}
+			event.calcphases();
+			if (event.eventtype.roleimg!== true && typeof event.eventtype.roleimg != 'undefined' && event.eventtype.roleimg !== false)
+				event.eventtype.roleimg = sails.config.S3_CLOUD_URL+event.eventtype.roleimg;
 
-			req.session.event = lookupid;
+			if (event.icon)
+				event.icon = sails.config.S3_CLOUD_URL+event.icon;
+				
+			if (event.iconbackground)
+				event.iconbackground = sails.config.S3_CLOUD_URL+event.iconbackground;
+			//console.log(event);
 
-			//event config screen -- module selection for the event
-			//console.log(lookupid);
-			Event.findOne(lookupid).exec(function(err,event){
-				if (event == undefined)
-				{
-					console.log("no event found view page "+lookupid);
-					//req.session.flash = {err:"Event not found"};
-					return res.redirect('/commission/new');
-				}
-				event.calcphases();
-				if (event.eventtype.roleimg)
-					event.eventtype.roleimg = sails.config.S3_CLOUD_URL+event.eventtype.roleimg;
-
-				if (event.icon)
-					event.icon = sails.config.S3_CLOUD_URL+event.icon;
-				//console.log(event);
+			User.findOne(event.ownedby[0]).exec(function(err,u){
+				event.ownedby_user = u;
 				res.view({event:event});
 			});
-		}
+		});
+
 	},
 
 	kill:function(req,res)
@@ -122,12 +297,12 @@ module.exports = {
 				    	req.session.passport.user.currentevent = null;
 
 				    req.session.flash = {err:"Event removed"};
-					return res.redirect('/commision/new');
+					return res.redirect('/commission/new');
 				  });
 				}
 				else
 				{
-					return res.redirect('/commision/new');
+					return res.redirect('/commission/new');
 				}
 			});
 	},
@@ -163,7 +338,62 @@ module.exports = {
 			if (err || ev == null)
 				return res.json({});
 			else
-				return res.json({codes:ev.codes});
+			{
+
+				User.find({}).exec(function(err,users){
+					_.each(ev.codes,function(f){
+						if (f.uid)
+						  f.user = _.find(users,{id:f.uid});
+					});
+
+					return res.json({codes:ev.codes});
+				});
+			}
+		});
+	},
+
+	resendcode:function(req,res)
+	{
+		Event.findOne(req.param('id')).exec(function(err,ev)
+		{
+			 var thecode = _.find(ev.codes,function(c){
+				 return c.code == req.param('code');
+			 });
+			 Event.getnewcode(function(newcode){
+				 _.each(ev.codes,function(e){
+					 if (e.code == req.param('code'))
+					 	e.code = newcode;
+				 });
+
+
+				if (thecode.number.length>1)
+					Nexmo.sendSMS({number:thecode.number,code:newcode});
+				if (thecode.email)
+					Email.sendEmail({to:thecode.email,subject:'Invite to Join a Film Crew',content:'You have been invited to join the Bootlegger film crew for '+ev.name + ". Click the link to accept. " + sails.config.master_url + '/join/'+newcode});
+				ev.save(function(err)
+				{
+					console.log(err);
+					return res.json({msg:'ok'});
+				});
+			});
+		});
+	},
+
+	remcode:function(req,res)
+	{
+		Event.findOne(req.param('id')).exec(function(err,ev)
+		{
+			var index = -1;
+			_.each(ev.codes,function(c,i){
+				if (c.code == req.param('code'))
+					index = i;
+					//delete ev.codes[i];
+			});
+			ev.codes.splice(index, 1);
+			ev.save(function()
+			{
+				return res.json({msg:'ok'});
+			});
 		});
 	},
 
@@ -173,15 +403,32 @@ module.exports = {
 		{
 			if (ev.codes == undefined)
 				ev.codes = new Array();
-			
+
 			Event.getnewcode(function(code){
-				ev.codes.push({number:req.param('number'),status:'sent',code:code});
-				Nexmo.sendSMS({number:req.param('number'),code:code});
-				ev.save(function()
+
+				var number = req.param('number');
+				if (!_.find(number,'+'))
+					number = '+'+number;
+				var doit = false;
+				if (number && phonenumber(req.param('number')))
 				{
-					return res.json({});
-				});
-			});		
+					doit = true;
+					Nexmo.sendSMS({number:number,code:code});
+				}
+				if (req.param('email') && ValidateEmail(req.param('email')))
+				{
+					doit = true;
+					Email.sendEmail({to:req.param('email'),subject:'Invite to Join a Film Crew',content:'You have been invited to join the Bootlegger film crew for '+ev.name + ". Click the link to accept. " + sails.config.master_url + '/join/'+code});
+				}
+				if (doit)
+				{
+					ev.codes.push({number:number,email:req.param('email'),status:'sent',code:code});
+					ev.save(function()
+					{
+						return res.json({msg:'ok'});
+					});
+				}
+			});
 		});
 	},
 
@@ -220,6 +467,7 @@ module.exports = {
 			//console.log(index);
 
 			ev.coverage_classes[index].items.push({name:item, direction:direction});
+
 			ev.save(function(err,ev)
 			{
 				sails.eventmanager.addevent(id);
@@ -230,8 +478,11 @@ module.exports = {
 
 	removecoverage:function(req,res)
 	{
+		//console.log("removing coverage");
 		var parentindex = req.param('parentindex');
+		//console.log(parentindex);
 		var index = req.param('index');
+		//console.log(index);
 		var id = req.params.id;
 		Event.findOne(req.params.id).exec(function(err,ev)
 		{
@@ -271,9 +522,6 @@ module.exports = {
 	{
 		var args = req.params.all();
 		var id = args.id;
-
-		//console.log(args);
-
 		delete args.id;
 
 		Event.update({
@@ -324,9 +572,32 @@ module.exports = {
 		return res.json({},200);
 	},
 
-	//subscribe to event feed and direction engine (socket.io)
+	/**
+	 * @api {get} /data/:id.zip Get Shoot Assets
+	 * @apiName getshoottemplate
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} id Shoot Id
+	 *
+	 * @apiSuccess {File} .zip Zip file filled with overlay assets
+	 */
+
+	/**
+	 * @api {socket.io get} /api/shoot/join/:id Register as Contributor
+	 * @apiName join
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} id Shoot id
+	 *
+	 * @apiSuccess {String} msg 'subscribed'
+	 */
 	sub:function(req,res)
 	{
+		//subscribe to event feed and direction engine (socket.io)
+		if (!req.param('id'))
+			return res.json({msg:'no shoot id given'},500);
+
+
 		req.socket.on('disconnect',function(){
 			//console.log('sub_disconn: '+ req.socket.id);
 
@@ -346,22 +617,51 @@ module.exports = {
 	resub:function(req,res)
 	{
 		User.subscribe(req.socket,[req.session.passport.user.id]);
-		sails.eventmanager.signin(req.param('id'),req.session.passport.user.id,req.session.passport.user,true,req.param('force'));		
+		sails.eventmanager.signin(req.param('id'),req.session.passport.user.id,req.session.passport.user,true,req.param('force'));
 		//console.log('Attempted re-subscribe (after connection drop) with: ' + req.socket.id);
 		return res.json({msg:'subscribed'});
 	},
 
-	//this is for the web view (not producing content) to get updates
+
+	/**
+	 * @api {socket.io get} /api/shoot/updates/:id Register to Monitor
+	 * @apiDescription Register for realtime socket.io events for this shoot.
+	 * @apiPermission admin
+	 * @apiName monitor
+	 * @apiGroup Shoot Management
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} id Shoot id
+	 *
+	 * @apiSuccess {String} msg 'Subscribed'
+	 */
 	updates:function(req,res)
 	{
+		//this is for the web view (not producing content) to get updates
+
+		if (!req.param('id'))
+			return res.json({msg:'no shoot id given'},500);
+
 		//console.log('subscribe to: '+ req.param('id'));
 		Event.subscribe(req.socket,[req.param('id')]);
 		sails.eventmanager.checkstatus(req.param('id'));
 		return res.json({msg:'subscribed'});
 	},
-	
+
+
+	/**
+	 * @api {socket.io post} /api/shoot/discon/:id Disconnnect
+	 * @apiName discon
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} id Shoot id
+	 *
+	 * @apiSuccess {String} msg 'logged out'
+	 */
 	signout:function(req,res)
 	{
+		if (!req.param('id'))
+			return res.json({msg:'no shoot id given'},500);
+
 		sails.eventmanager.disconnect(req.param('id'),req.session.passport.user.id);
 		//also remove from server / logout
 		var request = require('request');
@@ -376,9 +676,20 @@ module.exports = {
 		});
 	},
 
-	//for the client -- returns more information about the event
+
+	/**
+	 * @api {socket.io post} /api/shoot/connect/:id Connect
+	 * @apiName connect
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} id Shoot id
+	 *
+	 * @apiSuccess {Object} shoot Shoot template information
+	 */
 	subscribe:function(req,res)
 	{
+		if (!req.params.id)
+			return res.json({msg:'no shoot id given'},500);
 		//subscribe to messages from a specific event:
 		//send message to rest of team
 		Event.publishUpdate(req.params.id,{msg: req.session.passport.user.profile.displayName +' signed in to publish',timestamp:new Date().toLocaleDateString()},req.socket);
@@ -388,7 +699,7 @@ module.exports = {
 		{
 			if (ev)
 			{
-				var e = ev;				
+				var e = ev;
 				//cull shottypes from this list which do not match the appropriate leadlocation value
 				var direction = ev.leadlocation;
 
@@ -407,7 +718,11 @@ module.exports = {
 				e.roles = allroles;
 				e.eventcss = ev.eventtype.eventcss;
 				e.ispublic = e.public;
-				
+				e.shotrelease = ev.eventtype.shotrelease?ev.eventtype.shotrelease:'';
+
+				e.icon = (e.icon && e.icon!='') ? sails.config.S3_CLOUD_URL+e.icon : '';
+				e.iconbackground = (e.iconbackground && e.iconbackground!='') ? sails.config.S3_CLOUD_URL+e.iconbackground : '';
+
 				if (e.roleimg == undefined && ev.eventtype.roleimg != undefined)
 					e.roleimg = sails.config.S3_CLOUD_URL + ev.eventtype.roleimg;
 
@@ -435,70 +750,94 @@ module.exports = {
 		});
 	},
 
+
+	/**
+	 * @api {get} /api/profile/mine List Shoots
+	 * @apiDescription List the current user's shoots
+	 * @apiName mine
+	 * @apiGroup Profile
+	 * @apiVersion 0.0.2
+	 *
+	 *
+	 * @apiSuccess {Array} myevents
+	 * @apiSuccess {Array} codeevents
+	 * @apiSuccess {Array} publicevents
+	 */
 	myevents:function(req,res)
 	{
-		//find events owned by this user:
-		//console.log(req.user.id);
-		//console.log('listing my events');
-		var myevents = {};
-		var codeevents = {};
+		var foundalready = new Array();
 		
-		//console.log(req.session.passport);
-
-		Event.find(
-			{'ownedby': {
-        		contains: req.session.passport.user.id
-      		}}).exec(function(err,data){
-			var evs = new Array();
-			_.each(data,function(d){
-				if (!sails.localmode)
-						evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description,default_event:(d.id==req.session.passport.user.currentevent)});
-					else
-						evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description,default_event:(d.id==req.session.passport.user.currentevent)});
+		User.find({}).exec(function(err,users){
+			
+			//OWNER
+			Event.find(
+				{'ownedby': {
+	        		contains: req.session.passport.user.id
+	      		}}).exec(function(err,data){
 				
-			});
-
-			//console.log(data);
-
-			myevents = evs;
-
-			Event.find().where({'codes.uid':req.session.passport.user.id}).exec(function(err,event)
-			{
-				var evs = new Array();
-				_.each(event,function(d){
-					if (!sails.localmode)
-						evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description});
-					else
-						evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description});
+				_.each(data,function(d){
+					d.status = 'OWNER';
+					foundalready.push(d);
 				});
 
-				Media.find({created_by:req.session.passport.user.id}).exec(function(err,media)
+				//INVITED
+				Event.find().where({'codes.uid':req.session.passport.user.id}).exec(function(err,event)
 				{
-					var events = _.pluck(media,'event_id');
+					var codeevents = new Array();
+					_.each(event,function(d){
+						d.status = 'INVITED';
+						foundalready.push(d);
+					});
 
-					Event.find(events).exec(function(err,all)
+					//CONTRIBUTED
+					Media.find({created_by:req.session.passport.user.id}).exec(function(err,media)
 					{
-						codeevents = evs;
-						_.each(all,function(d)
-						{
-							codeevents.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description});
-						});
+						var events = _.pluck(media,'event_id');
 
-						Event.find().where({public:true}).exec(function(err,event)
+						Event.find(events).exec(function(err,all)
 						{
-							var evs = new Array();
-							_.each(event,function(d){
-							if (!sails.localmode)
-								evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description});
-							else
-								evs.push({icon:d.icon ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id, server:d.server, starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, server:'localhost',description:d.eventtype.description});
+							_.each(all,function(d)
+							{
+								d.status = 'INVITED';
+								foundalready.push(d);
+
 							});
-							return res.json({myevents:myevents,codeevents:codeevents,publicevents:evs});	
-						});		
+
+							Event.find().where({public:[1,true]}).exec(function(err,event)
+							{
+								var publicevents = new Array();
+								_.each(event,function(d){
+									d.status = 'PUBLIC';
+									foundalready.push(d);
+								});
+								
+								//now remove dupes:
+								var nodupes = _.uniq(foundalready,'id');
+								var output = [];
+								_.each(nodupes,function(d)
+								{
+									if (d.groupevent)
+									{
+										//console.log("grouping");
+										var mm = _.find(users,{id:d.ownedby[0]});
+										//console.log(mm);
+										if (!_.contains(output,{group:mm.profile.displayName})){
+											//console.log('creating group');
+											output.push({group:mm.profile.displayName,icon:mm.profile._json.picture,events:[]});
+										}
+										_.find(output,{group:mm.profile.displayName}).events.push({status:d.status,iconbackground:(d.iconbackground && d.iconbackground!='') ? sails.config.S3_CLOUD_URL+d.iconbackground : '',icon:(d.icon && d.icon!='') ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id,starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description,default_event:(d.id==req.session.passport.user.currentevent)});
+									}
+									else 
+									{
+										output.push({status:d.status,iconbackground:(d.iconbackground && d.iconbackground!='') ? sails.config.S3_CLOUD_URL+d.iconbackground : '',icon:(d.icon && d.icon!='') ? sails.config.S3_CLOUD_URL+d.icon : '',name:d.name,id:d.id,starts:d.starts,ends:d.ends,ends_time:d.ends_time,starts_time:d.starts_time, description:d.eventtype.description,default_event:(d.id==req.session.passport.user.currentevent)});
+									}
+								});
+
+								return res.json(output);
+							});
+						});
 					});
 				});
-
-						
 			});
 		});
 	},
@@ -530,10 +869,19 @@ module.exports = {
 		});
 	},
 
+	/**
+	 * @api {get} /api/profile/me Profile Information
+	 * @apiName User Profile
+	 * @apiGroup Profile
+	 * @apiVersion 0.0.2
+	 *
+	 * @apiSuccess {Object} result Current user's profile information
+	 */
 	me:function(req,res)
 	{
 		User.findOne(req.session.passport.user.id).exec(function(err,u)
 		{
+			delete u.pushcode;
 			return res.json(u);
 		});
 	},
@@ -570,7 +918,7 @@ module.exports = {
 				async.series(calls, function(err, result) {
 					//console.log(output);
 			       return res.json(output);
-				});		
+				});
 			}
 			else
 			{
@@ -579,26 +927,23 @@ module.exports = {
 		});
 	},
 
-	// testeventupdate:function(req,res)
-	// {
-	// 	Event.findOne(req.param('id'),function(err,ev){
-	// 		//console.log(ev);
-	// 		if (err==null && ev!=null)
-	// 		{
-	// 			//console.log(ev);
-	// 			sails.eventmanager.updateevent(ev.id);
-	// 			return res.json({msg:'Updated Changed'});
-	// 		}
-	// 		else
-	// 		{
-	// 			return res.json({msg:'Problem Updating'});
-	// 		}
-	// 	});
-	// },
-
+	/**
+	 * @api {socket.io post} /api/shoot/changephase/:id Change Phase
+	 * @apiName changephase
+	 * @apiPermission admin
+	 * @apiGroup Shoot Management
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} id Shoot id
+	 * @apiParam {Number} phase Phase to change to
+	 *
+	 * @apiSuccess {String} msg Subscribed
+	 */
 	changephase:function(req,res)
 	{
 		Event.findOne(req.param('id'),function(err,ev){
+			if (!req.param('id') || err || !ev)
+				return res.json({msg:'no shoot found'},500);
+
 			//console.log(ev);
 			if (err==null && ev!=null)
 			{
@@ -612,7 +957,7 @@ module.exports = {
 			}
 			else
 			{
-				return res.json({msg:'Problem Changing Phase'});
+				return res.json({msg:'Problem Changing Phase'},500);
 			}
 		});
 	},
@@ -628,6 +973,8 @@ module.exports = {
 			if (err==null && ev!=null)
 			{
 				//console.log(ev);
+				if (!ev.phases)
+					ev.phases = [];
 				ev.phases.push({name:req.param('phase')});
 				ev.save(function(err)
 				{
@@ -662,12 +1009,29 @@ module.exports = {
 		});
 	},
 
+	removeadmin:function(req,res){
+		Event.findOne(req.param('id'),function(err,ev){
+			if (req.param('userid') != req.session.passport.user.id)
+			{
+				var ix = _.indexOf(ev.ownedby,req.param('userid'));
+				ev.ownedby.splice(ix,1);
+				ev.save(function(err,e)
+				{
+					return res.json({msg:'ok'});
+				});
+			}
+			else {
+				return res.json({msg:'ok'});
+			}
+		});
+	},
+
 	addadmin:function(req,res)
 	{
 		//makes this person an admin on this event (if we can find them and they are not already)
 		//check for user exists:
 		//console.log(req.param('email'));
-		User.find({'profile.emails.value':req.param('email')}).exec(function(err,u)
+		User.findOne({'profile.emails.value':req.param('email')}).exec(function(err,u)
 		{
 			//console.log(u);
 
@@ -678,14 +1042,14 @@ module.exports = {
 					//console.log(ev);
 					if (err==null && ev!=null)
 					{
-						if (!_.contains(ev.ownedby,u[0].id))
+						if (!_.contains(ev.ownedby,u.id))
 						{
 							//console.log(u);
-							ev.ownedby.push(u[0].id);
+							ev.ownedby.push(u.id);
 							ev.save(function(err)
 							{
 								return res.json({msg:'Administrator Added'});
-							});	
+							});
 						}
 						else
 						{
@@ -736,9 +1100,20 @@ module.exports = {
 		  //console.log(req.method);
 		if (req.method == "POST" && req.file('map') != undefined)
 		{
-			
+
 			req.file('map').upload(function(err, tt)
 			{
+				if (err)
+				{
+					req.session.flash = {msg:err};
+					return res.redirect('/event/view');
+				}
+
+				if (tt.length != 1)
+				{
+					req.session.flash = {msg:'No file given'};
+					return res.redirect('/event/view');
+				}
 				var uuid = require('node-uuid');
 		 		var fakeid = uuid.v1();
 				var filename = fakeid + tt[0].filename;
@@ -747,7 +1122,7 @@ module.exports = {
 				//fs.copySync(tmp,tmpdir + filename);
 
 				//console.log('ready with file');
-			
+
 
 				client.putFile(tmp, 'upload/' + filename, {'x-amz-acl': 'public-read'},
 		    		function(err, result) {
@@ -776,13 +1151,118 @@ module.exports = {
 								res.redirect('/event/view');
 							}
 						});
-		    		});	
+		    		});
 			});
 		}
 		else
 		{
 			res.redirect('/event/view');
 		}
+	},
+
+	background:function(req,res)
+	{
+		var knox = require('knox');
+		//upload map file for an event role:
+		var knox_params = {
+		    key: sails.config.AWS_ACCESS_KEY_ID,
+		    secret: sails.config.AWS_SECRET_ACCESS_KEY,
+		    bucket: sails.config.S3_BUCKET
+		  }
+
+		  //console.log(req.method);
+		if (req.method == "POST" && req.file('image') != undefined)
+		{
+			req.file('image').upload(function(err, tt)
+			{
+				var uuid = require('node-uuid');
+	 			var fakeid = uuid.v1();
+				var filename = fakeid + tt[0].filename;
+				var tmp = tt[0].fd;
+				var client = knox.createClient(knox_params);
+
+				lwip.open(tmp, function(err, image) {
+				    if (err) return console.log(err);
+				    image.cover(600,250,function(err, image){
+				        image.writeFile(tmp+"_small.png", function(err){
+				            if (err) return console.log(err);
+							client.putFile(tmp+"_small.png", 'upload/' + filename + ".png", {'x-amz-acl': 'public-read'},
+					    		function(err, result) {
+					    			//done uploading
+									
+									
+					    			console.log('done uploading');
+					    			if (err)
+					    				console.log("s3 upload error: "+err);
+
+					    			Event.findOne(req.param('id')).exec(function(err,m){
+
+										if (!err && m!=undefined)
+										{
+											m.iconbackground = filename + ".png";
+											m.save(function(err){
+												req.session.flash = "Upload Complete";
+												res.redirect('/event/view');
+											});
+										}
+										else
+										{
+											req.session.flash = "Error Uploading Image";
+											res.redirect('/event/view');
+										}
+									});
+					    		});
+					        });
+					    });
+					});
+
+			});
+		}
+		else
+		{
+			res.redirect('/event/view');
+		}
+	},
+
+	clearbackground:function(req,res)
+	{
+		Event.findOne(req.param('id')).exec(function(err,m){
+
+			if (!err && m!=undefined)
+			{
+				m.iconbackground = "";
+				m.save(function(err){
+					console.log(err);
+					req.session.flash = {msg:"Background removed!"};
+					res.redirect('/event/view');
+				});
+			}
+			else
+			{
+				req.session.flash = {msg:"Error Removing Background"};
+				res.redirect('/event/view');
+			}
+		});
+	},
+	
+	clearicon:function(req,res)
+	{
+		Event.findOne(req.param('id')).exec(function(err,m){
+
+			if (!err && m!=undefined)
+			{
+				m.icon = "";
+				m.save(function(err){
+					req.session.flash = {msg:"Icon removed!"};
+					res.redirect('/event/view');
+				});
+			}
+			else
+			{
+				req.session.flash = {msg:"Error Removing Icon"};
+				res.redirect('/event/view');
+			}
+		});
 	},
 
 	image:function(req,res)
@@ -795,15 +1275,12 @@ module.exports = {
 		    bucket: sails.config.S3_BUCKET
 		  }
 
-
 		  //console.log(req.method);
 		if (req.method == "POST" && req.file('image') != undefined)
 		{
-			
-			
-
 			req.file('image').upload(function(err, tt)
 			{
+			
 				var uuid = require('node-uuid');
 	 			var fakeid = uuid.v1();
 				var filename = fakeid + tt[0].filename;
@@ -815,7 +1292,7 @@ module.exports = {
 				    image.cover(100,100,function(err, image){
 				        image.writeFile(tmp+"_small.png", function(err){
 				            if (err) return console.log(err);
-							client.putFile(tmp+"_small.png", 'upload/' + filename, {'x-amz-acl': 'public-read'},
+							client.putFile(tmp+"_small.png", 'upload/' + filename + ".png", {'x-amz-acl': 'public-read'},
 					    		function(err, result) {
 					    			//done uploading
 					    			//console.log('done uploading');
@@ -826,23 +1303,23 @@ module.exports = {
 
 										if (!err && m!=undefined)
 										{
-											m.icon = filename;
+											m.icon = filename + ".png";
 											m.save(function(err){
-												req.session.flash = "Upload Complete";
+												req.session.flash = {msg:"Upload Complete"};
 												res.redirect('/event/view');
 											});
 										}
 										else
 										{
-											req.session.flash = "Error Uploading Image";
+											req.session.flash = {msg:"Error Uploading Image"};
 											res.redirect('/event/view');
 										}
 									});
-					    		});	
+					    		});
 					        });
 					    });
 					});
-				
+
 			});
 		}
 		else
@@ -851,8 +1328,21 @@ module.exports = {
 		}
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/registerpush/:id Register for Push Notifications
+	 * @apiName push
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	* @apiParam {String} pushcode Pushcode for platform
+	* @apiParam {String} platform Platform of device
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	registerpush:function(req,res)
 	{
+		if (!req.param('pushcode') || !req.param('platform'))
+			return res.json({msg:'no pushcode or platform given'},500);
+
 		//add push code to the session:
 		req.session.pushcode = req.param('pushcode');
 		req.session.platform = req.param('platform');
@@ -863,7 +1353,7 @@ module.exports = {
 			u.platform = req.param('platform');
 			u.save(function(err)
 			{
-				return res.json({msg:'OK'},200);
+				return res.json({msg:'ok'},200);
 			});
 		});
 	},
@@ -875,15 +1365,43 @@ module.exports = {
 		res.json({});
 	},
 
+
+	/**
+	 * @api {post} /api/shoot/create Create New Shoot
+	 * @apiName create
+	 * @apiGroup Shoot Management
+	 * @apiVersion 0.0.2
+	 *
+	 * @apiParam {String} eventtype Shoot Template to Use
+	 * @apiParam {String} name Shoot Name
+	 * @apiParam {Date} starts Start Date
+	 * @apiParam {Date} start_time Start Time
+	 * @apiParam {Date} ends End Date
+	 * @apiParam {Date} end_time End Time
+	 * @apiSuccess {String} msg Subscribed
+	 */
 	addevent:function(req,res,next)
 	{
-		//console.log("creating: " + req.param('eventtype'));
+		if (!req.param('agree'))
+		{
+			req.session.flash = {msg:'Please agree to the terms and conditions.'};
+			return res.redirect('/commission/new');
+		}
+
+		if (!req.param('eventtype'))
+		{
+				return res.json({msg:'no template given'},500);
+		}
 
 		//do save
 		EventTemplate.findOne(req.param('eventtype')).exec(function(err,myev)
 		{
-		
-			//console.log(myev);	
+			if (err || !myev)
+				return res.json({msg:'no template found'},500);
+
+			
+
+			//console.log(myev);
 			//var myev = tys[req.param('eventtype')];
 			//console.log(myev);
 			var coverage_classes = myev.coverage_classes;
@@ -893,8 +1411,22 @@ module.exports = {
 				c.items = [];
 			});
 
+			//if (!coverage_classes.hasOwnProperty("0"))
+			//{
+			//console.log("fixing coverage array");
+			//fix for non array based coverage class
+			var i = 0;
+			var tmp = {};
+			_.each(coverage_classes,function(e,f)
+			{
+				tmp[i.toString()] = e;
+				i++;
+			});
+			coverage_classes = tmp;
+			//}
+
 			//console.log(coverage_classes);
-			
+
 			//add in missing modules:
 			if (!myev.post_modules)
 			{
@@ -913,8 +1445,8 @@ module.exports = {
 					myev.shoot_modules[m] = 0;
 				});
 
-				var lastone = _.last(_.pluck(sails.eventmanager.event_modules,'codename'));
-				myev.shoot_modules[lastone] = 1;
+				//var lastone = _.last(_.pluck(sails.eventmanager.event_modules,'codename'));
+				myev.shoot_modules['marathondirector'] = 1;
 			}
 
 			if (!myev.ruleset)
@@ -931,12 +1463,13 @@ module.exports = {
 			Event.getnewcode(function(code){
 				//console.log(myev);
 
-				var whichserver = sails.config.master_url;
+				var whichserver = sails.config.hostname + ':' + sails.config.port;
 
 				//var e = req.params.all();
 				//console.log(req.params.all());
 				var neevent = _.extend(req.params.all(),{publicshare:0,public:1,publicview:1,eventtype:myev,ownedby:[req.session.passport.user.id],meta_modules:meta_modules,post_modules:post_modules,shoot_modules:shoot_modules,coverage_classes:coverage_classes,offlinecode:code, codes:[], phases:phases});
 				delete neevent.id;
+				neevent.created_by = req.session.passport.user.id;
 				Event.create(neevent,function(err,event){
 
 					//event.ownedby = [];
@@ -949,12 +1482,12 @@ module.exports = {
 					{
 						//console.log("error adding event");
 						req.session.flash = {err:err.ValidationError};
-						//console.log(err.ValidationError);
+
 						return res.redirect('/commission/new');
 						//return;
 						//return next(err);
 					}
-					else   
+					else
 					{
 						//console.log("requesting server address");
 						var reqs = require('request');
@@ -969,9 +1502,9 @@ module.exports = {
 								}
 
 
-								console.log(body);
+								//console.log(body);
 
-								console.log("server:"+whichserver);
+								//console.log("server:"+whichserver);
 								//console.log("me:"+sails.hostname + ':'+ sails.port);
 								//console.log(err);
 
@@ -1008,9 +1541,16 @@ module.exports = {
 											user.save(function(err)
 											{
 												//console.log("redirect to view");
-												return res.redirect('/event/view');		
+												if (req.param('adjust'))
+												{
+													return res.redirect('/commission');
+												}
+												else
+												{
+													return res.redirect('/event/view');
+												}
 											}); //end user update
-											  
+
 										} // end if err
 									});	//end user find
 								});
@@ -1022,6 +1562,7 @@ module.exports = {
 		});//end get details...
 	},
 
+
 	list:function(req,res)
 	{
 		Event.find({},function(err,events){
@@ -1029,22 +1570,48 @@ module.exports = {
 		});
 	},
 
-	listtypes:function(req,res)
-	{
-		var tys = EventTypes.listEvents();
-		res.json(tys);
-	},
 
+	// listtypes:function(req,res)
+	// {
+	// 	var tys = EventTypes.listEvents();
+	// 	res.json(tys);
+	// },
+
+
+	/**
+	 * @api {socket.io post} /api/shoot/startrecording Start Recording
+	 * @apiName record
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	  * @apiParam {String} eventid Shoot id
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	startrecording:function(req,res)
 	{
+		if (!req.param('eventid'))
+			return res.json({msg:'no eventid given'},500);
+
 		sails.eventmanager.startrecording(req.param('eventid'),req.session.passport.user.id);
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/stoprecording Stop Recording
+	 * @apiName stoprecord
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	  * @apiParam {String} eventid Shoot id
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	stoprecording:function(req,res)
 	{
+		if (!req.param('eventid'))
+			return res.json({msg:'no eventid given'},500);
+
 		sails.eventmanager.stoprecording(req.param('eventid'),req.session.passport.user.id);
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	},
 
 	holdrecording:function(req,res)
@@ -1059,32 +1626,101 @@ module.exports = {
 		return res.json({msg:'OK'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/selectrole Select Role
+	 * @apiName selectrole
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	  * @apiParam {String} eventid Shoot id
+	 * @apiParam {Number} roleid Role id
+	 * @apiParam {Boolean} confirm Confirmed role
+	 *
+	 * @apiSuccess {String} msg Subscribed
+	 */
 	chooserole:function(req,res)
 	{
+		//console.log(req.allParams());
+		if (!req.param('eventid') || typeof req.param('roleid') == 'undefined')
+			return res.json({msg:'no eventid or roleid given'},500);
+
 		sails.eventmanager.chooserole(res, req.param('eventid'),req.session.passport.user.id, req.param('roleid'), req.param('confirm'));
 		return;
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/acceptrole Accept Role
+	 * @apiName acceptrole
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} eventid Shoot id
+	 * @apiParam {Number} roleid Role id
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	acceptrole:function(req,res)
 	{
+		//console.log(req.allParams());
+
+		if (!req.param('eventid') || typeof req.param('roleid') == 'undefined')
+			return res.json({msg:'no eventid or roleid given'},500);
+
 		sails.eventmanager.acceptrole(req.param('eventid'),req.session.passport.user.id,req.param('roleid'));
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/rejectrole Reject Role
+	 * @apiName rejectrole
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	  * @apiParam {String} eventid Shoot id
+	 * @apiParam {Number} roleid Role id
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	rejectrole:function(req,res)
 	{
+		f (!req.param('eventid') || typeof req.param('roleid') == 'undefined')
+			return res.json({msg:'no eventid or roleid given'},500);
+
 		sails.eventmanager.rejectrole(req.param('eventid'),req.session.passport.user.id,req.param('roleid'));
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/acceptshot Accept Shot
+	 * @apiName acceptshot
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} eventid Shoot id
+	 * @apiParam {Number} shotid Shot id
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	acceptshot:function(req,res)
 	{
+		if (!req.param('eventid') || typeof req.param('shotid') == 'undefined')
+			return res.json({msg:'no eventid or shotid given'},500);
+
 		sails.eventmanager.acceptshot(req.param('eventid'),req.session.passport.user.id,req.param('shotid'));
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/rejectshot Reject Shot
+	 * @apiName rejectshot
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} eventid Shoot id
+	 * @apiParam {Number} shotid Shot id
+	 *
+	 * @apiSuccess {String} msg Subscribed
+	 */
 	rejectshot:function(req,res)
 	{
+		if (!req.param('eventid') || typeof req.param('shotid') == 'undefined')
+			return res.json({msg:'no eventid or shotid given'},500);
+
 		sails.eventmanager.rejectshot(req.param('eventid'),req.session.passport.user.id,req.param('shotid'));
 		return res.json({msg:'OK'},200);
 	},
@@ -1095,27 +1731,76 @@ module.exports = {
 		return res.json({msg:'OK'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/ready:id Ready to Shoot
+	 * @apiName ready
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} eventid Shoot id
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	ready:function(req,res)
 	{
+		if (!req.param('eventid'))
+			return res.json({msg:'no eventid or shotid given'},500);
+
 		sails.eventmanager.ready(req.param('eventid'),req.session.passport.user.id);
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/leverole/:id Leave Role
+	 * @apiName leaverole
+	 * @apiGroup Shoot Participation
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} eventid Shoot id
+	 * @apiParam {Number} shotid Shot id
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	unselectrole:function(req,res)
 	{
+		if (!req.param('eventid'))
+			return res.json({msg: 'no shoot id given'},500);
+
 		sails.eventmanager.unselectrole(req.param('eventid'),req.session.passport.user.id);
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/started Start Shoot
+	 * @apiName started
+	 * @apiGroup Shoot Management
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} eventid Shoot Id
+	 *
+	 * @apiSuccess {String} msg Subscribed
+	 */
 	started:function(req,res)
 	{
+		if (!req.param('eventid'))
+			return res.json({msg: 'no shoot id given'},500);
 		sails.eventmanager.eventstarted(req.param('eventid'),req.session.passport.user.id);
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	},
 
+	/**
+	 * @api {socket.io post} /api/shoot/pause Pause Shoot
+	 * @apiName paused
+	 * @apiPermission admin
+	 * @apiGroup Shoot Management
+	 * @apiVersion 0.0.2
+	 * @apiParam {String} eventid Shoot Id
+	 *
+	 * @apiSuccess {String} msg 'ok'
+	 */
 	pause:function(req,res)
 	{
+		if (!req.param('eventid'))
+			return res.json({msg: 'no shoot id given'},500);
+		//console.log("trying pause"+req.param('eventid'));
 		sails.eventmanager.eventpaused(req.param('eventid'),req.session.passport.user.id);
-		return res.json({msg:'OK'},200);
+		return res.json({msg:'ok'},200);
 	}
 };

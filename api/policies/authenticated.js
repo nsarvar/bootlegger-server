@@ -16,6 +16,7 @@ module.exports = function (req, res, ok) {
   	if (req.wantsJSON)
   	{
       //console.log("no in json");
+      
     	return res.send("You are not permitted to perform this action.", 403);
     }
     else

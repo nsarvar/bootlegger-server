@@ -1,10 +1,10 @@
 exports.sendSMS = function(options) {
 	var nexmo = require('nexmoapi').Nexmo;
-	var sender = new nexmo('aa0a6dc2', '597b166a',true);
+	var sender = new nexmo(sails.config.nexmo.id, sails.config.nexmo.key,true);
 	var to = options.number;
 	var code = options.code;
 	var from = "Bootlegger";
-	var text = "You have been added as part of a production team on Bootlegger. Download the app from http://bootlegger.tv, and use the code " + code + " to access this event."
+	var text = "You have been invited to take part in a Bootlegger film crew. Get involved at "+sails.config.master_url+"/join/" + code + "."
 	sender.send(from, to, text, function(err){
 		//done
 		console.log("text sent" + err);

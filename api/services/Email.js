@@ -5,7 +5,6 @@ var directTransport = require('nodemailer-direct-transport');
 var transporter = nodemailer.createTransport(directTransport());
 
 exports.sendEmail = function(options) {
-
     transporter.sendMail({
 		from: "Bootlegger <no-reply@bootlegger.tv>", // sender address
         to: options.to, // list of receivers

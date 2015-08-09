@@ -3,24 +3,27 @@ Bootlegger is a system to orchestrate multiple users capturing footage for a fil
 
 Each user's native mobile application connects to a Bootlegger server, which coordinates their actions according to a pre-defined shoot templates.
 
-## Other Features
-- shot instructions
-- dropbox integration to sync footage at the end of the shoot
-- S3 backend for storing media
+![](architecture.png "Bootlegger Architecture")
 
 ## Requirements
 Bootlegger requires:
 
-- Node.js
-- MongoDB
-- Websockets ([Socket.io](http://socket.io/))
-- [SailsJS](http://sailsjs.org) (MVC Framework)
+- Node.js https://nodejs.org/
+- MongoDB https://www.mongodb.org/
+- Redis http://redis.io/
+- Google Developer Account (optional)
+- Facebook Developer Account (optional)
+- Dropbox Developer Account (optional)
+- Beanstalk http://kr.github.io/beanstalkd/
+- Amazon S3 Account
+- Amazon Elastic Transcoder Account
 
 ## Setting Up Development
-- Install [Node.js](http://nodejs.org/) and [MongoDB](http://www.mongodb.org/)
+- Install all services
 > You might find installing [Ampps](http://www.ampps.com/downloads) helps with mongo, as it includes rockmongo, an admin ui for mongodb.
 
-- Download files from Git
+
+- Clone from Git
 - Enter server directory
 - Run `npm install`
 - Copy config/local.example.js to config/local.js and fill in missing information, including your Mongo and Redis, Google and S3 connection details.
@@ -28,9 +31,6 @@ Bootlegger requires:
 ## Starting the Server
 Running bootlegger on your local machine:
 `node app.js`
-
-Running Local Mode Server (4 digit code login) (without nginx to serve static resources): 
-`node app.js --local`
 
 Running a 'live' server:
 `node app.js --production`

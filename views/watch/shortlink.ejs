@@ -1,0 +1,84 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+                <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <style>
+        body
+        {
+            margin:0;
+            padding: 0;
+            font-family:"Open Sans",sans;
+            font-weight:300;
+            font-style: normal;
+        }
+
+        h1{
+          font-weight:300;
+          text-shadow:0 0 20px rgba(0,0,0,0.5)
+        }
+
+        h1 small{
+          font-size:0.7em;
+        }
+
+        video
+        {
+            margin:auto auto;
+            width:80%;
+            display:block;
+            margin-top:6%;
+            box-shadow:0 0 20px rgba(0,0,0,0.5)
+        }
+
+        @media (max-width: 600px) {
+          video
+          {
+            width:100%;
+            margin-top:0;
+          }
+        }
+        </style>
+        
+        <% if (typeof(edit) != 'undefined'){ %>
+        <title><%- edit.title %></title>
+        <meta property="og:title" content="<%- edit.title %>" />
+        <meta property="og:type" content="video.other" />
+        <meta property="og:image" content="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>-00001.png" />
+        <meta property="og:url" content="<%- sails.config.master_url %>/v/<%- edit.shortlink %>" />
+        <meta property="og:video" content="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>.mp4" />
+        <meta property="og:video:type" content="video/mp4" />
+        <meta property="og:video:width" content="854" />
+        <meta property="og:video:height" content="480" />
+        <meta name="twitter:card" content="player">
+        <meta name="twitter:site" content="@BootleggerTV">
+        <meta name="twitter:title" content="<%- edit.title %>">
+        <meta name="twitter:image" content="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>-00001.png">
+        <meta name="twitter:player" content="<%- sails.config.master_url %>/v/<%- edit.shortlink %>">
+        <meta name="twitter:player:width" content="854">
+        <meta name="twitter:player:height" content="480">
+        <meta name="twitter:player:stream" content="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>.mp4">
+        <meta name="twitter:player:stream:content_type" content="video/mp4">        
+    </head>
+    <body style="height:100%;width:100%;overflow:hidden;background:#1f1f1f">
+
+        <% if (edit.path) { %>
+        <video controls autoplay >
+            <source src="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>.mp4"></source>
+        </video>
+        <% } else { %>
+        <% if (edit.failed) { %>
+          <div style="width:30%;font-size:30pt;color:#444;margin:auto auto; margin-top:20%;font-family:sans-serif;color:orange;"><i class="fa fa-alert"></i>There was a problem editing this video!</div>
+         <% } else {%>
+        <div style="width:30%;font-size:30pt;color:#444;margin:auto auto; margin-top:20%;font-family:sans-serif;text-align:center;"><i class="fa fa-spin fa-gear"></i><br> This video is still being edited...</div>
+        <% }} %>
+        <h1 style="color:white;text-align:center;"><%- edit.title %><br><small><%- edit.description %></small></h1>
+    </body>
+    <% } else {%>
+         <body style="height:100%;width:100%;overflow:hidden;background:#1f1f1f">
+        <h1 style="color:white;text-align:center;"> Micro-Edits from this shoot cannot be shared, sorry.</h1>
+    </body>
+      <% } %>
+</html>

@@ -27,171 +27,132 @@
  */
 
 module.exports.routes = {
-
-  // By default, your root route (aka home page) points to a view
-  // located at `views/home/index.ejs`
-  // 
-  // (This would also work if you had a file at: `/views/home.ejs`)
 '/': 'AuthController.login',
 '/v/:shortlink?':'WatchController.shortlink',
 '/howtobootleg/:platform?':'AuthController.howtobootleg',
-//'/faq':'AuthController.faq',
+'/auth/mobilelogin/:id?':'AuthController.mobilelogin',
 '/status':'AuthController.status',
 '/auth': 'AuthController.login',
 '/event/myevents':'EventController.myevents',
 '/event/view/:id?': 'EventController.view',
 '/event/edit/:id?': 'EventController.edit',
-'/auth/clone_output/:id?':'AuthController.clone_output',
-// '/event/getimages/:id?':'EventController.getimages',
-//'/event/server/:id?':'EventController.server',
-'/pre':'EventControler.view',
-'/shoot':'ShootController.index',
-'/watch/:id?':'WatchController.index',
-'/post':'PostController.index',
-'/deliver':'DeliveryController.index',
+'/event/image/:id?':{uploadLimit:'4mb'},
+//'/auth/clone_output/:id?':'AuthController.clone_output',
+'/post/module_function/audio_sync/:id?':{uploadLimit: '500mb'},
+'/post/remind':'PostController.remind',
+'/post/broadcast':'PostController.broadcast',
+'/post/module_function':'PostController.module_function',
+'/post/module/:id?':'PostController.module',
+'/post/getnumbers':'PostController.getnumbers',
+'/post/document':'PostController.document',
+'/post/canceldownload':'PostController.canceldownload',
+'/post/downloadprogress':'PostController.downloadprogress',
+'/post/myoutputtemplates':'PostController.myoutputtemplates',
+'/post/downloadall':'PostController.downloadall',
+'/post/updateoutputs':'PostController.updateoutputs',
+
+'/commission/addshot':'CommissionController.addshot',
+'/commission/example':'CommissionController.example',
+'/commission/savetoreuse':'CommissionController.savetoreuse',
+'/commission/savetocommunity':'CommissionController.savetocommunity',
+'/commission/update':'CommissionController.update',
+'/commission/info':'CommissionController.info',
+'/commission/templateinfo':'CommissionController.templateinfo',
+'/commission/savetooriginal':'CommissionController.savetooriginal',
+'/commission/allshots':'CommissionController.allshots',
+'/commission/allmodules':'CommissionController.allmodules',
+'/commission/updateshots':'CommissionController.updateshots',
+
+'/shoot/preedit':'ShootController.preedit',
+'/shoot/liveedit':'ShootController.liveedit',
+'/shoot/:id?':'ShootController.index',
+
 '/media/upload/:id?':{uploadLimit: '500mb'},
 '/media/uploadthumb/:id?':{uploadLimit: '4mb'},
 '/event/registercode/:code?':'EventController.registercode',
-'/auth/local_login/:code?':'AuthController.local_login',
-'/post/module/:id?':'PostController.module',
-'/demo1':'AuthController.demo1',
-'/demo2':'AuthController.demo2'
+'/media/transcodefile':'MediaController.transcodefile',
+//'/auth/local_login/:code?':'AuthController.local_login',
 
-   // 'post /dologin': {
-   //              controller: 'AuthController',
-   //              action: 'dologin'
-   //  },
-   //  'get /openid': {
-   //          controller: 'AuthController',
-   //          action: 'openid'
-   //  }
-
-
-
-  /*
-  // But what if you want your home page to display
-  // a signup form located at `views/user/signup.ejs`?
-  '/': {
-    view: 'user/signup'
-  }
+// '/demo1':'AuthController.demo1',
+// '/demo2':'AuthController.demo2',
+'/terms':'AuthController.terms',
+'/privacy':'AuthController.privacy',
+'/getapp':'AuthController.getapp',
+'/join/:id?':'AuthController.join',
+'/joincomplete':'AuthController.joincomplete',
+'/media/nicejson/:id?':'MediaController.nicejson',
+'/dashboard':'EventController.dashboard',
+'/commission/new':'CommissionController.new',
+'/commission/:id?':'CommissionController.index',
+'/post/:id?':'PostController.index',
 
 
-  // Let's say you're building an email client, like Gmail
-  // You might want your home route to serve an interface using custom logic.
-  // In this scenario, you have a custom controller `MessageController`
-  // with an `inbox` action.
-  '/': 'MessageController.inbox'
+/*
+API ENDPOINTS
+*/
+
+//info
+'/api':'ApiController.index',
+//server status
+'/api/status':'AuthController.status',
+
+'/api/getkey':'ApiController.getkey',
+
+//login
+'/api/login':'AuthController.apilogin',
+//logout
+'/api/logout':'AuthController.apilogout',
+
+//list shots
+'/api/commission/shots':{controller:'CommissionController',action:'allshots',policy:'apiauth'},
+//get template
+'/api/commission/gettemplate/:id?':{controller:'CommissionController',action:'templateinfo',policy:'apiauth'},
+//update template
+'/api/commission/update/:id?':{controller:'CommissionController',action:'update',policy:'apiauth'},
+//update shots live
+'/api/commission/updateshots/:id?':{controller:'CommissionController',action:'updateshots',policy:'apiauth'},
+//my events
+'/api/profile/mine':{controller:'EventController',action:'myevents',policy:'apiauth'},
+//my profile details
+'/api/profile/me':{controller:'EventController',action:'me',policy:'apiauth'},
+
+//create new media
+'/api/media/create':{controller:'MediaController',action:'addmedia',policy:'apiauth'},
+'/api/media/update/:id?':{controller:'MediaController',action:'update',policy:'apiauth'},
+//upload media thumb
+'/api/media/signuploadthumb/:id?':{controller:'MediaController',action:'uploadsignthumb',policy:'apiauth'},
+'/api/media/uploadthumbcomplete/:id?':{controller:'MediaController',action:'s3notifythumb',policy:'apiauth'},
+//upload media file
+'/api/media/signupload/:id?':{controller:'MediaController',action:'uploadsign',policy:'apiauth'},
+'/api/media/uploadcomplete/:id?':{controller:'MediaController',action:'s3notify',policy:'apiauth'},
+//get all media for event
+'/api/media/shoot/:id?':[{controller:'MediaController',action:'nicejson'},{policy:'apiauth'},{policy:'viewonly'}],
+
+//get all media for event
+'/api/post/newedit':{controller:'WatchController',action:'newedit',policy:'apiauth'},
+
+'/api/shoot/changephase/:id?':[{controller:'EventController',action:'changephase'},{policy:'apiauth'},{policy:'isowner'}],
+'/api/shoot/create':[{controller:'EventController',action:'addevent'},{policy:'apiauth'},{policy:'eventlimit'}],
+'/api/shoot/pause':[{controller:'EventController',action:'pause'},{policy:'apiauth'},{policy:'isowner'}],
+'/api/shoot/started':[{controller:'EventController',action:'started'},{policy:'apiauth'},{policy:'isowner'}],
+'/api/shoot/updates/:id?':[{controller:'EventController',action:'updates'},{policy:'apiauth'},{policy:'isowner'}],
+//connect to event
+
+'/api/shoot/acceptrole':{controller:'EventController',action:'acceptrole',policy:'apiauth'},
+'/api/shoot/acceptshot':{controller:'EventController',action:'acceptshot',policy:'apiauth'},
+'/api/shoot/connect/:id?':{controller:'EventController',action:'subscribe',policy:'apiauth'},
+'/api/shoot/join/:id?':{controller:'EventController',action:'sub',policy:'apiauth'},
+'/api/shoot/discon/:id?':{controller:'EventController',action:'signout',policy:'apiauth'},
+'/api/shoot/leaverole/:id?':{controller:'EventController',action:'unselectrole',policy:'apiauth'},
+'/api/shoot/ready/:id?':{controller:'EventController',action:'ready',policy:'apiauth'},
+'/api/shoot/registerpush/:id?':{controller:'EventController',action:'registerpush',policy:'apiauth'},
+'/api/shoot/rejectrole':{controller:'EventController',action:'rejectrole',policy:'apiauth'},
+'/api/shoot/rejectshot/:id?':{controller:'EventController',action:'rejectshot',policy:'apiauth'},
+'/api/shoot/selectrole':{controller:'EventController',action:'chooserole',policy:'apiauth'},
+'/api/shoot/startrecording':{controller:'EventController',action:'startrecording',policy:'apiauth'},
+'/api/shoot/stoprecording':{controller:'EventController',action:'stoprecording',policy:'apiauth'},
 
 
-  // Alternatively, you can use the more verbose syntax:
-  '/': {
-    controller: 'MessageController',
-    action: 'inbox'
-  }
 
 
-  // If you decided to call your action `index` instead of `inbox`,
-  // since the `index` action is the default, you can shortcut even further to:
-  '/': 'MessageController'
-
-
-  // Up until now, we haven't specified a specific HTTP method/verb
-  // The routes above will apply to ALL verbs!
-  // If you want to set up a route only for one in particular
-  // (GET, POST, PUT, DELETE, etc.), just specify the verb before the path.
-  // For example, if you have a `UserController` with a `signup` action,
-  // and somewhere else, you're serving a signup form looks like: 
-  //
-  //		<form action="/signup">
-  //			<input name="username" type="text"/>
-  //			<input name="password" type="password"/>
-  //			<input type="submit"/>
-  //		</form>
-
-  // You would want to define the following route to handle your form:
-  'post /signup': 'UserController.signup'
-
-
-  // What about the ever-popular "vanity URLs" aka URL slugs?
-  // (you remember doing this with `mod_rewrite` in PHP)
-  //
-  // This is where you want to set up root-relative dynamic routes like:
-  // http://yourwebsite.com/twinkletoezz993
-  //
-  // You still want to allow requests through to the static assets,
-  // So we need to set up this route to allow URLs through that have a trailing ".":
-  // (e.g. your javascript, CSS, and image files)
-  'get /*(^.*)': 'UserController.profile'
-
-  */
 };
-
-
-
-/** 
- * (3) Action blueprints
- * These routes can be disabled by setting (in `config/controllers.js`):
- * `module.exports.controllers.blueprints.actions = false`
- *
- * All of your controllers ' actions are automatically bound to a route.  For example:
- *   + If you have a controller, `FooController`:
- *     + its action `bar` is accessible at `/foo/bar`
- *     + its action `index` is accessible at `/foo/index`, and also `/foo`
- */
-
-
-/**
- * (4) Shortcut CRUD blueprints
- *
- * These routes can be disabled by setting (in config/controllers.js)
- *			`module.exports.controllers.blueprints.shortcuts = false`
- *
- * If you have a model, `Foo`, and a controller, `FooController`,
- * you can access CRUD operations for that model at:
- *		/foo/find/:id?	->	search lampshades using specified criteria or with id=:id
- *
- *		/foo/create		->	create a lampshade using specified values
- *
- *		/foo/update/:id	->	update the lampshade with id=:id
- *
- *		/foo/destroy/:id	->	delete lampshade with id=:id
- *
- */
-
-/**
- * (5) REST blueprints
- *
- * These routes can be disabled by setting (in config/controllers.js)
- *		`module.exports.controllers.blueprints.rest = false`
- *
- * If you have a model, `Foo`, and a controller, `FooController`,
- * you can access CRUD operations for that model at:
- *
- *		get /foo/:id?	->	search lampshades using specified criteria or with id=:id
- *
- *		post /foo		-> create a lampshade using specified values
- *
- *		put /foo/:id	->	update the lampshade with id=:id
- *
- *		delete /foo/:id	->	delete lampshade with id=:id
- *
- */
-
-/**
- * (6) Static assets
- *
- * Flat files in your `assets` directory- (these are sometimes referred to as 'public')
- * If you have an image file at `/assets/images/foo.jpg`, it will be made available
- * automatically via the route:  `/images/foo.jpg`
- *
- */
-
-
-
-/**
- * (7) 404 (not found) handler
- *
- * Finally, if nothing else matched, the default 404 handler is triggered.
- * See `config/404.js` to adjust your app's 404 logic.
- */
- 

@@ -22,6 +22,12 @@
  * 
  */
 
+
+/*
+TODO -- need to configure this so that CORS checks are only carried out on everything apart from the /api/* routes -- i.e. stops access to everything not from the same domain on these routes? -- this will also have to work for the app too...
+
+*/
+
 module.exports.cors = {
 
 	// Allow CORS on all routes by default?  If not, you must enable CORS on a 
@@ -40,10 +46,12 @@ module.exports.cors = {
 
 	// Which methods should be allowed for CORS requests?  This is only used
 	// in response to preflight requests (see article linked above for more info)
-	methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
+	//methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
+
+	exposeHeaders:['content-type','origin','host']
 
 	// Which headers should be allowed for CORS requests?  This is only used
 	// in response to preflight requests.
-	headers: 'content-type'
+	//headers: ['content-type','origin','host']
 
 };

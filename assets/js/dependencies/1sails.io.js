@@ -392,7 +392,11 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       // `data` is optional
       if (typeof data === 'function') {
         cb = data;
-        data = {};
+        data = {apikey:apikey};
+      }
+      else
+      {
+      	data.apikey = apikey;
       }
 
       return this._request({
@@ -420,7 +424,11 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       // `data` is optional
       if (typeof data === 'function') {
         cb = data;
-        data = {};
+        data = {apikey:apikey};
+      }
+      else
+      {
+      	data.apikey = apikey;
       }
 
       return this._request({

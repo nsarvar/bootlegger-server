@@ -1,0 +1,25 @@
+{
+  "name": "Bootlegger API",
+  "title":"Bootlegger API Documentation",
+  "description": "API for bootlegger",
+  "header": {
+    "title": "Getting Started",
+    "filename": "header.md"
+  },
+  "footer": {
+    "title": "More Information",
+    "filename": "footer.md"
+  },
+  "withGenerator":false,
+  "sampleUrl":"https://dev.bootlegger.tv",
+  "order": [
+    "Misc",
+    "Authentication",
+    "Profile",
+    "Commission",
+    "Shoot Participation",
+    "Media",
+    "Shoot Management",
+    "Post Production"
+  ]
+}

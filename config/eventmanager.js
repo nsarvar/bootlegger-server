@@ -20,7 +20,7 @@ module.exports = {
 			//console.log(module.exports.event_modules);
 			module.exports.event_modules[e.codename] = e;
 			module.exports.event_modules[e.codename].init(multiserver);
-			sails.winston.info("Init "+e.codename+ " done.");
+			Log.info('eventmanager',"Init "+e.codename+ " done.");
 			e.longpoll();
 			setInterval(function (){
 				e.trigger();
@@ -41,7 +41,7 @@ module.exports = {
 		});
 
 		//create missing zip files for events if they are not already there:
-		sails.winston.info("Generating Zip Files for Events");
+		Log.info('eventmanager',"Generating Zip Files for Events");
 
 		Event.find({}).exec(function(err,events)
         {
@@ -50,12 +50,12 @@ module.exports = {
 			{
 				calls.push(function(cbb){
 					//console.log("doing: "+e.id);
-					e.genzip(cbb);		
+					e.genzip(cbb);
 				});
 			});
 			async.series(calls,function(err)
 			{
-				sails.winston.info("Event Zips Created");
+				Log.info('eventmanager',"Event Zips Created");
 			});
 		});
 
@@ -99,7 +99,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].process(req, media);
 				});
 			}
@@ -109,13 +109,12 @@ module.exports = {
 	//add event once the system is running
 	addevent:function(eventid)
 	{
-		//console.log("EVENTID: "+media.event_id);
 		//console.log(event_modules);
 		Event.findOne(eventid).exec(function (err,event) {
 			//console.log(event);
 			if (err || event == undefined) return;
 			event.genzip(function(){
-				
+
 			});
 			if (event.shoot_modules)
 			{
@@ -123,7 +122,7 @@ module.exports = {
 				{
 					//if module enabled for this event...
 					//console.log("adding event on "+k);
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].addevent(eventid);
 				});
 			}
@@ -139,7 +138,7 @@ module.exports = {
 			{
 				_.each(event.post_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].post(media);
 				});
 			}
@@ -155,10 +154,11 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 					{
-						console.log("starting signin");module.exports.event_modules[k].signin(eventid,user,profile,resub);	
-					}					
+						//console.log("starting signin");
+						module.exports.event_modules[k].signin(eventid,user,profile,resub);
+					}
 				});
 			}
 		});
@@ -174,7 +174,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].signout(eventid,user);
 				});
 			}
@@ -189,7 +189,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].startrecording(eventid,user);
 				});
 			}
@@ -205,7 +205,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].stoprecording(eventid,user);
 				});
 			}
@@ -221,7 +221,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].holdrecording(eventid,user);
 				});
 			}
@@ -237,7 +237,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].skiprecording(eventid,user);
 				});
 			}
@@ -253,7 +253,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].chooserole(res,eventid,user,role,confirmed);
 				});
 			}
@@ -269,7 +269,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].acceptrole(eventid,user,role);
 				});
 			}
@@ -285,7 +285,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].rejectrole(eventid,user,role);
 				});
 			}
@@ -301,7 +301,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].rejectshot(eventid,user,shot);
 				});
 			}
@@ -317,7 +317,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].acceptshot(eventid,user,shot);
 				});
 			}
@@ -333,7 +333,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].triggerinterest(eventid,user,role,shot);
 				});
 			}
@@ -349,7 +349,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].ready(eventid,user);
 				});
 			}
@@ -365,7 +365,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].unselectrole(eventid,user);
 				});
 			}
@@ -381,7 +381,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].eventstarted(eventid,user);
 				});
 			}
@@ -396,12 +396,12 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
-						module.exports.event_modules[k].eventpaused(eventid,user);
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
+						module.exports.event_modules[k].eventpaused(eventid,userid);
 				});
 			}
 		});
-	},	
+	},
 
 	//check status of events (eg users)
 	checkstatus:function(eventid)
@@ -412,7 +412,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].checkstatus(eventid);
 				});
 			}
@@ -428,7 +428,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].disconnect(eventid,user);
 				});
 			}
@@ -444,7 +444,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].heartbeat(eventid,user);
 				});
 			}
@@ -460,7 +460,7 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].changephase(eventid,phase);
 				});
 			}
@@ -476,8 +476,30 @@ module.exports = {
 			{
 				_.each(event.shoot_modules,function(v,k,l)
 				{
-					if (v && module.exports.event_modules[k]!=undefined)
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].updateevent(event);
+				});
+			}
+		});
+	},
+
+	//getusers
+	getusers:function(eventid,cb)
+	{
+		Event.findOne(eventid).exec(function (err,event) {
+			if (err || event == undefined) return;
+			if (event.shoot_modules)
+			{
+				_.each(event.shoot_modules,function(v,k,l)
+				{
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
+					{
+						if (module.exports.event_modules[k].AllEvents[eventid])
+						{
+							var users = module.exports.event_modules[k].AllEvents[eventid].users;
+							cb(_.pluck(users,'id'));
+						}
+					}
 				});
 			}
 		});

@@ -20,6 +20,16 @@ function genedl(event,callback)
 				return _.find(users,{id:u});
 			});
 
+			var allusers = _.filter(allusers,function(u)
+			{
+				if (u.permissions)
+				{
+					return !u.permissions[event];
+				}
+				else
+					{return true;}
+			});
+
 			allusers = _.sortBy(allusers,function(u){
 				return u.profile.name.familyName || u.profile.displayName;
 			});
@@ -36,6 +46,9 @@ function genedl(event,callback)
 module.exports = {
 
 	codename:'titles',
+	name:'Titles Generator',
+	description:'Generates a list of names which can be used for attributation and titling.',
+
 
 	init:function()
 	{

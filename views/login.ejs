@@ -1,1565 +1,424 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Bootlegger</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Bootlegger connects fans together in realtime to act as a coordinated camera crew.
-It produces high quality, content rich footage with no expense">
-<meta name="author" content="Bootlegger.tv">
-<meta name="google-site-verification" content="9VV37JlFo9nMYNnmxw_iMZ0uEeONLE59qc7m4rzDUQ4" />
-<link href='https://fonts.googleapis.com/css?family=Open+Sans|Waiting+for+the+Sunrise' rel='stylesheet' type='text/css' />
-<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
-<link rel="shortcut icon" href="favicon.png">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Bootlegger: Your personal film director and way to contribute to shoots all over the world.">
+    <meta name="author" content="Bootlegger">
+    <link rel="shortcut icon" href="/static/favicon.png">
+    <title>Bootlegger</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/static/styles-frontpage/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    <!-- JQuery Core JS -->
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <!-- Custom Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- Custom CSS -->
+    <link href="/static/styles-frontpage/animate.css" rel="stylesheet">
+    <link href="/static/styles-frontpage/modal.css" rel="stylesheet">
+    <link href="/static/styles-frontpage/navbar.css" rel="stylesheet">
+    <link href="/static/styles-frontpage/frontpage.css" rel="stylesheet">
+    <link href="/static/styles-frontpage/timeline.css" rel="stylesheet">
+    <link href="/static/styles-frontpage/footer.css" rel="stylesheet">
+
+
+    <!-- Custom JS -->
+    <script type="text/javascript" src="/static/js-extra/frontpage.js"></script>
+    <script type="text/javascript" src="/static/js-extra/covervid.min.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
 <style>
-
-body
-{
-  /*background:rgb(250,250,250);*/
-  margin:0;
-  padding: 0;
-  font-family: 'Open Sans', sans-serif;
-}
-
-
-.bcg {
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    height: 100%;
+.covervid-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-}
-/* Slide 1 */
-#slide-1 .bcg {
-  background-image:url('/static/images/slide1.jpg');
-  background-color: #040404;
-}
-
-/* CSS - Slide 2 */
-#slide-2 .bcg {
-    height: 300px;
-    background-image:url('/static/images/people.png');
-    background-size: initial;
-    background-attachment: inherit;
-    background-size: 100% 350px;
-    background-position: 0 100px;
-    background-repeat: repeat-x;
-}
-
-#slide-3, #slide-4, #slide-5, #slide-6
-{
-  height:100%;
-  background-image:url('/static/images/tiledbg.png');
-  background-attachment: scroll;
-  background-repeat: repeat;
-  background-size: initial;
-}
-
-#slide-3 .bcg{
-  /*background-image:url('phone4.png');*/
-  background-image:url('/static/images/tiledbg.png');
-  background-attachment: scroll;
-  background-repeat: repeat;
-  background-size: initial;
-}
-
-#slide-5 .bcg {
-  background-image:url('/static/images/pcb2.jpg');
-  background-repeat: repeat-y;
-}
-
-
-
-#slide-6 .bcg {background-image:url('/static/images/gallery.jpg');background-size: cover;}
-
-.menu
-{
-  padding:0;
-  margin: 0;
-}
-
-.menu li{
-  list-style: none;
-  display:block;
-  float:left;
-  color:white;
-  padding:2px;
-  /*width:15%;*/
-  padding-left:20px;
-  padding-right:20px;
-  /*font-size: 14pt;*/
-  text-align: center;
-  /*background:blue;*/
-  margin:0;
-  border-top: 3px solid transparent;
-  padding-top:3px;
-}
-
-.menu li a
-{
-  color:white;
-}
-
-li.active
-{
-  border-top: 3px solid #0088aa;
-  /*font-size: 15pt;*/
-}
-
-.slide
-{
-  
-}
-
-h2,h1,h3,h5
-{
-  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.6);
-  text-align: center;
-  color:white;
-  font-size:30pt;
-  font-family: Open Sans, sans-serif;
-  font-weight: normal;
-  margin:0;
-}
-h2
-{
-  font-size: 24pt;
-  font-family: Waiting for the Sunrise;
-  color:#0088aa;
-}
-
-h3
-{
-  font-size:40pt;
-}
-
-a
-{
-  color:white;
-  text-decoration: none;
-}
-
-.mainhand_p
-{
-  width:1000px;
-  height:90%;
-  position: fixed;
-  bottom:0px;
-  right:0px;
-  overflow: hidden;
-  margin-top: 200px;
-}
-
-.mainhand
-{
-  background-image:url('/static/images/hand1.png');
-  background-repeat: no-repeat;
-  background-position: right -100px top;
-  background-size: contain;
-  width:1000px;
-  height:720px;
-  overflow: hidden;
-}
-
-.grad1
-{
-background-color: green;
-width:100%;
-height:50px;
-background: linear-gradient(to bottom, rgba(0, 0, 0, 1),  rgba(0, 0, 0, 0));
-}
-
-.grad2
-{
-width:100%;
-height:50px;
-position:absolute;
-bottom:0;
-background: linear-gradient(to top, rgba(0, 0, 0, 1),  rgba(0, 0, 0, 0));
-}
-
-.msgl
-{
-  width:30%;
-  margin-left:30px;
-  position: absolute;
-}
-
-.popover {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1060;
-  display: none;
-  max-width: 276px;
-  padding: 1px;
-  min-width: 200px;
-  text-align: left;
-  white-space: normal;
-  background-color: #fff;
-  -webkit-background-clip: padding-box;
-          background-clip: padding-box;
- /* border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, .2);*/
-  border-radius: 6px;
-  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
-          box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
-}
-.popover.top {
-  margin-top: -10px;
-}
-.popover.right {
-  margin-left: 10px;
-}
-.popover.bottom {
-  margin-top: 10px;
-}
-.popover.left {
-  margin-left: -10px;
-}
-.popover-title {
-  padding: 8px 14px;
-  margin: 0;
-  font-size: 14px;
-  font-weight: normal;
-  line-height: 18px;
-  background-color: #0088aa;
-  border-bottom: 1px solid #ebebeb;
-  border-radius: 5px 5px 0 0;
-   /*color:#333;*/
-}
-.popover-content {
-  padding: 9px 14px;
-  color:#333;
-  font-size:10pt;
-}
-.popover > .arrow,
-.popover > .arrow:after {
-  position: absolute;
-  display: block;
-  width: 0;
-  height: 0;
-  border-color: transparent;
-  border-style: solid;
-}
-.popover > .arrow {
-  border-width: 11px;
-}
-.popover > .arrow:after {
-  content: "";
-  border-width: 10px;
-}
-.popover.top > .arrow {
-  bottom: -11px;
-  left: 50%;
-  margin-left: -11px;
-  border-top-color: #999;
-  border-top-color: rgba(0, 0, 0, .25);
-  border-bottom-width: 0;
-}
-.popover.top > .arrow:after {
-  bottom: 1px;
-  margin-left: -10px;
-  content: " ";
-  border-top-color: #fff;
-  border-bottom-width: 0;
-}
-.popover.right > .arrow {
-  top: 50%;
-  left: -11px;
-  margin-top: -11px;
-  border-right-color: #999;
-  border-right-color: rgba(0, 0, 0, .25);
-  border-left-width: 0;
-}
-.popover.right > .arrow:after {
-  bottom: -10px;
-  left: 1px;
-  content: " ";
-  border-right-color: #fff;
-  border-left-width: 0;
-}
-.popover.bottom > .arrow {
-  top: -11px;
-  left: 50%;
-  margin-left: -11px;
-  border-top-width: 0;
-  border-bottom-color: #999;
-  border-bottom-color: rgba(0, 0, 0, .25);
-}
-.popover.bottom > .arrow:after {
-  top: 1px;
-  margin-left: -10px;
-  content: " ";
-  border-top-width: 0;
-  border-bottom-color: #fff;
-}
-.popover.left > .arrow {
-  top: 50%;
-  right: -11px;
-  margin-top: -11px;
-  border-right-width: 0;
-  border-left-color: #999;
-  border-left-color: rgba(0, 0, 0, .25);
-}
-.popover.left > .arrow:after {
-  right: 1px;
-  bottom: -10px;
-  content: " ";
-  border-right-width: 0;
-  border-left-color: #fff;
-}
-
-.carousel {
-  position: relative;
-}
-.carousel-inner {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-}
-.carousel-inner > .item {
-  position: relative;
-  display: none;
-  -webkit-transition: .6s ease-in-out left;
-       -o-transition: .6s ease-in-out left;
-          transition: .6s ease-in-out left;
-}
-.carousel-inner > .item > img,
-.carousel-inner > .item > a > img {
-  line-height: 1;
-}
-.carousel-inner > .active,
-.carousel-inner > .next,
-.carousel-inner > .prev {
-  display: block;
-}
-.carousel-inner > .active {
-  left: 0;
-}
-.carousel-inner > .next,
-.carousel-inner > .prev {
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-.carousel-inner > .next {
-  left: 100%;
-}
-.carousel-inner > .prev {
-  left: -100%;
-}
-.carousel-inner > .next.left,
-.carousel-inner > .prev.right {
-  left: 0;
-}
-.carousel-inner > .active.left {
-  left: -100%;
-}
-.carousel-inner > .active.right {
-  left: 100%;
-}
-.carousel-control {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 15%;
-  font-size: 20px;
-  color: #fff;
-  text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
-  filter: alpha(opacity=50);
-  opacity: .5;
-}
-.carousel-control.left {
-  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .0001) 100%);
-  background-image:      -o-linear-gradient(left, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .0001) 100%);
-  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, .5)), to(rgba(0, 0, 0, .0001)));
-  background-image:         linear-gradient(to right, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .0001) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
-  background-repeat: repeat-x;
-}
-.carousel-control.right {
-  right: 0;
-  left: auto;
-  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, .0001) 0%, rgba(0, 0, 0, .5) 100%);
-  background-image:      -o-linear-gradient(left, rgba(0, 0, 0, .0001) 0%, rgba(0, 0, 0, .5) 100%);
-  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, .0001)), to(rgba(0, 0, 0, .5)));
-  background-image:         linear-gradient(to right, rgba(0, 0, 0, .0001) 0%, rgba(0, 0, 0, .5) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
-  background-repeat: repeat-x;
-}
-.carousel-control:hover,
-.carousel-control:focus {
-  color: #fff;
-  text-decoration: none;
-  filter: alpha(opacity=90);
-  outline: 0;
-  opacity: .9;
-}
-.carousel-control .icon-prev,
-.carousel-control .icon-next,
-.carousel-control .glyphicon-chevron-left,
-.carousel-control .glyphicon-chevron-right {
-  position: absolute;
-  top: 50%;
-  z-index: 5;
-  display: inline-block;
-}
-.carousel-control .icon-prev,
-.carousel-control .glyphicon-chevron-left {
-  left: 50%;
-  margin-left: -10px;
-}
-.carousel-control .icon-next,
-.carousel-control .glyphicon-chevron-right {
-  right: 50%;
-  margin-right: -10px;
-}
-.carousel-control .icon-prev,
-.carousel-control .icon-next {
-  width: 20px;
-  height: 20px;
-  margin-top: -10px;
-  font-family: serif;
-}
-.carousel-control .icon-prev:before {
-  content: '\2039';
-}
-.carousel-control .icon-next:before {
-  content: '\203a';
-}
-.carousel-indicators {
-  position: absolute;
-  left: 50%;
-  z-index: 15;
-  width: 60%;
-  padding-left: 0;
-  margin-left: -30%;
-  text-align: center;
-  list-style: none;
-  overflow: hidden;
-}
-.carousel-indicators li {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin: 1px;
-  text-indent: -999px;
-  cursor: pointer;
-  background-color: #000 \9;
-  background-color: rgba(0, 0, 0, 0);
-  border: 1px solid #fff;
-  border-radius: 10px;
-}
-.carousel-indicators .active {
-  width: 12px;
-  height: 12px;
-  margin: 0;
-  background-color: #fff;
-}
-.carousel-caption {
-  position: absolute;
-  /*right: 15%;*/
-  width:640px;
-  top: 410px;
-  /*left: 15%;*/
-  z-index: 10;
-  color: #fff;
-  text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
-}
-.carousel-caption .btn {
-  text-shadow: none;
-}
-
-.modal-open {
-  /*overflow: hidden;*/
-}
-.modal {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1050;
-  display: none;
-  overflow: hidden;
-  -webkit-overflow-scrolling: touch;
-  outline: 0;
-}
-.modal.fade .modal-dialog {
-  -webkit-transition: -webkit-transform .3s ease-out;
-       -o-transition:      -o-transform .3s ease-out;
-          transition:         transform .3s ease-out;
-  -webkit-transform: translate3d(0, -25%, 0);
-       -o-transform: translate3d(0, -25%, 0);
-          transform: translate3d(0, -25%, 0);
-}
-.modal.in .modal-dialog {
-  -webkit-transform: translate3d(0, 0, 0);
-       -o-transform: translate3d(0, 0, 0);
-          transform: translate3d(0, 0, 0);
-}
-.modal-open .modal {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-.modal-dialog {
-  position: relative;
-  width: auto;
-  margin: 10px;
-}
-.modal-content {
-  position: relative;
-  background-color: #fff;
-  -webkit-background-clip: padding-box;
-          background-clip: padding-box;
-  border: 1px solid #999;
-  border: 1px solid rgba(0, 0, 0, .2);
-  border-radius: 6px;
-  outline: 0;
-  -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
-          box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
-}
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1040;
-  background-color: #000;
-}
-.modal-backdrop.fade {
-  filter: alpha(opacity=0);
-  opacity: 0;
-}
-.modal-backdrop.in {
-  filter: alpha(opacity=50);
-  opacity: .5;
-}
-.modal-header {
-  min-height: 16.42857143px;
-  padding: 15px;
-  border-bottom: 1px solid #e5e5e5;
-}
-.modal-header .close {
-  margin-top: -2px;
-}
-.modal-title {
-  margin: 0;
-  line-height: 1.42857143;
-}
-.modal-body {
-  position: relative;
-  padding: 15px;
-}
-.modal-footer {
-  padding: 15px;
-  text-align: right;
-  border-top: 1px solid #e5e5e5;
-}
-.modal-footer .btn + .btn {
-  margin-bottom: 0;
-  margin-left: 5px;
-}
-.modal-footer .btn-group .btn + .btn {
-  margin-left: -1px;
-}
-.modal-footer .btn-block + .btn-block {
-  margin-left: 0;
-}
-.modal-scrollbar-measure {
-  position: absolute;
-  top: -9999px;
-  width: 50px;
-  height: 50px;
-  overflow: scroll;
-}
-@media (min-width: 768px) {
-  .modal-dialog {
-    width: 600px;
-    margin: 30px auto;
-  }
-  .modal-content {
-    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
-  }
-  .modal-sm {
-    width: 300px;
-  }
-}
-@media (min-width: 992px) {
-  .modal-lg {
-    width: 900px;
-  }
-}
-
-.close {
-  float: right;
-  font-size: 21px;
-  font-weight: bold;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  filter: alpha(opacity=20);
-  opacity: .2;
-}
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-  filter: alpha(opacity=50);
-  opacity: .5;
-}
-button.close {
-  -webkit-appearance: none;
-  padding: 0;
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-}
-.btn {
-  display: inline-block;
-  padding: 6px 12px;
-  margin-bottom: 0;
-  font-size: 14px;
-  font-weight: normal;
-  line-height: 1.42857143;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-  background-image: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
-}
-.btn:focus,
-.btn:active:focus,
-.btn.active:focus {
-  outline: thin dotted;
-  outline: 5px auto -webkit-focus-ring-color;
-  outline-offset: -2px;
-}
-.btn:hover,
-.btn:focus {
-  color: #333;
-  text-decoration: none;
-}
-.btn:active,
-.btn.active {
-  background-image: none;
-  outline: 0;
-  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-          box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-}
-
-a
-{
-  color:#0088aa;
-}
-.alert {
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 1px solid transparent;
-  border-radius: 4px;
-}
-.alert h4 {
-  margin-top: 0;
-  color: inherit;
-}
-.alert .alert-link {
-  font-weight: bold;
-}
-.alert > p,
-.alert > ul {
-  margin-bottom: 0;
-}
-.alert > p + p {
-  margin-top: 5px;
-}
-.alert-dismissable,
-.alert-dismissible {
-  padding-right: 35px;
-}
-.alert-dismissable .close,
-.alert-dismissible .close {
-  position: relative;
-  top: -2px;
-  right: -21px;
-  color: inherit;
-}
-.alert-success {
-  color: #3c763d;
-  background-color: #dff0d8;
-  border-color: #d6e9c6;
-}
-.alert-success hr {
-  border-top-color: #c9e2b3;
-}
-.alert-success .alert-link {
-  color: #2b542c;
-}
-.alert-info {
-  color: #31708f;
-  background-color: #d9edf7;
-  border-color: #bce8f1;
-}
-.alert-info hr {
-  border-top-color: #a6e1ec;
-}
-.alert-info .alert-link {
-  color: #245269;
-}
-.alert-warning {
-  color: #8a6d3b;
-  background-color: #fcf8e3;
-  border-color: #faebcc;
-}
-.alert-warning hr {
-  border-top-color: #f7e1b5;
-}
-.alert-warning .alert-link {
-  color: #66512c;
-}
-.alert-danger {
-  color: #a94442;
-  background-color: #f2dede;
-  border-color: #ebccd1;
-}
-.alert-danger hr {
-  border-top-color: #e4b9c0;
-}
-.alert-danger .alert-link {
-  color: #843534;
-}
-
-.ticks
-{
-  padding: 0;
-  margin: auto auto;
-  width:50%;
-}
-
-.ticks li{
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  height:90px;
-  display:block;
-  color:white;
-  font-size:25pt;
-  position: relative;
-}
-
-.tick{
-  position: absolute;
-  display:inline-block;
-  right:0px;
-  top:10px;
-}
-
-h3 small
-{
-  margin-top:10px;
-  line-height:1.1;
-  font-size: 12pt;
-  display:block;
-  color:#ccc;
-}
-
-
-
-@media (max-width: 1024px) {
-    #mainscreen {
-      display: none;
-      height:0 !important;
-    }
-
-    #mobile
-    {
-      display:block;
-    }
-    body{
-     /* overflow-y: hidden !important;*/
-     /* max-height: 800px;*/
-     overflow: auto !important;
-     height:auto !important;
-    }
-    html
-    {
-      overflow: auto !important;
-    }
-}
-
-@media (min-width: 1025px) {
-    #mainscreen {
-      display: block;
-    }
-
-    #mobile
-    {
-      display:none;
-    }
-
-
-}
-
-#mobile
-{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-  background-image:url('/static/images/slide1.jpg');
-}
-
-
-h5
-{
-  color:white;
-  font-size:20pt;
+    height:706px;
 }
 </style>
 </head>
 
-
-<body style="overflow-x: hidden;">
-
-<div id="mobile" style="width:100%;min-height:100%;position:absolute;">
-  <div style="min-height:100%;">
-    <div style="margin:auto auto;width:80%;padding-top:10%;">
-      <img src="/static/images/logohome.png" style="width:100%;"  />
+<body>
+    <div class="covervid-wrapper">
+        <video class="covervid-video hidden-xs" style="display:none;" autoplay muted loop>
+             <source src="/static/BootleggerHighlights.webm" type="video/webm">
+            <source src="/static/BootleggerHighlights.mp4" type="video/mp4">
+        </video>
     </div>
-    <h1 style="width:80%;font-size:2em;margin:auto auto">
-        Turns fans into film crew.
-      </h1>
-      <h1 style="width:90%;margin:auto auto;font-size:30pt;margin-bottom:20px;">
-      <small style="display:block;line-height:1.1;margin-top:20px;font-size:16pt;">Bootlegger connects people together to act as a coordinated camera crew. <br>Produces high quality, content rich footage with no expense.  <br><a href="/howtobootleg">Find Out More</a></small>
-    </h1>
-      <div style="margin:auto auto; width:80%;text-align:center;">
-        <a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger"><img src="/static/images/abadge.png"/></a><br><br>
-      </div>
 
-      <% if (!localmode) {%>
-      <div style="width:80%;margin:auto auto;text-align:center;">
-      <h1 style="font-size:1.5em;">
-        <small>Manage Your Shoot</small>
-      </h1>
-      <a href="/auth/google"><img src="/static/images/login.png" style="width:250px;"/></a>
-    </div>
-    <% } %>
+    <!-- <div class="covervid-wrapper" style="height:706px;position:absolute;top:0;width:100%;left:0;">
+        <video muted autoplay loop poster="/images/background.jpg" class="covervid-video">
+            <source src="/BootleggerHighlights.mp4" />
+        </video>
+    </div> -->
 
-    <iframe style="width:100%;min-height:400px;margin-top:50px;" src="//www.youtube.com/embed/FeWIYppyOQE" frameborder="0" allowfullscreen></iframe>
-  </div>
-</div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
 
-<div id="mainscreen">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="#" id="logo-link" class="navbar-brand hidden-sm hidden-md" ><img id="logo" src="/images/logo-black.png" /></a>
+            </div>
 
-<div class="menu navbar-example" style="position:fixed;bottom:0px;background-color:rgba(30,30,30,0.5);width:100%;z-index:1000"  data-0="bottom:-38px;" data-40="bottom:0px;">
-  <ul class="nav nav-tabs"  style="margin:auto auto;width:100%;padding:0;display:block;height:38px;">
-    <li class="active" style="width:30px;padding-left:10px;padding-right:10px;"><a href="#start" ><img src="/static/images/up.png" /></a></li>
-    <li><a href="#what" >What is Bootlegger</a></li>
-    <li><a href="#why">Why Use Bootlegger?</a></li>
-    <li><a href="#how">How it Works</a></li>
-    <li><a href="#when">Past Success</a></li>
-
-        <li style="height:87px;padding:0;position:absolute;bottom:0px;right:5px;width:65px;text-align:center;">
-      <div style="height:47px;background:rgba(30,30,30,0.5);width:65px;border-top-left-radius: 10px;border-top-right-radius: 10px;">
-        <a href="http://community.bootlegger.tv" class="text-center">
-          <i style="margin-top:12px;margin-left:2px;margin-bottom:14px;" class="fa fa-desktop fa-2x"></i>
-<br>          <span style="display:inline-block;line-height:12px;margin-top:-10px;font-size:10pt;">Online<br>Forum</span>
-        </a>
-      </div>
-    </li>
-
-    <!-- <li style="height:87px;padding:0;position:absolute;bottom:0px;right:5px;width:65px;text-align:center;">
-      <div style="height:47px;background:rgba(30,30,30,0.5);width:65px;border-top-left-radius: 10px;border-top-right-radius: 10px;">
-        <a data-toggle="modal" data-target="#myModal" href="#">
-          <img src="/static/images/server.png" alt="Offline Setup"/>
-          <span style="display:inline-block;line-height:12px;margin-top:-10px;font-size:10pt;">Local<br>Setup</span>
-        </a>
-      </div>
-    </li> -->
-
-    <li style="height:87px;padding:0;position:absolute;bottom:0px;right:75px;width:65px;text-align:center;">
-      <div style="height:47px;background:rgba(30,30,30,0.5);width:65px;border-top-left-radius: 10px;border-top-right-radius: 10px;">
-        <button type="button" style="background:transparent;border:none;color:white;padding:0;cursor:pointer;font-size:10pt;" class="popover-dismiss" data-toggle="popover" title="Bootlegger Crew Community" data-placement="top" data-content="We are currently working on the Bootlegger Crew Community, where you can share tips and bid for gigs">
-          <img src="/static/images/community.png" alt="Bootlegger Community" style="padding-bottom:6px;"/>
-          <span style="display:inline-block;line-height:12px;margin-top:-10px;">Crew<br>Space</span>
-        </button>
-      </div>
-    </li>
-  </ul>
-</div>
-
-<div
-  class="mainhand_p"
-  data-0p="right:0px"
-  data-700="bottom: -100%;"
-  data-130p="bottom:-10%;"
-  data-250p="right:-30px"
-  data-550p="right:0px"
-  data-5800="bottom:0%;"
-  data-6200="bottom:100%;"
-  >
-  <video style="width:515px;height:415px;position:absolute;right:305px;top:54px;" autoplay loop>
-     <source src="http://static.bootlegger.tv/assets/background.mp4" type="video/mp4"></source>
-      <source src="http://static.bootlegger.tv/assets/background.webm" type="video/webm" />
-      <source src="http://static.bootlegger.tv/assets/background.ogg" type="video/ogg" />
-  </video>
-
-  <div class="mainhand" style="position:absolute">
-    <div style="width:477px;height:413px;position:absolute;right:304px;top:107px;">
-      <img src="/static/images/1.png" style="width:100%;" data-0="display:block;" data-2034="display:none;"/>
-      <img src="/static/images/2.png" style="width:100%;" data-0="display:none;" data-2035="display:block;" data-2889="display:none;"/>
-      <img src="/static/images/3.png"  style="width:100%;" data-0="display:none;" data-2890="display:block;" data-3599="display:none;"/>
-      <img src="/static/images/4.png"  style="width:100%;"data-0="display:none;" data-3600="display:block;" data-4049="display:none;"/>
-      <img src="/static/images/5.png" style="width:100%;" data-0="display:none;" data-4050="display:block;" data-4309="display:none;"/>
-      <img src="/static/images/6.png" style="width:100%;" data-0="display:none;" data-4370="display:block;" data-4699="display:none;"/>
-      <img src="/static/images/7.png" style="width:100%;" data-0="display:none;" data-4700="display:block;" />
-    </div>
-  </div>
-</div>
-
-<!-- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Run Your Own Local Server</h4>
-      </div>
-      <div class="modal-body">
-        <div class="alert alert-warning" role="alert">Recommended for advanced users only</div>
-
-        <b>For those situations where mobile internet is not available, or a private bootlegger setup is prefereable.</b><br>
-        <div style="width:200px;text-align:center;margin:auto auto;border-radius:10px;background:#EEE;padding:5px;margin-top:10px;">
-          <a href="http://bootlegger.s3.amazonaws.com/bootleggerserver.zip">
-          <img src="/static/images/vm1.png"/>
-          <div style="font-size:small;">Download Virtual Applicance</div>
-        </a>
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#" data-section="#timeline-container">How it Works</a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="#recent-shoots">Recent Shoots</a>
+                    </li>
+                    <li>
+                        <a href="mailto:info@bootlegger.tv">Contact</a>
+                    </li>
+                    <li class="google-oauth">
+                        <a href="/auth/google">
+                            <img src="/images/google-oauth.png" />
+                        </a>
+                    </li>
+                    <li class="google-oauth">
+                        <a href="/auth/facebook">
+                            <img src="/images/facebook-oauth.png" />
+                        </a>
+                    </li>
+                    <!-- <li class="google-oauth">
+                        <a href="/auth/twitter">
+                            <img src="/images/twitter-oauth.png" />
+                        </a>
+                    </li> -->
+                </ul>
+            </div>
         </div>
-
-
-        
-          <b>Installation</b>
-          <ol>
-            <li>Download the <em>Bootlegger Offline Server Appliance</em> above</li>
-        <li>Install <a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a></li>
-        <li>Unzip and open (import) the file you downloaded and import the Appliance into VirtualBox</li>
-        <li>Boot the server, and note the IP address displayed at boot.</li>
-      </ol>
-      <b>Pre Event</b>
-      <ol>
-        <li>Visit bootlegger.tv, login click <em>Advanced Options</em> on your event page and copy the <em>offline code</em></li>
-        <li>Visit the IP address of your local bootlegger server in your browser. Click Sync and enter the <em>offline event code</em> to download your settings</li>
-      </ol>
-
-      <b>Post Event</b>
-      <ol>
-        <li>When your event has finished, open a browser to your local server. Click Sync on the homepage to upload your content back to bootlegger.tv</li>
-      </ol>
-    </ol>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-<section id="slide-1" class="homeSlide">
-    <div class="bcg"
-    id="start"
-        data-top="background-position: 50% 0px;"
-        data-top-bottom="background-position: 50% -200px;"
-        data-anchor-target="#slide-1">
-
-        <div style="margin:auto auto;width:526px;padding-top:80px;">
-      <img src="/static/images/logohome.png"  />
-    </div>
-
-    
-    <% if (!localmode) { %>
-    <h2 style="position:fixed;top:70px;right:60px;font-size:20pt;z-index:2000;text-align:right;line-height:1;" data-100p="opacity:0"  data-110p="opacity:1" data-200p="opacity:1"  data-210p="opacity:0">
-      Organisers<img src="/static/images/upar.png" />login to <br>manage your film shoots.
-
-    </h2>
-    <% } %>
-
-    <h1 style="width:900px;margin:auto auto;font-size:32pt;">
-      Turns fans into film crew.
-      <small style="display:block;line-height:1.1;margin-top:20px;font-size:16pt;">Bootlegger connects people together to act as a coordinated camera crew. <br>Produces high quality, content rich footage with no expense.  <br><a href="/howtobootleg" style="background:#0088aa;border-radius:10px;padding:10px;display:inline-block;margin-top:10px;box-shadow:0 0 10px rgba(0,0,0,0.5);color:white;">Find Out More</a></small>
-    </h1>
-
-
-
-<div style="width:100%;margin-top:30px;">
-<div style="margin-left:35%;width:15%;display:inline-block;text-align:center;float:left;">
- <h1 style="line-height:.5em;margin-bottom:10px;">
-  <small style="font-size:14pt;">
-      Download the app to start Bootlegging.
-    </small>
-  </h1>
-      <a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger" style="display:block;"><img src="/static/images/abadge.png"/></a>
-</div>
-<div style="width:15%;display:inline-block;text-align:center;float:left;">
-  <h1 style="line-height:.5em;margin-bottom:10px;"><small style="font-size:14pt;">
-      Create an shoot for others to Bootleg
-    </small>
-  </h1>
-   <div id="loginbtn" style="z-index:1001;margin:auto auto;width:250px;"
-
-  data-610="position:relative;right:0px;"  data-611="position:fixed;top:0;right:30%;"  data-612="right:30%;" data-780="right:1%;">
-    <a href="/auth/google"><img src="/static/images/login.png" style="width:250px;"/></a>
-  </div>
-</div>
-</div>
-
-<div style="width:100%;clear:both;text-align:center;padding-top:30px;">
-  <div style="border-bottom:1px solid rgba(255,255,255,0.4);margin-bottom:10px;width:30%;margin:auto auto;display:block;clear:both;"><h3 style="font-size:15pt;">Upcoming Shoots</h3></div>
-<% _.each(upcoming,function(u){ %>
-<div class="event" style="margin-top:10px;display:inline-block;background:rgba(0,0,0,0.5);padding:10px;box-shadow:0 0 20px rgba(0,0,0,0.5);color:white;">
-<h1 style="font-size:15pt;"><%- u.name %></h1>
-<%- moment(u.starts,"DD-MM-YYYY").format('ddd Do MMM \'YY') %> <span style="color:silver;">to</span> <%- moment(u.ends,"DD-MM-YYYY").format('ddd Do MMM \'YY') %>
-</div>
-<% }); %>
-</div>
-    
-
-    <div style="margin:auto auto; width:600px;text-align:center;margin-top:50px;">
-      
-
-
-<% if (localmode) { %>
-<% if(flash.msg) { %>
-  <div class="myalert alert alert-danger"><%- flash.msg %></div>
-<% } %>
-<div class="alert alert-warning">You are in LOCAL mode and so cannot use Google to Login. Enter your Offline Code instead:</div>
-<form action="/auth/local_login_pc" method="POST">
-  <div class="input-group col-sm-4 col-md-offset-4">
-   
-      <input type="text" name="code" class="btn input-lg form-control" style="font-size:14pt;font-weight:bold;border-radius:10px;border:2px solid silver;padding:5px;" />
-    <span class="input-group-btn">
-      <input type="submit" class="btn input-lg btn-default" value="Login"/>
-    </span>
-  </div>
-</form>
-<div class="clearfix"></div><br>
-
-<form method="get" action="/auth/sync">
-<button type="submit" class="input-lg btn btn-info">Sync this Local Server with My Online Account</button>
-</form>
-<% } %>
-    </div> 
-
-
-    <div style="width:300px;display:block;position:absolute;right:5%;bottom:0;" data-0="opacity:1"  data-50="opacity:0">
-      <h2>Scroll to find out more <img src="/static/images/scroll.png" /></h2> 
-    </div>
-    </div>
-</section>
-
-<section id="slide-2" style="margin-top:-300px;">
-    <div class="bcg"  class="slide"
-    data-center="background-position: 50% 0px;"
-        data-top-bottom="background-position: 50% -50px;"
-        data-anchor-target="#slide-2"
-    >
-    </div>
-</section>
-
-<section id="slide-3" class="longSlide" style="height:6300px;">
-    <div class="bcg"  
-      style="height:6300px;"
-        data-center="background-position: 50% 0px;"
-        data-top-bottom="background-position: 50% -400px;"
-        data-anchor-target="#slide-3">
-
-
-        <div class="grad1" style="background:linear-gradient(to bottom, rgba(20, 20,20, 1),  rgba(20, 20, 20, 0));">
-
-        </div>
-        <div style="position:relative;">
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="900px" height="6000px" style="position:absolute;top:0;left:0px;z-index:0">
-        <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_mid_svg_5">
-         <path opacity="0.5" fill="#333333" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-       </defs>
-        <path
-        opacity="0.5"
-        style="fill:transparent;stroke:#333333;stroke-width:7;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6000;stroke-dashoffset:0"
-        data-1000="stroke-dashoffset:5700;" data-5700="stroke-dashoffset:0;"
-        marker-mid="url(#se_marker_mid_svg_5)"
-        d="m -112.61249,0.65558 c 368.477,-40.044 743.17642,548.6423 463.31591,780.2893 -279.860512,231.64702 -362.108944,582.61342 -22.6395,754.44082 339.46944,171.8274 413.38847,579.8502 173.8162,826.897 -239.57227,247.0468 -546.569238,516.786 -465.742097,837.5166 80.827147,320.7306 439.579927,267.2177 550.621397,545.8746 111.04147,278.6569 -216.91067,498.892 -431.4114,657.212 -214.500737,158.32 -347.67571,538.8772 -86.587302,706.9005 261.088412,168.0233 505.899792,267.1157 576.241202,622.473 70.34141,355.3573 -370.24043,536.5203 -1154.1188,520.3578"
-        />
-      </svg>
-
-          <h3 id="what" class="msgl" style="top:200px;"></h3>
-
-      <h3 class="msgl"  style="text-align:left;top:500px;">Film gigs with the Bootlegger app
-        <small>
-          Bootlegger coordinates multiple mobile phones to record live events...
-        </small>
-      </h3>
-
-      <h3 class="msgl" style="text-align:left;top:1300px;">You become part of the event production team
-        <small>
-          Each phone becomes a camera in the video team...
-        </small>
-      </h3>
-
-      <h3 class="msgl" style="text-align:left;padding-top:2000px;">Bootlegger suggests shots
-        <small>
-          During the event, bootlegger asks you if you are able to get particular shots...
-        </small>
-      </h3>
-
-      <h3 class="msgl" style="text-align:left;padding-top:2700px;">Provides hints
-        <small>
-          And provides on-screen overlays to help you get the right angle...
-        </small>
-      </h3>
-
-      <h3 class="msgl" style="text-align:left;padding-top:3200px;">Counts you down
-        <small>
-          It then counts you down before you go 'live'...
-        </small>
-      </h3>
-
-      <h3 class="msgl" style="text-align:left;padding-top:3800px;">Starts you recording
-        <small>
-          Initiates your phone to record...
-        </small>
-      </h3>
-
-      <h3 class="msgl" style="text-align:left;padding-top:4500px;">...all whilst coordinating the team for best coverage
-        <small>
-          Bootlegger coordinates the team to make sure nothing is missed, and that close-ups, wide shots and band members are all covered.
-        </small>
-      </h3>
-  </div>
-
-  <div style="position:absolute;top:6000px;width:100%;height:2000px;">
-
-      <div style="background:url(/static/images/megaphone.png) no-repeat;background-size:contain;position:absolute;left:0;width:40%;height:999px;background-position:-150px 0;margin-top:200px;"
-      data-5800="left:-1000px;"
-      data-6100="left:0px;"
-      >
-
-      </div>
-
-      <div style="background:url(/static/images/why.png) no-repeat;background-size:contain;position:absolute;width:60%;height:290px;margin-top:200px;"
-      data-5800="right:-1000px;"
-      data-6100="right:100px;"
-      >
-      <h3 id="why">&nbsp</h3>
-      </div>
-    
-    <h3 style="margin:auto auto;margin-top:600px;width:700px;height:300px;">As a band or event organiser, why would you use Bootlegger?</h3>
-
-    <ul class="ticks" style="margin-top:50px;"> 
-      <li>Get better quality footage in HD <img data-6200="display:inline-block;" data-6201="display:none;" class="tick" src="/static/images/untick.png"/><img data-6200="display:none;" data-6201="display:inline-block;" class="tick" src="/static/images/tick.png"/></li>
-      <li>Get more angles, coverage and  for editing, <img data-6300="display:inline-block;" data-6301="display:none;" class="tick" src="/static/images/untick.png"/><img data-6300="display:none;" data-6301="display:inline-block;" class="tick" src="/static/images/tick.png"/></li>
-      <li>Free to use <img data-6400="display:inline-block;" data-6401="display:none;" class="tick" src="/static/images/untick.png"/><img data-6400="display:none;" data-6401="display:inline-block;" class="tick" src="/static/images/tick.png"/></li>
-      <li>Involve your fans making videos <img data-6500="display:inline-block;" data-6501="display:none;" class="tick" src="/static/images/untick.png"/><img data-6500="display:none;" data-6501="display:inline-block;" class="tick" src="/static/images/tick.png"/></li>
-    </ul>
-  </div>
-    <!-- <h3 class="msgl" style="text-align:left;padding-top:300px;margin-top:1000px;">Generate high quality videos for</h1>
-    <h3 class="msgl" style="text-align:left;padding-top:300px;">...Promotion</h1>
-    <h3 class="msgl" style="text-align:left;padding-top:300px;">...Posterity</h1>
-      <h3 class="msgl" style="text-align:left;padding-top:300px;">...Fun</h1> -->
-
-    </div>
-    
-</section>
-
-<section id="slide-5" style="height:5600px;">
-    <div class="bcg" id="how"
-style="position:absolute;height:5600px;"
- data-bottom="background-position: 50% -300px;"
-        data="background-position: 50% 0px;"
-        data-anchor-target="#slide-5"
-     >
-    <div class="grad1">
-
-    </div>
-<div style="position:relative">
-        <h1>How it Works</h1>
-
-        <div style="position:absolute;margin-left:5%;">
-          <small style="font-size:9pt;color:white;">Bootlegger is powered by</small><br>
-          <img src="/static/images/powered.png" />
-        </div>
-
-        <div id="cloud" style="left:200px;top:300px;width:470px;text-align:center" data="position:absolute;"  data-40-top="position:fixed;">
-          <img src="/static/images/cloud.png" />
-          <h5 style="position:absolute;top:200px;"  data-7900="opacity:0;" data-8000="opacity:1;" data-8400="opacity:1;" data-8500="opacity:0;">Devices log into the server, indicating their approximate location in the venue</h5>
-          <h5 style="position:absolute;top:200px;"  data-8500="opacity:0;" data-8600="opacity:1;" data-9000="opacity:1;" data-9100="opacity:0;">The server allocates timing and shot information to each device</h5>
-          <h5 style="position:absolute;top:200px;"  data-9100="opacity:0;" data-9200="opacity:1;" data-9600="opacity:1;" data-9700="opacity:0;">At specific points in the timing sequence, shots are requested dependent on what has been captured already</h5>
-          <h5 style="position:absolute;top:200px;"  data-9700="opacity:0;" data-9800="opacity:1;" data-10200="opacity:1;" data-10300="opacity:0;">Server initiates recording on the device</h5>
-          <h5 style="position:absolute;top:200px;"  data-10400="opacity:0;" data-10500="opacity:1;" data-10900="opacity:1;" data-11000="opacity:0;">Shot thumbnail and meta-data are uploaded to the server</h5>
-          <h5 style="position:absolute;top:200px;"  data-11000="opacity:0;" data-11100="opacity:1;" data-11500="opacity:1;" data-11600="opacity:0;">After the event, all HD video is batch uploaded from all devices</h5>
-
-          <h5 style="position:absolute;top:200px;" data-11600="opacity:0;" data-11700="opacity:1;" data-12100="opacity:1;" data-12200="opacity:0;">Meta-data and footage is synced to the event organisers Dropbox</h5>
-
-         
-        </div>
-
-        <img src="/static/images/phone.png" style="left:1100px;top:100px;" data-anchor-target="#cloud" data="position:absolute;"  data-300-top="position:fixed;"  data-11500="opacity:1;" data-11600="opacity:0;"/>
-        <img src="/static/images/phone.png" style="left:800px;top:300px;" data-anchor-target="#cloud" data="position:absolute;"  data-300-top="position:fixed;" data-11500="opacity:1;" data-11600="opacity:0;"/>
-        <img src="/static/images/phone.png" style="left:950px;top:550px;" data-anchor-target="#cloud" data="position:absolute;"  data-300-top="position:fixed;" data-11500="opacity:1;" data-11600="opacity:0;"/>
-
-        <div style="position:absolute;top:140px;left:630px;z-index:0;" data-anchor-target="#cloud" data="position:absolute;"  data-300-top="position:fixed;">
-         <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;"  data-8500="opacity:0;" data-8600="opacity:1;" data-9000="opacity:1;" data-9100="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-end="url(#se_marker_end_svg_1)" id="svg_1" y2="41" x2="416.99998" y1="241.99999" x1="5" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;" xmlns:svg="http://www.w3.org/2000/svg"  data-8500="opacity:0;" data-8600="opacity:1;" data-9000="opacity:1;" data-9100="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-end="url(#se_marker_end_svg_1)" id="svg_1" y2="265.5" x2="146.5" y1="264.5" x1="3.5" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;" xmlns:svg="http://www.w3.org/2000/svg"  data-8500="opacity:0;" data-8600="opacity:1;" data-9000="opacity:1;" data-9100="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-end="url(#se_marker_end_svg_1)" id="svg_1"   y2="484.49998" x2="285.5" y1="289.49997" x1="4.50001" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-      <h1 style="position:absolute;left:507px;top:56px;" data-8500="opacity:0;" data-8600="opacity:1;" data-9000="opacity:1;" data-9100="opacity:0;"> 
-        2s
-      </h1>
-      <h1 style="position:absolute;left:207px;top:256px;" data-8500="opacity:0;" data-8600="opacity:1;" data-9000="opacity:1;" data-9100="opacity:0;"> 
-        5s
-      </h1>
-      <h1 style="position:absolute;left:359px;top:505px;" data-8500="opacity:0;" data-8600="opacity:1;" data-9000="opacity:1;" data-9100="opacity:0;"> 
-        0s
-      </h1>
-
-
-
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;"   data-9100="opacity:0;" data-9200="opacity:1;" data-9600="opacity:1;" data-9700="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-end="url(#se_marker_end_svg_1)" id="svg_1" y2="41" x2="416.99998" y1="241.99999" x1="5" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-      <h1 style="position:absolute;left:495px;top:56px;font-size:14pt;"  data-9100="opacity:0;" data-9200="opacity:1;" data-9600="opacity:1;" data-9700="opacity:0;"> 
-        closeup
-      </h1>
-
-
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;" xmlns:svg="http://www.w3.org/2000/svg"  data-9700="opacity:0;" data-9800="opacity:1;" data-10200="opacity:1;" data-10300="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-end="url(#se_marker_end_svg_1)" id="svg_1"   y2="484.49998" x2="285.5" y1="289.49997" x1="4.50001" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-      <h1 style="position:absolute;left:347px;top:501px;" data-9700="opacity:0;" data-9800="opacity:1;" data-10200="opacity:1;" data-10300="opacity:0;"> 
-        <img src="/static/images/rec.png"/>
-      </h1>
-
-
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;" xmlns:svg="http://www.w3.org/2000/svg"   data-10400="opacity:0;" data-10500="opacity:1;" data-10900="opacity:1;" data-11000="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="leftarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_start_svg_4">
-         <path fill="#0088aa" d="m0,50l100,40l-30,-40l30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-start="url(#se_marker_start_svg_4)" id="svg_1"   y2="484.49998" x2="285.5" y1="294.49996" x1="12.5" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-      <h1 style="position:absolute;left:347px;top:501px;"  data-10400="opacity:0;" data-10500="opacity:1;" data-10900="opacity:1;" data-11000="opacity:0;"> 
-        <img src="/static/images/pic.png"/>
-      </h1>
-
-
-
-       <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;"  data-11000="opacity:0;" data-11100="opacity:1;" data-11500="opacity:1;" data-11600="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-         <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="leftarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_start_svg_4">
-         <path fill="#0088aa" d="m0,50l100,40l-30,-40l30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-start="url(#se_marker_start_svg_4)" id="svg_1" y2="41" x2="416.99999" y1="239" x1="15.99999" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;" xmlns:svg="http://www.w3.org/2000/svg" data-11000="opacity:0;" data-11100="opacity:1;" data-11500="opacity:1;" data-11600="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-         <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="leftarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_start_svg_4">
-         <path fill="#0088aa" d="m0,50l100,40l-30,-40l30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-start="url(#se_marker_start_svg_4)" id="svg_1"  y2="265.5" x2="146.5" y1="264.5" x1="15.5" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;" xmlns:svg="http://www.w3.org/2000/svg"  data-11000="opacity:0;" data-11100="opacity:1;" data-11500="opacity:1;" data-11600="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-         <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="leftarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_start_svg_4">
-         <path fill="#0088aa" d="m0,50l100,40l-30,-40l30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-start="url(#se_marker_start_svg_4)" id="svg_1"   y2="484.49998" x2="285.5" y1="294.49996" x1="12.5" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-
-
-      <h1 style="position:absolute;left:494px;top:56px;" data-11000="opacity:0;" data-11100="opacity:1;" data-11500="opacity:1;" data-11600="opacity:0;"> 
-        <img src="/static/images/vids.png"/>
-      </h1>
-      <h1 style="position:absolute;left:193px;top:256px;" data-11000="opacity:0;" data-11100="opacity:1;" data-11500="opacity:1;" data-11600="opacity:0;"> 
-        <img src="/static/images/vids.png"/>
-      </h1>
-      <h1 style="position:absolute;left:344px;top:505px;" data-11000="opacity:0;" data-11100="opacity:1;" data-11500="opacity:1;" data-11600="opacity:0;"> 
-        <img src="/static/images/vids.png"/>
-      </h1>
-
-
-      <img style="position:absolute;left:180px;top:200px;" src="/static/images/db.png"  data-11600="opacity:0;" data-11700="opacity:1;" data-12100="opacity:1;" data-12200="opacity:0;"/>
-
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;" xmlns:svg="http://www.w3.org/2000/svg"  data-11600="opacity:0;" data-11700="opacity:1;" data-12100="opacity:1;" data-12200="opacity:0;">
-       <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-       <defs>
-        <marker refY="50" refX="50" markerHeight="5" markerWidth="5" viewBox="0 0 100 100" se_type="rightarrow" orient="auto" markerUnits="strokeWidth" id="se_marker_end_svg_1">
-         <path stroke-width="10" fill="#0088aa" d="m100,50l-100,40l30,-40l-30,-40z"/>
-        </marker>
-       </defs>
-       <g>
-        <title>Layer 1</title>
-        <line marker-end="url(#se_marker_end_svg_1)" id="svg_1" y2="265.5" x2="146.5" y1="264.5" x1="3.5" stroke-width="5" stroke="#0088aa" fill="none"/>
-       </g>
-      </svg>
-</div>
-    </div>
-
-        <div class="grad2">
-    </div>
-
-</div>
-
-    
-
-</section>
-
-<section id="slide-6"  class="slide" style="overflow:hidden;">
-    <div class="bcg" id="when" style="position:relative;"
-
-        data-top="background-position: 50% 0px;"
-        data="background-position: 50% 150px;"
-        >
-        <div style="display:inline-block;margin-left:3%;float:left;position:absolute;z-index:1000;width:25%"
-        data="margin-top:10%;"
-        data-bottom="margin-top:13%;">
-          <h3 style="text-align:left;">Past Success</h3>
-          <h1 style="font-size:20pt;text-align:left;width:100%">We have worked with a number of rising bands to produce quality videos of their gigs for YouTube...</h1>
-          <small style="margin-top:30px;font-size:9pt;color:white;display:inline-block;margin-bottom:5px;">Bootlegger is a research project at Newcastle University, <a href="mailto:info@bootlegger.tv">Contact Us</a></small>
-          <br>
-          <img src="/static/images/ncl.png"  />
-      </div>
-
-      
-        <div style="background:url(/static/images/hand2.png) no-repeat top right;background-size:cover;background-position:left;width:1000px;height:700px;position:absolute;right:0;"
-      data="margin-top: -40%"
-          data-bottom="margin-top: 10%">
-
-          <div style="height:720px !important;overflow:hidden;">
-        <div id="carousel-example-generic" class="carousel" data-interval="false" data-ride="carousel" style="margin-left:82px;margin-top:99px;height:100%;">
-          <ol class="carousel-indicators" style="top:10px;left:35%">
-                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
-                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
-          </ol>
-          <div class="carousel-inner" >
-              <div class="item active" style="width:468px;">
-                 <video style="width:615px;height:470px;background:black"  controls>
-                    <source src="//static.bootlegger.tv/assets/1.mp4" type="video/mp4"></source>
-                    <source src="//static.bootlegger.tv/assets/1.webm" type="video/webm" />
-                    <source src="//static.bootlegger.tv/assets/1.ogg" type="video/ogg" />
-
-                  </video>
-               <div class="carousel-caption">
-                  Zyna Hel, 2014
+    </nav>
+
+    <header class="main-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="hero-text">
+                        <img id="icon-logo" src="/images/icon-black.png" />
+                        <h1 id="tagline">Your Community Film Crew</h1>
+                        <p>Bootlegger makes it possible for anyone to plan, shoot and contribute to great video projects using mobile devices.</p>
+                        <a class="animated pulse" id="app-download-button" href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger">
+                            Download for Android
+                        </a>
+                    </div>
                 </div>
-              </div>
-              <div class="item">
-                 <video style="width:615px;height:470px;background:black"  controls>
-                     <source src="//static.bootlegger.tv/assets/2.mp4" type="video/mp4"></source>
-                    <source src="//static.bootlegger.tv/assets/2.webm" type="video/webm" />
-                    <source src="//static.bootlegger.tv/assets/2.ogg" type="video/ogg" />
-                  </video>
-                <div class="carousel-caption">
-                  Mouses, 2014
-                </div>
-              </div>
+            </div>
+        </div>
+    </header>
 
-                <div class="item">
-                 <video style="width:615px;height:470px;background:black"  controls>
-                     <source src="//static.bootlegger.tv/assets/3.mp4" type="video/mp4"></source>
-                    <source src="//static.bootlegger.tv/assets/3.webm" type="video/webm" />
-                    <source src="//static.bootlegger.tv/assets/3.ogg" type="video/ogg" />
-                  </video>
-              <div class="carousel-caption">
-                  Mouses, 2014
-                </div>
-              </div>
-          </div>
+    <div id="highlights">
+
+        <div class="container">
+
+            <div class="col-sm-4 highlights-column">
+                <img class="img-responsive img-center" src="/images/join-the-crew.png" alt="">
+                <h2>Join the Crew</h2>
+                <p>Bootlegger uses graphic overlays and real-time coordination so you can shoot great video. Download the app, join a shoot and get creative.</p>
+            </div>
+            <div class="col-sm-4 highlights-column">
+                <img class="img-center" src="/images/directors-chair.png" alt="">
+                <h2>A Personal Director</h2>
+                <p>Even first-time film-makers can plan complex video productions with Bootlegger’s easy-to-use Shoot Designer. Let Bootlegger direct your crew, collect your footage and organise your editing with rich metadata.</p>
+            </div>
+            <div class="col-sm-4 highlights-column">
+                <img class="img-responsive img-center" src="/images/production-control.png" alt="">
+                <h2>Production Control</h2>
+                <p>You control everything from who’s in your crew to exactly what they’re asked to shoot. Use genre templates or create your own projects to help the crew collect what you need.</p>
+            </div>
+
         </div>
-      </div>
-        </div>
+
     </div>
-    <div  data-anchor-target="#when"></div>
-</section>
 
+    <!-- Timeline -->
+    <div id="timeline-container">
 
-</div>
+        <div class="container">
 
-<script src="/static/js/dependencies/2jquery-2.0.3.min.js"></script>
-<script src="/static/js/skrollr.min.js"></script>
-<script src="/static/js-extra/skrollr.menu.min.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-function adjustWindow(){
-    
-    // Init Skrollr
-    // var s = skrollr.init({
-    //     forceHeight: false
-    // });
+            <h2>How it Works</h2>
 
-    var s = skrollr.init({
-         // forceHeight: false
-          render: function(data) {
-              //Debugging - Log the current scroll position.
-              //console.log(data.curTop);
-          },
-          keyframe: function(element, name, direction) {
-            //name will be one of data500, dataTopBottom, data_offsetCenter
-        }
-      });
+            <div class="fixed-label animated" id="producer-label"><i class="fa fa-circle-o"></i>Producer</div>
+            <div class="fixed-label animated" id="crew-label">Crew<i class="fa fa-circle-o"></i></div>
 
-      skrollr.menu.init(s,{
-        duration: function(currentTop, targetTop) {
-            //By default, the duration is hardcoded at 500ms.
-            return 1000;
-        }
-      });
-    
-    // Get window size
-      winH = $window.height();
-      //console.log("h:"+winH);
-      // Keep minimum height 550
-      if(winH <= 550) {
-      winH = 550;
-    } 
-      
-      // Resize our slides
-      $slide.height(winH);
+                <ul class="timeline">
+                    <li class="producer-li">
+                        <div class="timeline-image">
+                            <i class="animated fadeIn fa fa-calendar fa-fw fa-4x"></i>
+                        </div>
 
-      $('.homeSlide').height(winH+300);
-      
-      // Refresh Skrollr after resizing our sections
-      s.refresh($('.slide'));
-      s.refresh($('.homeSlide'));
-  }
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Make a Shoot</h4>
+                            </div>
 
-$window = $(window);
-$slide = $('.slide');
-$body = $('body');
-$(function(){
-  adjustWindow();
-  $('body').scrollspy({ target: '.navbar-example' });
+                            <div class="timeline-body">
+                                <p>Plan your shoot quickly and easily using our off-the-shelf templates or customise them to produce your own intricate production. Invite your friends or make it open to everyone to participate in.</p>
+                            </div>
+                        </div>
+                    </li>
 
-  $( window ).resize(function() {
-    adjustWindow();
-  });
+                    <li class="timeline-inverted crew-li">
+                        <div class="timeline-image">
+                            <i class="animated fadeIn fa fa-check-square-o fa-fw fa-4x"></i>
+                        </div>
 
-  $('.popover-dismiss').popover({
-    trigger: 'focus'
-  });
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Sign up to a Shoot</h4>
+                            </div>
 
-  $('#carousel-example-generic').on('slide.bs.carousel', function () {
-    // do something…
-    $('#carousel-example-generic video').each(function(){this.pause()});
-  });
+                            <div class="timeline-body">
+                                <p>The Bootlegger app is a gateway to video shoots around the world. Sign in to become part of a crew and contribute to exciting projects both locally and around the world.</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="producer-li">
+                        <div class="timeline-image">
+                            <i class="animated fadeIn fa fa-desktop fa-fw fa-4x"></i>
+                        </div>
+
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Monitor Live</h4>
+                            </div>
+
+                            <div class="timeline-body">
+                                <p>Once started, you can watch your shoot unfold in real time through the Bootlegger website. See the location of your crew and get detailed metadata on exactly what they’re shooting.</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="timeline-inverted crew-li">
+                        <div class="timeline-image">
+                            <i class="animated fadeIn fa fa-graduation-cap fa-fw fa-4x"></i>
+                        </div>
+
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Learn Great Skills</h4>
+                            </div>
+
+                            <div class="timeline-body">
+                                <p>No prior filming experience required! Follow Bootlegger’s onscreen hints, countdowns and detailed shot overlays to produce professional looking footage from your own mobile device.</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="timeline-inverted crew-li">
+                        <div class="timeline-image">
+                            <i class="animated fadeIn fa fa-share-alt fa-fw fa-4x"></i>
+                        </div>
+
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Share Your Creativity</h4>
+                            </div>
+
+                            <div class="timeline-body">
+                                <p>Hit upload to share your footage with the producer for editing once you have a WiFi connection. The clips you upload are tied to your account, meaning that you’ll get credit for what you shoot.</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="producer-li">
+                        <div class="timeline-image">
+                            <i class="animated fadeIn fa fa-pencil fa-fw fa-4x"></i>
+                        </div>
+
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Collect and Edit</h4>
+                            </div>
+
+                            <div class="timeline-body">
+                                <p>Collect footage tagged with all the information you need to edit, including crew member, location, subject and shot type. Browse and watch the clips via the Bootlegger website, making quick and easy micro-edits or discarding unwanted footage as you go.</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="producer-li">
+                        <div class="timeline-image">
+                            <i class="animated fadeIn fa fa-upload fa-fw fa-4x"></i>
+                        </div>
+
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Publish</h4>
+                            </div>
+
+                            <div class="timeline-body">
+                                <p>Download your clips and edit using the software package of your choice. You can export your project to standard Adobe and Apple formats, making it even easier to share your film with the world. Easily credit those who helped make your film.</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="timeline-inverted crew-li">
+                        <div class="timeline-image">
+                            <i class="animated fadeIn fa fa-film fa-fw fa-4x"></i>
+                        </div>
+
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Watch the Film</h4>
+                            </div>
+
+                            <div class="timeline-body">
+                                <p>Sit back and enjoy the end result! See your name in the credits alongside your teammates and share the awesome film you helped create.</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <h4><a href="/howtobootleg" class="animated pulse mylink">Find Out More <i class="fa fa-chevron-right"></i></a></h4>
+        </div>
+
+        <div id="upcoming-shoots" style="display: none">
+
+            <div class="container">
+
+                <div class="col-sm-4 upcoming-shoot-column">
+                    <h4>Haneen's pilot</h4>
+                    <p>Wed 17th Jun '15 to Wed 8th Jul '15</p>
+                </div>
+                <div class="col-sm-4 upcoming-shoot-column">
+                    <h4>Alia's Bootlessger Shoot</h4>
+                    <p>Tue 30th Jun '15 to Tue 30th Jun '15</p>
+                </div>
+                <div class="col-sm-4 upcoming-shoot-column">
+                    <h4>ReelLives: Ouseburn Festival</h4>
+                    <p>Sat 4th Jul '15 to Sun 5th Jul '15</p>
+                </div>
+
+                <div class="clearfix"></div>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div id="footer">
+            <div class="container">
+                <div id="recent-shoots">
+
+                    <h2>Recent Shoots Using Bootlegger</h2>
+
+                    <div class="col-sm-4 recent-shoot-column">
+                        <a class="recent-shoot-link" href="//www.youtube.com/embed/3PRQWs2T8GU?rel=0&hd=1" target="_blank">
+                            <div class="thumbnail-wrapper">
+                                <img class="img-responsive img-center" src="/images/videos/thumbnail/mouses-bloodlust.jpg" alt="">
+                                <h4>Mouses: Bloodlust</h4>
+                                <i class="fa fa-play-circle"></i>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-4 recent-shoot-column">
+                        <a class="recent-shoot-link" href="//www.youtube.com/embed/904VHPMzimI?rel=0&hd=1" target="_blank">
+                            <div class="thumbnail-wrapper">
+                                <img class="img-responsive img-center" src="/images/videos/thumbnail/loudest-whisper.jpg" alt="">
+                                <h4>Loudest Whisper</h4>
+                                <i class="fa fa-play-circle"></i>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-4 recent-shoot-column">
+                        <a class="recent-shoot-link" href="//www.youtube.com/embed/m8OnPzf6dZo?rel=0&hd=1" target="_blank">
+                            <div class="thumbnail-wrapper">
+                                <img class="img-responsive img-center" src="/images/videos/thumbnail/great-north-run.jpg" alt="">
+                                <h4>Great North Run</h4>
+                                <i class="fa fa-play-circle"></i>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                </div>
+
+                <div id="sub-footer">
+
+                    <div class="col-lg-12 footer-links">
+                        <p>Copyright &copy; Bootlegger 2015</p> |
+                        <a href="/api/docs">The Bootlegger Platform API</a>
+                        |
+                        <a href="http://github.com/digitalinteraction/bootlegger-server">Bootlegger on GitHub</a>
+                        <ul>
+                            <li>
+                                <a href="https://twitter.com/BootleggerTV">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li style="margin-left:5px;">
+                                <a href="https://www.youtube.com/channel/UC5ewRMUdGCR3BHaHrKo3RSg">
+                                    <i class="fa fa-youtube"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Youtube Modal -->
+    <div id="background-overlay">
+
+        <div id="close-modal-button">
+            <i class="fa fa-times fa-2x"></i>
+        </div>
+
+        <div class="youtube-modal animated">
+            <div class="videoWrapper">
+                <iframe id="modal-iframe" width="560" height="349" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- jQuery -->
+    <script src="/static/js/dependencies/2jquery-2.0.3.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/static/js/bootstrap.min.js"></script>
+<script>
+$(function()
+{
+   // coverVid($('.covervid-video'),1920,1080);
+  $('.covervid-video').fadeIn(1000);
+
 });
-   
-  
-
+coverVid(document.querySelector('.covervid-video'), 1920, 1080);
 </script>
-
 </body>
+
 </html>

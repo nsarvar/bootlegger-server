@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<xs:schema xmlns="http://tempuri.org/apple_xml_5" elementFormDefault="qualified" targetNamespace="http://tempuri.org/apple_xml_5" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="xmeml">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="project" />
+        <xs:element ref="sequence" />
+        <xs:element ref="bin" />
+        <xs:element ref="clip" />
+        <xs:element ref="importoptions" />
+      </xs:choice>
+      <xs:attribute name="version" type="xs:NMTOKENS" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="importoptions">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="createnewproject" />
+        <xs:element ref="targetprojectname" />
+        <xs:element ref="defsequencepresetname" />
+        <xs:element ref="displaynonfatalerrors" />
+        <xs:element ref="filterreconnectmediafiles" />
+        <xs:element ref="filterincludemarkers" />
+        <xs:element ref="filterincludeeffects" />
+        <xs:element ref="filterincludesequencesettings" />
+        <xs:element ref="deletethisxmlfileatimport" />
+        <xs:element ref="createfcpprojectatxmlfilepath" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="project">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="children" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="children">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="bin" />
+        <xs:element ref="clip" />
+        <xs:element ref="sequence" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bin">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="children" />
+        <xs:element ref="labels" />
+        <xs:element ref="comments" />
+        <xs:element ref="uuid" />
+        <xs:element ref="updatebehavior" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="clip">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="duration" />
+        <xs:element ref="rate" />
+        <xs:element ref="enabled" />
+        <xs:element ref="in" />
+        <xs:element ref="out" />
+        <xs:element ref="anamorphic" />
+        <xs:element ref="alphatype" />
+        <xs:element ref="alphareverse" />
+        <xs:element ref="compositemode" />
+        <xs:element ref="masterclipid" />
+        <xs:element ref="ismasterclip" />
+        <xs:element ref="labels" />
+        <xs:element ref="comments" />
+        <xs:element ref="stillframeoffset" />
+        <xs:element ref="subclipinfo" />
+        <xs:element ref="logginginfo" />
+        <xs:element ref="stillframe" />
+        <xs:element ref="file" />
+        <xs:element ref="marker" />
+        <xs:element ref="filter" />
+        <xs:element ref="sourcetrack" />
+        <xs:element ref="subframeoffset" />
+        <xs:element ref="timecode" />
+        <xs:element ref="media" />
+        <xs:element ref="start" />
+        <xs:element ref="end" />
+        <xs:element ref="startoffset" />
+        <xs:element ref="endoffset" />
+        <xs:element ref="pixelaspectratio" />
+        <xs:element ref="defaultangle" />
+        <xs:element ref="filmdata" />
+        <xs:element ref="uuid" />
+        <xs:element ref="updatebehavior" />
+        <xs:element ref="subclipmasterid" />
+      </xs:choice>
+      <xs:attribute name="id" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sequence">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="duration" />
+        <xs:element ref="rate" />
+        <xs:element ref="timecode" />
+        <xs:element ref="in" />
+        <xs:element ref="out" />
+        <xs:element ref="marker" />
+        <xs:element ref="media" />
+        <xs:element ref="sequence" />
+        <xs:element ref="ismasterclip" />
+        <xs:element ref="labels" />
+        <xs:element ref="comments" />
+        <xs:element ref="logginginfo" />
+        <xs:element ref="description" />
+        <xs:element ref="masterclipid" />
+        <xs:element ref="filmdata" />
+        <xs:element ref="file" />
+        <xs:element ref="pixelaspectratio" />
+        <xs:element ref="fielddominance" />
+        <xs:element ref="filter" />
+        <xs:element ref="uuid" />
+        <xs:element ref="updatebehavior" />
+      </xs:choice>
+      <xs:attribute name="id" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="clipitem">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="duration" />
+        <xs:element ref="rate" />
+        <xs:element ref="enabled" />
+        <xs:element ref="in" />
+        <xs:element ref="out" />
+        <xs:element ref="start" />
+        <xs:element ref="end" />
+        <xs:element ref="anamorphic" />
+        <xs:element ref="alphatype" />
+        <xs:element ref="alphareverse" />
+        <xs:element ref="compositemode" />
+        <xs:element ref="masterclipid" />
+        <xs:element ref="ismasterclip" />
+        <xs:element ref="labels" />
+        <xs:element ref="comments" />
+        <xs:element ref="stillframeoffset" />
+        <xs:element ref="sequence" />
+        <xs:element ref="subclipinfo" />
+        <xs:element ref="logginginfo" />
+        <xs:element ref="stillframe" />
+        <xs:element ref="timecode" />
+        <xs:element ref="syncoffset" />
+        <xs:element ref="file" />
+        <xs:element ref="marker" />
+        <xs:element ref="filter" />
+        <xs:element ref="sourcetrack" />
+        <xs:element ref="link" />
+        <xs:element ref="subframeoffset" />
+        <xs:element ref="multiclip" />
+        <xs:element ref="mediadelay" />
+        <xs:element ref="filmdata" />
+        <xs:element ref="pixelaspectratio" />
+        <xs:element ref="fielddominance" />
+        <xs:element ref="gamma" />
+        <xs:element ref="itemhistory" />
+        <xs:element ref="primarytimecode" />
+        <xs:element ref="mixedratesoffset" />
+        <xs:element ref="subclipmasterid" />
+      </xs:choice>
+      <xs:attribute name="id" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="filmdata">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="appspecificdata" />
+        <xs:element ref="filmslate" />
+        <xs:element ref="cameraroll" />
+        <xs:element ref="labroll" />
+        <xs:element ref="keycode" />
+        <xs:element ref="dailyroll" />
+        <xs:element ref="inknumber" />
+        <xs:element ref="filmstandard" />
+        <xs:element ref="telecinespeed" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="filmslate">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="scene" />
+        <xs:element ref="take" />
+        <xs:element ref="slate" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="keycode">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prefix" />
+        <xs:element ref="feetframes" />
+        <xs:element ref="perfoffset" />
+        <xs:element ref="reversed" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="inknumber">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prefix" />
+        <xs:element ref="feetframes" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="multiclip">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="angle" />
+        <xs:element ref="collapsed" />
+        <xs:element ref="synctype" />
+      </xs:choice>
+      <xs:attribute name="id" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="angle">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="clip" />
+        <xs:element ref="activevideoangle" />
+        <xs:element ref="activeaudioangle" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="transitionitem">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="rate" />
+        <xs:element ref="start" />
+        <xs:element ref="end" />
+        <xs:element ref="alignment" />
+        <xs:element ref="effect" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="generatoritem">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="duration" />
+        <xs:element ref="rate" />
+        <xs:element ref="enabled" />
+        <xs:element ref="in" />
+        <xs:element ref="out" />
+        <xs:element ref="start" />
+        <xs:element ref="end" />
+        <xs:element ref="anamorphic" />
+        <xs:element ref="alphatype" />
+        <xs:element ref="effect" />
+        <xs:element ref="sourcetrack" />
+        <xs:element ref="filter" />
+        <xs:element ref="timecode" />
+        <xs:element ref="primarytimecode" />
+        <xs:element ref="alphareverse" />
+        <xs:element ref="link" />
+        <xs:element ref="logginginfo" />
+        <xs:element ref="labels" />
+        <xs:element ref="comments" />
+        <xs:element ref="mediadelay" />
+        <xs:element ref="fielddominance" />
+        <xs:element ref="filmdata" />
+        <xs:element ref="subframeoffset" />
+        <xs:element ref="masterclipid" />
+        <xs:element ref="compositemode" />
+        <xs:element ref="syncoffset" />
+        <xs:element ref="marker" />
+        <xs:element ref="subclipmasterid" />
+      </xs:choice>
+      <xs:attribute name="id" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="filter">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="start" />
+        <xs:element ref="end" />
+        <xs:element ref="effect" />
+        <xs:element ref="enabled" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sourcetrack">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="mediatype" />
+        <xs:element ref="trackindex" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="file">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="rate" />
+        <xs:element ref="duration" />
+        <xs:element ref="media" />
+        <xs:element ref="timecode" />
+        <xs:element ref="pathurl" />
+        <xs:element ref="width" />
+        <xs:element ref="height" />
+        <xs:element ref="mediaSource" />
+        <xs:element ref="metadata" />
+      </xs:choice>
+      <xs:attribute name="id" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="media">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="video" />
+        <xs:element ref="audio" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="video">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="in" />
+        <xs:element ref="out" />
+        <xs:element ref="track" />
+        <xs:element ref="format" />
+        <xs:element ref="samplecharacteristics" />
+        <xs:element ref="duration" />
+        <xs:element ref="trackcount" />
+        <xs:element ref="stillframe" />
+        <xs:element ref="alphatype" />
+        <xs:element ref="layerindex" />
+        <xs:element ref="metadata" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="audio">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="in" />
+        <xs:element ref="out" />
+        <xs:element ref="track" />
+        <xs:element ref="format" />
+        <xs:element ref="outputs" />
+        <xs:element ref="channelcount" />
+        <xs:element ref="channeldescription" />
+        <xs:element ref="rate" />
+        <xs:element ref="samplecharacteristics" />
+        <xs:element ref="layout" />
+        <xs:element ref="audiochannel" />
+        <xs:element ref="trackcount" />
+        <xs:element ref="filter" />
+        <xs:element ref="duration" />
+        <xs:element ref="metadata" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="track">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="clipitem" />
+        <xs:element ref="transitionitem" />
+        <xs:element ref="generatoritem" />
+        <xs:element ref="enabled" />
+        <xs:element ref="locked" />
+        <xs:element ref="outputchannelindex" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="format">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="samplecharacteristics" />
+        <xs:element ref="appspecificdata" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="samplecharacteristics">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="width" />
+        <xs:element ref="height" />
+        <xs:element ref="anamorphic" />
+        <xs:element ref="pixelaspectratio" />
+        <xs:element ref="fielddominance" />
+        <xs:element ref="colordepth" />
+        <xs:element ref="codec" />
+        <xs:element ref="depth" />
+        <xs:element ref="samplerate" />
+        <xs:element ref="rate" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="codec">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="appspecificdata" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="appspecificdata">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="appname" />
+        <xs:element ref="appmanufacturer" />
+        <xs:element ref="appversion" />
+        <xs:element ref="data" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="data">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="fcpimageprocessing" />
+        <xs:element ref="qtcodec" />
+        <xs:element ref="qteffectid" />
+        <xs:element ref="UUID" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fcpimageprocessing">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="useyuv" />
+        <xs:element ref="usesuperwhite" />
+        <xs:element ref="rendermode" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="qtcodec">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="codecname" />
+        <xs:element ref="codectypename" />
+        <xs:element ref="codectypecode" />
+        <xs:element ref="codecvendorcode" />
+        <xs:element ref="spatialquality" />
+        <xs:element ref="temporalquality" />
+        <xs:element ref="keyframerate" />
+        <xs:element ref="datarate" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="logginginfo">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="description" />
+        <xs:element ref="good" />
+        <xs:element ref="scene" />
+        <xs:element ref="shottake" />
+        <xs:element ref="lognote" />
+        <xs:element ref="takenote" />
+        <xs:element ref="shotnote" />
+        <xs:element ref="scenenote" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="outputs">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="group" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="group">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="index" />
+        <xs:element ref="numchannels" />
+        <xs:element ref="downmix" />
+        <xs:element ref="channel" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="channel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="index" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="audiochannel">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="channellabel" />
+        <xs:element ref="sourcechannel" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="timecode">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="rate" />
+        <xs:element ref="string" />
+        <xs:element ref="frame" />
+        <xs:element ref="source" />
+        <xs:element ref="displayformat" />
+        <xs:element ref="format" />
+        <xs:element ref="reel" />
+        <xs:element ref="field" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rate">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="ntsc" />
+        <xs:element ref="timebase" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="reel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="link">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="mediatype" />
+        <xs:element ref="trackindex" />
+        <xs:element ref="clipindex" />
+        <xs:element ref="groupindex" />
+        <xs:element ref="linkclipref" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="valuelist">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="valueentry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="valueentry">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="value" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="value">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="horiz" />
+        <xs:element ref="vert" />
+        <xs:element ref="alpha" />
+        <xs:element ref="red" />
+        <xs:element ref="green" />
+        <xs:element ref="blue" />
+        <xs:element ref="timecode" />
+        <xs:element ref="clip" />
+        <xs:element ref="sequence" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="marker">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="in" />
+        <xs:element ref="out" />
+        <xs:element ref="comment" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="effect">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="effectid" />
+        <xs:element ref="effectcategory" />
+        <xs:element ref="effecttype" />
+        <xs:element ref="mediatype" />
+        <xs:element ref="parameter" />
+        <xs:element ref="wipecode" />
+        <xs:element ref="wipeaccuracy" />
+        <xs:element ref="startratio" />
+        <xs:element ref="endratio" />
+        <xs:element ref="reverse" />
+        <xs:element ref="rate" />
+        <xs:element ref="duration" />
+        <xs:element ref="keyframe" />
+        <xs:element ref="appspecificdata" />
+        <xs:element ref="privatestate" />
+        <xs:element ref="multiclip" />
+        <xs:element ref="effectclass" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parameter">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+        <xs:element ref="parameterid" />
+        <xs:element ref="parameterspecifier" />
+        <xs:element ref="interpolation" />
+        <xs:element ref="valuemin" />
+        <xs:element ref="valuemax" />
+        <xs:element ref="keyframe" />
+        <xs:element ref="valuelist" />
+        <xs:element ref="value" />
+        <xs:element ref="appspecificdata" />
+        <xs:element ref="privatestate" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="keyframe">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="when" />
+        <xs:element ref="value" />
+        <xs:element ref="inscale" />
+        <xs:element ref="outscale" />
+        <xs:element ref="inbez" />
+        <xs:element ref="outbez" />
+        <xs:element ref="interpolation" />
+        <xs:element ref="hadbezierin" />
+        <xs:element ref="hadbezierout" />
+        <xs:element ref="speedkfstart" />
+        <xs:element ref="speedkfend" />
+        <xs:element ref="speedkfin" />
+        <xs:element ref="speedkfout" />
+        <xs:element ref="speedvirtualkf" />
+        <xs:element ref="origvalue" />
+        <xs:element ref="anchoroffset" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="inbez">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="horiz" />
+        <xs:element ref="vert" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="outbez">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="horiz" />
+        <xs:element ref="vert" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="interpolation">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="name" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="labels">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="label" />
+        <xs:element ref="label2" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="comments">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="mastercomment1" />
+        <xs:element ref="mastercomment2" />
+        <xs:element ref="mastercomment3" />
+        <xs:element ref="mastercomment4" />
+        <xs:element ref="clipcommenta" />
+        <xs:element ref="clipcommentb" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="subclipinfo">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="startoffset" />
+        <xs:element ref="endoffset" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="metadata">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="storage" />
+        <xs:element ref="key" />
+        <xs:element ref="updatebehavior" />
+        <xs:element ref="size" />
+        <xs:element ref="type" />
+        <xs:element ref="value" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="itemhistory">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="uuid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="in" type="xs:string" />
+  <xs:element name="out" type="xs:string" />
+  <xs:element name="index" type="xs:string" />
+  <xs:element name="numchannels" type="xs:string" />
+  <xs:element name="downmix" type="xs:string" />
+  <xs:element name="width" type="xs:string" />
+  <xs:element name="height" type="xs:string" />
+  <xs:element name="anamorphic" type="xs:string" />
+  <xs:element name="pixelaspectratio" type="xs:string" />
+  <xs:element name="fielddominance" type="xs:string" />
+  <xs:element name="name" type="xs:string" />
+  <xs:element name="duration" type="xs:string" />
+  <xs:element name="masterclipid" type="xs:string" />
+  <xs:element name="ismasterclip" type="xs:string" />
+  <xs:element name="subclipmasterid" type="xs:string" />
+  <xs:element name="good" type="xs:string" />
+  <xs:element name="lognote" type="xs:string" />
+  <xs:element name="scene" type="xs:string" />
+  <xs:element name="ntsc" type="xs:string" />
+  <xs:element name="timebase" type="xs:string" />
+  <xs:element name="codecname" type="xs:string" />
+  <xs:element name="codectypename" type="xs:string" />
+  <xs:element name="codectypecode" type="xs:string" />
+  <xs:element name="codecvendorcode" type="xs:string" />
+  <xs:element name="spatialquality" type="xs:string" />
+  <xs:element name="temporalquality" type="xs:string" />
+  <xs:element name="keyframerate" type="xs:string" />
+  <xs:element name="datarate" type="xs:string" />
+  <xs:element name="string" type="xs:string" />
+  <xs:element name="frame" type="xs:string" />
+  <xs:element name="source" type="xs:string" />
+  <xs:element name="displayformat" type="xs:string" />
+  <xs:element name="mediatype" type="xs:string" />
+  <xs:element name="trackindex" type="xs:string" />
+  <xs:element name="clipindex" type="xs:string" />
+  <xs:element name="groupindex" type="xs:string" />
+  <xs:element name="when" type="xs:string" />
+  <xs:element name="effectid" type="xs:string" />
+  <xs:element name="qteffectid" type="xs:string" />
+  <xs:element name="effectcategory" type="xs:string" />
+  <xs:element name="effecttype" type="xs:string" />
+  <xs:element name="effectclass" type="xs:string" />
+  <xs:element name="privatestate" type="xs:string" />
+  <xs:element name="parameterid" type="xs:string" />
+  <xs:element name="parameterspecifier" type="xs:string" />
+  <xs:element name="valuemin" type="xs:string" />
+  <xs:element name="valuemax" type="xs:string" />
+  <xs:element name="inscale" type="xs:string" />
+  <xs:element name="outscale" type="xs:string" />
+  <xs:element name="alpha" type="xs:string" />
+  <xs:element name="red" type="xs:string" />
+  <xs:element name="green" type="xs:string" />
+  <xs:element name="blue" type="xs:string" />
+  <xs:element name="start" type="xs:string" />
+  <xs:element name="end" type="xs:string" />
+  <xs:element name="wipecode" type="xs:string" />
+  <xs:element name="wipeaccuracy" type="xs:string" />
+  <xs:element name="startratio" type="xs:string" />
+  <xs:element name="endratio" type="xs:string" />
+  <xs:element name="reverse" type="xs:string" />
+  <xs:element name="alphatype" type="xs:string" />
+  <xs:element name="alphareverse" type="xs:string" />
+  <xs:element name="compositemode" type="xs:string" />
+  <xs:element name="label" type="xs:string" />
+  <xs:element name="label2" type="xs:string" />
+  <xs:element name="clipcommenta" type="xs:string" />
+  <xs:element name="clipcommentb" type="xs:string" />
+  <xs:element name="mastercomment1" type="xs:string" />
+  <xs:element name="mastercomment2" type="xs:string" />
+  <xs:element name="mastercomment3" type="xs:string" />
+  <xs:element name="mastercomment4" type="xs:string" />
+  <xs:element name="comment" type="xs:string" />
+  <xs:element name="stillframeoffset" type="xs:string" />
+  <xs:element name="stillframe" type="xs:string" />
+  <xs:element name="syncoffset" type="xs:string" />
+  <xs:element name="colordepth" type="xs:string" />
+  <xs:element name="appname" type="xs:string" />
+  <xs:element name="appmanufacturer" type="xs:string" />
+  <xs:element name="appversion" type="xs:string" />
+  <xs:element name="enabled" type="xs:string" />
+  <xs:element name="locked" type="xs:string" />
+  <xs:element name="outputchannelindex" type="xs:string" />
+  <xs:element name="depth" type="xs:string" />
+  <xs:element name="useyuv" type="xs:string" />
+  <xs:element name="usesuperwhite" type="xs:string" />
+  <xs:element name="rendermode" type="xs:string" />
+  <xs:element name="samplerate" type="xs:string" />
+  <xs:element name="createnewproject" type="xs:string" />
+  <xs:element name="targetprojectname" type="xs:string" />
+  <xs:element name="defsequencepresetname" type="xs:string" />
+  <xs:element name="displaynonfatalerrors" type="xs:string" />
+  <xs:element name="filterreconnectmediafiles" type="xs:string" />
+  <xs:element name="filterincludemarkers" type="xs:string" />
+  <xs:element name="filterincludeeffects" type="xs:string" />
+  <xs:element name="filterincludesequencesettings" type="xs:string" />
+  <xs:element name="createfcpprojectatxmlfilepath" type="xs:string" />
+  <xs:element name="deletethisxmlfileatimport" type="xs:string" />
+  <xs:element name="trackcount" type="xs:string" />
+  <xs:element name="channeldescription" type="xs:string" />
+  <xs:element name="subframeoffset" type="xs:string" />
+  <xs:element name="startoffset" type="xs:string" />
+  <xs:element name="endoffset" type="xs:string" />
+  <xs:element name="linkclipref" type="xs:string" />
+  <xs:element name="description" type="xs:string" />
+  <xs:element name="shottake" type="xs:string" />
+  <xs:element name="alignment" type="xs:string" />
+  <xs:element name="horiz" type="xs:string" />
+  <xs:element name="vert" type="xs:string" />
+  <xs:element name="pathurl" type="xs:string" />
+  <xs:element name="layerindex" type="xs:string" />
+  <xs:element name="field" type="xs:string" />
+  <xs:element name="primarytimecode" type="xs:string" />
+  <xs:element name="hadbezierin" type="xs:string" />
+  <xs:element name="hadbezierout" type="xs:string" />
+  <xs:element name="speedkfstart" type="xs:string" />
+  <xs:element name="speedkfend" type="xs:string" />
+  <xs:element name="speedkfin" type="xs:string" />
+  <xs:element name="speedkfout" type="xs:string" />
+  <xs:element name="speedvirtualkf" type="xs:string" />
+  <xs:element name="origvalue" type="xs:string" />
+  <xs:element name="mediaSource" type="xs:string" />
+  <xs:element name="collapsed" type="xs:string" />
+  <xs:element name="synctype" type="xs:string" />
+  <xs:element name="activevideoangle" type="xs:string" />
+  <xs:element name="activeaudioangle" type="xs:string" />
+  <xs:element name="mediadelay" type="xs:string" />
+  <xs:element name="defaultangle" type="xs:string" />
+  <xs:element name="channelcount" type="xs:string" />
+  <xs:element name="layout" type="xs:string" />
+  <xs:element name="takenote" type="xs:string" />
+  <xs:element name="shotnote" type="xs:string" />
+  <xs:element name="scenenote" type="xs:string" />
+  <xs:element name="take" type="xs:string" />
+  <xs:element name="slate" type="xs:string" />
+  <xs:element name="cameraroll" type="xs:string" />
+  <xs:element name="labroll" type="xs:string" />
+  <xs:element name="prefix" type="xs:string" />
+  <xs:element name="feetframes" type="xs:string" />
+  <xs:element name="perfoffset" type="xs:string" />
+  <xs:element name="reversed" type="xs:string" />
+  <xs:element name="dailyroll" type="xs:string" />
+  <xs:element name="filmstandard" type="xs:string" />
+  <xs:element name="telecinespeed" type="xs:string" />
+  <xs:element name="channellabel" type="xs:string" />
+  <xs:element name="sourcechannel" type="xs:string" />
+  <xs:element name="UUID" type="xs:string" />
+  <xs:element name="uuid" type="xs:string" />
+  <xs:element name="updatebehavior" type="xs:string" />
+  <xs:element name="storage" type="xs:string" />
+  <xs:element name="key" type="xs:string" />
+  <xs:element name="size" type="xs:string" />
+  <xs:element name="type" type="xs:string" />
+  <xs:element name="gamma" type="xs:string" />
+  <xs:element name="mixedratesoffset" type="xs:string" />
+  <xs:element name="anchoroffset" type="xs:string" />
+</xs:schema>

@@ -28,7 +28,7 @@ module.exports = {
 
 	getall:function(req,res)
 	{
-		Log.find({eventid:null}).sort('_id DESC').exec(function(err,logs){
+		Log.find({eventid:null}).skip(req.param('skip')).limit(req.param('limit')).sort('_id DESC').exec(function(err,logs){
 			res.json(logs);
 		});
 	},
@@ -59,7 +59,6 @@ module.exports = {
 
 	click:function(req,res)
 	{
-		Log.logmore('click',{msg:req.param('page'), userid:req.session.passport.user.id, eventid:req.param('eventid'), event:req.param('event'), extras:req.param('extras')});
+		Log.verbose('click',req.param('page') + ' click',{msg:req.param('page'), userid:req.session.passport.user.id, eventid:req.param('eventid'), event:req.param('event'), extras:req.param('extras')});
 	}
-
 };

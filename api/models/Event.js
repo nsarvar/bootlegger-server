@@ -22,10 +22,10 @@ module.exports = {
 	    minLength: 5
 	  },
 	starts: {
-	    required:true,
+	    required:true
 	  },
     ends: {
-	    required:true,
+	    required:true
 	  },
 	  eventtype: {
 	    type: 'json'
@@ -96,7 +96,8 @@ module.exports = {
 				}
 				else
 				{
-					console.log('missing file: '+f.source);
+					//missing file...
+					//console.log('missing file: '+f.source);
 				}
 			});
 

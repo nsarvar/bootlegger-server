@@ -21,22 +21,14 @@
 </style>
 <div class="row">
 	<div class="col-sm-2">
-		<label>Audio Sync <br><a class="small" href="/post/module_function/audio_sync?func=reset&event=<%-event %>">Reset</a></label>
-	</div>
-	<div id="progress" class="col-sm-6" style="display:none">
-		<div class="progress">
-		  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-		    <span class="sr-only">60% Complete</span>
-		  </div>
-		</div>
+		<label>Audio Sync <br><a class="small" href="/post/module_function/audio_sync?func=reset&event=<%-event %>&apikey=<%-apikey %>">Reset</a></label>
 	</div>
 
 
+	<div class="col-sm-6" id="inpgrp">
+		<form action="/post/module_function/audio_sync?apikey=<%- apikey %>" enctype="multipart/form-data" method="POST" >
 
-	<div class="col-sm-6" id="inpgrp"> 
-		<form action="/post/module_function/audio_sync" enctype="multipart/form-data" method="POST" > 
-			
-		<input type="hidden" name="event" value="<%- event %>"/> 
+		<input type="hidden" name="event" value="<%- event %>"/>
 		<input type="hidden" name="func" value="upload"/>
 		<div class="input-group" >
 		        <span class="input-group-btn">
@@ -47,15 +39,21 @@
 		        <input type="text" class="form-control" readonly>
 		</div>
 		<br>
-		<input type="submit" value="Upload" class="col-sm-2 btn btn-primary" />
-
-
-
+		<input type="submit" value="Upload" class="btn btn-primary" />
 		</form>
 	</div>
 
+	<div id="audio_progress" class="col-sm-6" style="display:none">
+		<div class="progress">
+			<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+				<span class="sr-only">60% Complete</span>
+			</div>
+		</div>
+		<div id="audio_status" class="text-muted text-center"></div>
+	</div>
+
 	<div class="col-sm-4" id="desc">
-		<div class="popover" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+		<div class="" style="margin-right: -40px;margin-left:20px;margin-top: -10px;margin-bottom: -13px;display:inline-block;right:25px;left:inherit;position:relative;float:right;">
 		    <div class="arrow"></div>
 		    <h3 class="popover-title"><%- name %></h3>
 		    <div class="popover-content">
@@ -63,66 +61,47 @@
 		    </div>
 		</div>
 	</div>
-
-</div>
-<div class="row" id="approx">
-
-	<div class="col-sm-12">
-		<div class="panel small">Without providing a master audio track of the event, we can generate an EDL with approximate timings <a href="/post/module_function/audio_sync?func=getedl&event=<%-event %>">Download Approximated EDL</a>
-		</div>
+	<div  style="margin-bottom:-20px;background: #eee; clear: both; height: 32px; padding: 6px;">
+	<p>You do not need to stay on this page. We will send an email to <span class="text-muted"><%= user.profile.emails[0].value %></span> when the sync is finished.</p>
 	</div>
+</div>
 </div>
 <div class="row" id="download" style="display:none;">
 	<div class="col-sm-12">
-		We have added your synced EDL to the files for your dropbox, otherwise you can download it <a href="/post/module_function/audio_sync?func=getedl&event=<%-event %>">Here</a>
+	We have updated your media with the sync information, and you can download the EDL for your event <a href="/post/module_function/audio_sync?func=getedl&event=<%-event %>&<-apikey %>">Here</a>
 	</div>
 </div>
 
 
 
 <script>
+function update()
+{
+	//$('#progress').show();
+	//return;
+	//console.log("checking");
+	//return;
+	$.get('/post/module_function/audio_sync?apikey='+apikey,{event:'<%- event %>',func:'progress'},function(data)
+	{
+		console.log(data);
+		if (data.stopped == true)
+		{
+			$('#audio_progress').hide();
+			$('#inpgrp').show();
+		}
+		else {
+			$('#audio_progress').show();
+			$('#inpgrp').hide();
+		}
+		$('#audio_status').text(data.msg);
+		$('.progress-bar').css('width', data.percentage+'%').attr('aria-valuenow', data.percentage);
+	});
+}
+
 	//get progress
 	$(function()
 	{
-		$.get('/post/module_function/audio_sync',{event:'<%- event %>',func:'progress'},function(data)
-		{
-			console.log(data);
-			if (data.progress != -1)//not started process...
-			{
-				//FOR DEBUG:
-				$('#inpgrp').hide();
-				$('#progress').show();
-				$('#desc').hide();
-
-				if (data.progress != 100)
-				{					
-					//console.log('setting interval');
-					//trigger update
-					setInterval(function(){
-						$.get('/post/module_function/audio_sync',{event:'<%- event %>',func:'progress'},function(data)
-						{
-							//console.log(data.progress);
-							$('.progress-bar').css('width', data.progress+'%').attr('aria-valuenow', data.progress);
-							if (data.progress == 100)
-							{
-								$('#approx').hide();
-								$('#download').show();
-								$('#progress').hide();
-								$('#desc').hide();
-							}
-							//$('#progress > progress > progress-bar').css('width',data.progress+"%");
-						});
-					}, 1000);
-				}
-				else
-				{
-					//done
-					$('#approx').hide();
-					$('#download').show();
-					$('#desc').hide();
-					$('#progress').hide();
-				}
-			}
-		});
+		update();
+		setInterval(update, 5000);
 	});
 </script>

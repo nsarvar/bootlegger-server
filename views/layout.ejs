@@ -10,9 +10,14 @@ It produces high quality, content rich footage with no expense">
     <meta name="google-site-verification" content="9VV37JlFo9nMYNnmxw_iMZ0uEeONLE59qc7m4rzDUQ4" />
     <link rel="shortcut icon" href="/static/favicon.png">
 
-    <title>Bootlegger</title>
+    <title>Bootlegger <%- (typeof(sails.config.beta) != 'undefined')?'BETA':'' %></title>
  <!--<script src="/static/min/production.js"></script>-->
 
+<script>
+var apikey = '<%- apikey %>';
+</script>
+
+<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
 <!--<link rel="stylesheet" href="/static/min/production.css">-->
@@ -20,38 +25,49 @@ It produces high quality, content rich footage with no expense">
 <script src="/js/dependencies/1sails.io.js"></script>
 <script src="/js/dependencies/2jquery-2.0.3.min.js"></script>
 <script src="/js/dependencies/3angular.min.js"></script>
+<script src="/js/admin_controller.js"></script>
 <script src="/js/angular-animate.min.js"></script>
+<script src="/js/angular-bootstrap-switch.js"></script>
 <script src="/js/angular-google-maps.min.js"></script>
+<script src="/js/angular-knob.js"></script>
 <script src="/js/angular-loading-spinner.js"></script>
 <script src="/js/angular-sanitize.min.js"></script>
 <script src="/js/angular-spinner.min.js"></script>
 <script src="/js/angular-ui-sortable.js"></script>
 <script src="/js/app.js"></script>
 <script src="/js/bootstrap-datepicker.js"></script>
-<script src="/js/bootstrap-switch.min.js"></script>
+<script src="/js/bootstrap-switch.js"></script>
 <script src="/js/bootstrap-tokenfield.min.js"></script>
+<script src="/js/bootstrap-wysiwyg.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/bootstro.min.js"></script>
 <script src="/js/checklist-model.js"></script>
-<script src="/js/controllers.js"></script>
+<script src="/js/commission_controller.js"></script>
+<script src="/js/dashboard_controller.js"></script>
+<script src="/js/dirPagination.js"></script>
+<script src="/js/export_controller.js"></script>
 <script src="/js/handlebars-v1.1.2.js"></script>
 <script src="/js/holder.min.js"></script>
 <script src="/js/jasny-bootstrap.min.js"></script>
 <script src="/js/jquery-ui.js"></script>
 <script src="/js/jquery-ui.min.js"></script>
-<script src="/js/jquery.knob.min.js"></script>
+<script src="/js/jquery.hotkeys.js"></script>
+<script src="/js/jquery.knob.js"></script>
 <script src="/js/lodash.min.js"></script>
+<script src="/js/log_controller.js"></script>
 <script src="/js/modernizr.js"></script>
 <script src="/js/moment.min.js"></script>
 <script src="/js/ngStorage.min.js"></script>
 <script src="/js/ngsails.io.js"></script>
-<script src="/js/script.js"></script>
+<script src="/js/shoot_controller.js"></script>
 <script src="/js/skrollr.min.js"></script>
 <script src="/js/slider.js"></script>
 <script src="/js/spin.min.js"></script>
-<script src="/js/ui-bootstrap-custom-tpls-0.12.1.min.js"></script>
+<script src="/js/ui-bootstrap-tpls-0.13.0.min.js"></script>
 <script src="/js/ui-grid.min.js"></script>
+<script src="/js/ui-utils.js"></script>
 <script src="/js/videogular.min.js"></script>
+<script src="/js/watch_controller.js"></script>
 <!--SCRIPTS END-->
 <!--STYLES-->
 <link rel="stylesheet" href="/styles/bootstrap-switch.css">
@@ -60,14 +76,14 @@ It produces high quality, content rich footage with no expense">
 <link rel="stylesheet" href="/styles/carousel.css">
 <link rel="stylesheet" href="/styles/datepicker.css">
 <link rel="stylesheet" href="/styles/ekko-lightbox.min.css">
+<link rel="stylesheet" href="/styles/font-awesome.css">
+<link rel="stylesheet" href="/styles/importer.css">
 <link rel="stylesheet" href="/styles/jasny-bootstrap.min.css">
 <link rel="stylesheet" href="/styles/jquery-ui.css">
-<link rel="stylesheet" href="/styles/paper-bootstrap.css">
 <link rel="stylesheet" href="/styles/ui-grid.min.css">
 <link rel="stylesheet" href="/styles/x_app.css">
 <!--STYLES END-->
 
-    
     <script>
     <% if (user) { %>
     var localcode = '<%=user.localcode%>';
@@ -78,24 +94,49 @@ It produces high quality, content rich footage with no expense">
 
     <script id="eventlist-template" type="text/x-handlebars-template">
     <li><p style="margin-top:-5px;" class="bg-primary menuitem">My Shoots</p></li>
-      {{#each myevents}}
-      <li>
-      {{#if this.default_event}}
-      <a href="/event/view/{{this.id}}">{{this.name}} <i class="glyphicon glyphicon-star pull-right"></i></a>
-      {{else}}
-      <a href="/event/view/{{this.id}}">{{this.name}}</a>
-      {{/if}}
-      </li>
+      {{#each this}}
+        {{#if group}}
+                {{#if events}}
+                    <li>
+                      <a href="#"><span class="text-muted">{{group}}</span></a>
+                    </li>
+                          {{#each events}}
+                          <li>       
+                          <a href="/event/view/{{this.id}}">&nbsp;&nbsp;&nbsp;{{this.name}}</a>
+                          </li>
+                          {{/each}}
+                  {{/if}}
+            {{else}}
+              <li>
+              
+              <a href="/event/view/{{this.id}}">{{this.name}}</a>
+             
+              </li>
+            {{/if}}
       {{else}}
       <li><a href="#" ><span class="text-muted">no shoots owned</span></a></li>
       {{/each}}
+
+<!--
       <li><p class="bg-primary menuitem" style="margin-top:10px;">Participating In</p></li>
       {{#each codeevents}}
-      <li><a href="/watch/{{ this.id}}">{{this.name}}</a></li>
+        {{#if group}}
+          {{#if events}}
+            <li>
+              <a href="#"><span class="text-muted">{{group}}</span></a>
+            </li>
+                {{#each events}}
+                <li><a href="/watch/{{this.id}}">&nbsp;&nbsp;&nbsp;{{this.name}}</a></li>
+                {{/each}}
+                {{/if}}
+            {{else}}
+              <li><a href="/watch/{{this.id}}">{{this.name}}</a></li>
+          {{/if}}
       {{else}}
       <li><a href="#" ><span class="text-muted">no shoots joined</span></a></li>
-      {{/each}}
+      {{/each}} -->
       <li>&nbsp;</li>
+      <li class="bg-primary menuitem">Join a Shoot</li>
       <li>
       <div class="input-group" style="padding:3px 5px;">
       <input type="text" id="mycode" class="form-control" placeholder="Join Code">
@@ -103,23 +144,66 @@ It produces high quality, content rich footage with no expense">
         <button class="btn btn-default" type="button" onclick="registercode()">Go!</button>
       </span>
       </li>
-      
+
     </script>
   </head>
 
   <body>
     <div class="container">
+
+      <div class="modal fade" id="nameModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" style="margin:auto auto;margin-top:10%;" role="document">
+            <form action="/auth/changename" method="POST">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">Edit Name</h4>
+                </div>
+                <div class="modal-body">
+                  <p>Change the name that will be used on credits for shoots you participate in.</p>
+                  <input type="text" name="name" class="form-control" placeholder="Dave Bootlegger" value="<%- user.profile.displayName %>" required min="10"/>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <input type="submit" class="btn btn-primary" value="Update My Name" />
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
       <div class="masthead">
-        <div class="header row" style="position:relative;margin-bottom:18px;height:auto">          
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" style="margin-left:0;margin-right:0;" data-target="#main-menu">
+            <i class="fa fa-bars fa-2x"></i>
+          </button>
+          <% if (!user) { %>
+            <img src="/images/main_logo.png" style="height:48px;margin-top:5px;" />
+            <% } %>
+          <% if (user) { %>
+            <% if(event.name != "") { %>
+            <h3 class="visible-xs pull-left" style="margin-top:20px;width:75%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;"><%= event.name %></h3>
+          <% } else { %>
+              <img src="/images/main_logo.png" style="height:48px;margin-top:5px;" class="visible-xs" />
+        <%  }
+        } %>
+        <div class="header row" style="position:relative;margin-bottom:18px;height:auto">
+
+          <a href="/" class="hidden-xs" style="width:30%;min-height:90px;display:inline-block;float:left;" data-placement="bottom" data-toggle="tooltip" title="Back to My Dashboard">
+          <% if(typeof(sails.config.beta) != 'undefined') { %>
+            <div class="hidden-xs"><span class="label label-warning" style="margin-left:172px;float:left;">BETA</span></div>
+            <% } %>
+          </a>
+
+
 
           <% if (user) { %>
-          <div data-bootstro-title="Your Profile Information" data-bootstro-content="List shoots you are part of, and logout of Bootlegger." data-bootstro-placement="bottom" class="bootstro alert alert-info" style="display:inline-block;float:right;min-width:230px;">
-            <img style="border-radius:30px;float:left;width:60px;height:60px;margin-left:-5px;margin-top:-5px;margin-right:10px;margin-bottom:-10px;" src="<%= user.profile._json.picture %>?sz=60" />
+          <div data-bootstro-title="Your Profile Information" data-bootstro-content="List shoots you are part of, and logout of Bootlegger." data-bootstro-placement="bottom" class="bootstro alert alert-info hidden-xs" style="display:inline-block;float:right;min-width:236px;margin:0;">
+            <img style="border-radius:30px;float:left;width:60px;height:60px;margin-left:-5px;margin-top:-5px;margin-right:10px;margin-bottom:-10px;" src="<%= user.profile._json.picture %>" />
             <!-- <i style="opacity:0.5;float:left;font-size:40pt;margin-left:-5px;margin-top:-3px;margin-right:10px;margin-bottom:-10px;" class="glyphicon glyphicon-user"></i> -->
-            <span class="lead">Hello <%= user.profile.name.givenName %>!</span><br>
+            <span class="lead">Hello <%= user.profile.displayName.split(' ')[0] %>!</span> <a href="#" class="super" data-toggle="modal" data-target="#nameModal"><sup><i class="fa fa-edit text-muted" data-placement="bottom" data-toggle="tooltip" title="Change My Name"></i></sup></a><br>
             <div class="dropdown" style="display:inline-block">
               <a href="#" id="myeventsbtn" data-toggle="dropdown">my shoots <span class="caret"></span></a>
-              <ul class="dropdown-menu" style="z-index:3000" role="menu" id="eventlist">
+              <ul class="dropdown-menu eventlist" style="z-index:3000" role="menu">
                 <li class="loading"></li>
               </ul>
             </div>
@@ -132,44 +216,47 @@ It produces high quality, content rich footage with no expense">
 
           <div class="hidden-xs" style="float:right;display:inline-block;width:150px;padding-top:8px;text-align:center;margin-bottom:8px;">
             <a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger"><img style="margin-bottom:5px;" alt="Android app on Google Play" src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" /></a>
-<br>
+            <br>
             <a href="/howtobootleg">How to Use the App</a>
           </div>
 
-         
-          <div style="position:absolute;right:0;bottom:-25px;">
+
+<div class="hidden-xs" style="position:absolute;right:0;bottom:-25px;">
 
 <% if (typeof showhelp == 'undefined') { %>
-            <a href="#" class="text-muted" onclick="bootstro.start('.bootstro',{stopOnBackdropClick:false});"><i class="fa fa-question-circle"></i> How do I use this page?</a>
-            <% } %>
-            <% if (user && user.profile.emails[0].value == sails.config.admin_email) { %>  | <a class="text-muted" href="/event/admin"><i class="fa fa-cog"></i> Adminstration</a><% } %>
-          </div>
+    <a class="hidden" href="#" class="text-muted" onclick="bootstro.start('.bootstro',{stopOnBackdropClick:false});"><i class="fa fa-question-circle"></i> How do I use this page?</a>
+<% } %>
+
+<% if (user && _.contains(sails.config.admin_email,user.profile.emails[0].value)) { %> <a class="text-muted" href="/event/admin"><i class="fa fa-cog"></i> Adminstration</a>
+<% } %>
+</div>
         </div>
 
-        
+
 
       <% if (user) { %>
 
-      <div style="margin-bottom:10px;">
+      <div style="margin-bottom:10px;" class="hidden-xs">
         <% if(event.name != "") { %>
-        <h2 id="title" class="bootstro" data-bootstro-title="Current Shoot Title" data-bootstro-content="The title of the shoot you are currently working on." data-bootstro-placement="bottom"><span><%= event.name %></span> <a style="font-size:10pt;padding-bottom:10px;vertical-align:middle" href="#" onclick="edittitle();"><i class="glyphicon glyphicon-pencil"></i></a></h2> 
+        <h2 class="bootstro thetitle" data-bootstro-title="Current Shoot Title" data-bootstro-content="The title of the shoot you are currently working on." data-bootstro-placement="bottom"><span><%= event.name %></span> <a  style="font-size:10pt;padding-bottom:10px;vertical-align:middle" href="#" onclick="edittitle();"><sup><i data-toggle="tooltip" title="Change Shoot Title" class="glyphicon glyphicon-pencil text-muted"></i></sup></a></h2>
         <% } %>
       </div>
       <% } %>
-     
+
       </div>
       </div> <!-- /container -->
 
       <div class="container" style="padding-top:10px;">
         <% if(flash && flash.msg) { %>
+          <script>var flashmsg=true;</script>
         <ul class="myalert alert alert-info">
-          <li><%- flash.msg %></li>
+          <li><i class="fa fa-info"></i> <%- flash.msg %></li>
         </ul>
         <br>
         <% } %>
 
         <% if(flash && flash.err) { %>
-        
+          <script>var flashmsg=true;</script>
           <% if (flash.err instanceof Array) { %>
           <ul class="myalert alert alert-danger">
           <% Object.keys(flash.err).forEach(function(error){ %>
@@ -195,67 +282,85 @@ It produces high quality, content rich footage with no expense">
 
 <% if (typeof showhelp == 'undefined') { %>
 <!-- start menu div -->
-<div class="col-md-2" style="margin-bottom:20px;padding-bottom:20px;">
-<div data-spy="affix" data-offset-top="145" style="top:20px;">
-<% if (event.name) { %>
+
+<nav>
+<div class="col-md-2 navbar-collapse collapse" style="overflow-y:visible !important; margin-bottom:20px;padding-bottom:20px;" id="main-menu">
+<div data-spy="affix" data-offset-top="145" style="top:20px;" class="menuaffix">
+
 <div class="list-group bootstro" data-bootstro-title="Shoot Menu" data-bootstro-content="Main settings for your shoot. These steps occur in order, ending with you exporting your video to Dropbox." data-bootstro-placement="right" >
-<a class="list-group-item list-group-item-info" style="background:#d9edf7;color:#31708f" href="#">Shoot Checklist</a>
-<a style="color:silver;" class="list-group-item mainmenu <% if (page=='commission') { %>active<%}%>" href="/commission">Commission 
+
+<% if (user) { %>
+<div class="visible-xs">
+    <div class="list-group-item">Hello <%= user.profile.name.givenName %>! <a href="/auth/logout" class="pull-right"> <i class="fa fa-sign-out fa-2x"></i></a></div>
+      <div class="dropdown list-group-item">
+        <a href="#" id="myeventsbtn" data-toggle="dropdown">my shoots <span class="caret"></span></a>
+        <ul class="dropdown-menu eventlist" style="z-index:3000" role="menu">
+          <li class="loading"></li>
+        </ul>
+      </div>
+
+</div>
+
+<% } %>
+
+
+
+<% if (event.name) { %>
+<a class="shootchecklist list-group-item list-group-item-info" style="background:#d9edf7;color:#31708f" href="#">Checklist</a>
+
+
+<a data-toggle="tooltip" data-delay="500" title="decide what to shoot" class="list-group-item mainmenu <% if (page=='commission') { %>active<%}%>" href="/commission/<%- event.id %>">Commission
   <% if (event.iscommission){ %>
     <i class="fa fa-fw fa-check fa-lg pull-right"></i>
     <% } else { %>
     <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
     <% } %>
 </a>
-<a class="list-group-item mainmenu <% if (page=='event') { %>active<%}%>" href="/event/view">Prepare 
+<a data-toggle="tooltip" data-delay="500" title="who can participate and when" class="list-group-item mainmenu <% if (page=='event') { %>active<%}%>" href="/event/view/<%- event.id %>">Prepare
   <% if (event.isprepare){ %>
     <i class="fa fa-fw fa-check fa-lg pull-right"></i>
     <% } else { %>
     <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
     <% } %></a>
-<a class="list-group-item mainmenu text-muted <% if (page=='shoot') { %>active<%}%>" href="/shoot">Shoot 
+<a data-toggle="tooltip" data-delay="500" title="real-time view of your footage" class="list-group-item mainmenu text-muted <% if (page=='shoot') { %>active<%}%>" href="/shoot/<%- event.id %>">Shoot
   <% if (event.isshoot){ %>
     <i class="fa fa-fw fa-check fa-lg pull-right"></i>
     <% } else { %>
     <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
     <% } %>
   </a>
-  <a class="list-group-item mainmenu text-muted <% if (page=='watch') { %>active<%}%>" href="/watch">Watch 
+  <!-- <a class="list-group-item mainmenu text-muted <% if (page=='watch') { %>active<%}%>" href="/watch">Watch
+  <% if (event.ispost){ %>
+    <i class="fa fa-fw fa-check fa-lg pull-right"></i>
+    <% } else { %>
+    <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
+    <% } %></a> -->
+<a data-toggle="tooltip" data-delay="500" title="download your video for editing" class="list-group-item mainmenu text-muted <% if (page=='post') { %>active<%}%>" href="/post/<%- event.id %>">Export
   <% if (event.ispost){ %>
     <i class="fa fa-fw fa-check fa-lg pull-right"></i>
     <% } else { %>
     <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
     <% } %></a>
-<a class="list-group-item mainmenu text-muted <% if (page=='post') { %>active<%}%>" href="/post">Export 
-  <% if (event.ispost){ %>
-    <i class="fa fa-fw fa-check fa-lg pull-right"></i>
-    <% } else { %>
-    <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
-    <% } %></a>
-    
+
+<%}%>
 </div>
 
-<script>
-  $(function(){
-    var items = '';
-    $('#mainbody .page-header:not(.exclude) h1').each(function(){
-      $(this).before('<a name="'+$(this).clone().children().remove().end().text().toString().replace(/\s+/g,'_').toLowerCase()+'"></a>');
-      items += '<li><a href="#'+$(this).clone().children().remove().end().text().toString().replace(/\s+/g,'_').toLowerCase()+'">' + $(this).clone().children().remove().end().text() + '</a></li>';
-    });
+<% if (action!='new') { %>
+<a data-toggle="tooltip" data-delay="500" title="setup a new shoot" class="btn btn-success" style="width:100%;margin-bottom:15px;" href="/commission/new"><span class="glyphicon glyphicon-plus pull-left"></span> New Shoot</a>
+<% }%>
+<a class="btn btn-primary" data-toggle="tooltip" data-delay="500" title="view all videos and edits I have produced" style="width:100%;margin-bottom:15px;" href="/watch"><span class="glyphicon glyphicon-film pull-left"></span> My Footage</a>
 
-    $('.mainmenu.active').after('<div class="list-group-item"><ul class="sublist">' + items + '</ul></div>');
-  });
-</script>
-<%}%>
+<% if (typeof(myevents) != 'undefined' && myevents.length > 0) { %>
+<div class="popover bottom" style="z-index:inherit !important;width:inherit !important;margin-top:-10px;padding:10px;display:inline-block;position:relative;">
+  <div class="arrow"></div>
+      <small>You have recently contributed to:
+    <% _.each(myevents,function(e){ %>
+    <a href="/watch/view/<%- e.id %>"><%- e.name %></a>,
+    <%});%></small>
+</div>
+<% } %>
 
-<a class="btn btn-success" style="width:100%;margin-bottom:15px;" href="/commission/new"><span class="glyphicon glyphicon-plus pull-left"></span> Start New Shoot</a>
-<a class="btn btn-primary" style="width:100%;margin-bottom:15px;" href="http://community.bootlegger.tv"><span class="fa fa-users pull-left"></span> Community</a>
-
-<% if (event.name) { %>
-<script>
-var mastereventname = "<%- event.name %>";
-var mastereventid = "<%- event.id %>";
-</script>
+<% if (event.name && _.contains(sails.config.admin_email,req.session.passport.user.profile.emails[0].value)) { %>
 <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
 <script src="/cast/playlist_sender.js"></script>
   <div id="cast_wrapper" style="display:none;" >
@@ -268,7 +373,7 @@ var mastereventid = "<%- event.id %>";
       </div>
       <div style="clear:both;">
           <a onclick="launchApp()" href="#">cast event</a> | <a onclick="stopApp()" href="#">stop cast</a>
-      </div> 
+      </div>
         <button id="playpauseresume" onclick="playMedia()" style="display:none;">Play</button>
       <div style="width:100%;position:absolute;left:0;bottom:0;background:rgba(255,255,255,0.4);">
         <div id="progress" style="background:#428bca;opacity:0.6;transition: width 1s linear;height:5px;width:0;padding:0;margin:0;"></div>
@@ -282,6 +387,9 @@ var mastereventid = "<%- event.id %>";
 
 </div>
 </div>
+
+</nav>
+
 <% } %>
 <% if (typeof showhelp == 'undefined') { %>
 <div class="col-md-10">
@@ -291,44 +399,32 @@ var mastereventid = "<%- event.id %>";
 
   <% if (notonthisserver) { %>
             <div class="jumbotron">
-  <h1>Out for Lunch!</h1>
-  <p><div class="">This event is not hosted on this server, try connecting to the correct server (you should have been redirected)</div></p>
-</div>
-            
-            <% } else { %>
-            <div id="mainbody">
-          <%- body %>
-        </div>
-          <%}%>
-        </div>
+    <h1>Out for Lunch!</h1>
+    <p><div class="">This event is not hosted on this server, try connecting to the correct server (you should have been redirected)</div></p>
+  </div>
 
-
+  <% } else { %>
+  <div id="mainbody">
+<%- body %>
+  </div>
+    <%}%>
+  </div>
     </div>
-      </div>
+</div>
 
  <div class="container">
       <!-- Site footer -->
       <div class="footer text-muted" style="min-height:100%;">
-        <a class="text-muted" href="/howtobootleg">Help</a> | <a class="text-muted" href="https://github.com/digitalinteraction/bootlegger-server">Bootlegger on GitHub</a> |  <a class="text-muted" href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger">Download Android App</a> | <span>&copy; Bootlegger 2015</span>
+        <a class="text-muted" href="/privacy">Privacy Policy</a> | <a class="text-muted" href="/terms">Terms</a> | <a class="text-muted" href="/howtobootleg">Help</a> | <a class="text-muted" href="/api/signup">Developers</a>  |  <a class="text-muted" href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger">Download Android App</a> | <span>&copy; Bootlegger <%- new Date().getFullYear() %></span>
       </div>
     </div>
-
-    <script>
-    $(function() {
-  $('a[href*=#]:not([href=#])').click(function() {
-    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-      if (target.length) {
-        $('html,body').animate({
-          scrollTop: target.offset().top
-        }, 1000);
-        return false;
-      }
-    }
-  });
-});
-    </script>
     
+    <% if (event.name) { %>
+    <script>
+    var mastereventname = "<%- event.name %>";
+    var mastereventid = "<%- event.id %>";
+    var masteruserid = "<%- user.id %>";
+    </script>
+    <% } %>
   </body>
 </html>

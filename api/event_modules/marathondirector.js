@@ -92,13 +92,14 @@ function processMedia(session, media)
 	{
 		//console.log("last push too soon");
 		module.exports.AllEvents[event].users[user].processingpush = false;
-	}	
+	}
 }
 
 //auto_director
 module.exports = {
 	codename:'marathondirector',
-	name:'Marathon Director',
+	name:'Shot Palette Director',
+	description:'Coordinates participants to capture content over time, with an evolving set of commissioned shots.',
 	AllEvents: {},
 
 	//initialise the events array
@@ -114,47 +115,50 @@ module.exports = {
 				if (e.shoot_modules[module.exports.codename] == 1)
 				{
 					//if this server is running it
-					//console.log('maybe '+e.name);
-					if (!e.server || e.server == sails.hostname  || sails.multiserveronline==false)
+					//console.log("event server: "+e.server);
+					//console.log(sails.config.hostname);
+					if (!e.server || e.server == sails.config.hostname + ':' + sails.config.port  || sails.multiserveronline==false)
 					{
-						console.log('starting event '+e.name);
+					//	console.log('marathon director starting event '+e.name + " / " + e.id);
+						Log.verbose('marathondirector','marathondirector starting event '+e.name);
 						module.exports.AllEvents[e.id] = {
 							id : e.id,
 							data : e,
 							users:{},
 							currentphase:'selection',
 							lastuploadchecked:new Date()
-						}
+						};
 
 						redisclient.get('busers:'+e.id, function(err, reply) {
 							if (reply)
 							{
-								console.log('reply: '+reply);
-								
+								//console.log(reply);
+
 								//console.log(JSON.parse(reply));
 								try{
 									var newusers = JSON.parse(reply);
-									console.log(newusers);
+									//console.log(newusers);
 									module.exports.AllEvents[e.id].users = newusers;
 								}
 								catch (ex)
 								{
 									console.log('cant parse from redis');
 								}
-								
+
 							}
-							module.exports.longpoll();
 						});
 					}
 				}
 			});
-			
+
 			//console.log(module.exports.AllEvents);
+			module.exports.longpoll();
 		});
 	},
 
 	addevent:function(eventid)
 	{
+		console.log("EVENTID: "+eventid);
 		if (module.exports.AllEvents[eventid] == undefined)
 		{
 			Event.findOne(eventid).exec(function(err,e)
@@ -163,7 +167,7 @@ module.exports = {
 				{
 					//if this server is running it
 					//console.log('maybe '+e.name);
-					if (!e.server || e.server == sails.hostname  || sails.multiserveronline==false)
+					if (!e.server || e.server == sails.config.hostname + ':' + sails.config.port  || sails.multiserveronline==false)
 					{
 						module.exports.AllEvents[e.id] = {
 							id : e.id,
@@ -179,7 +183,7 @@ module.exports = {
 		}
 		else
 		{
-			//module.exports.longpoll();
+
 		}
 	},
 
@@ -216,7 +220,7 @@ module.exports = {
 		var pushes = [];
 
 		_.each(module.exports.AllEvents,function(i,k,l)
-		{	
+		{
 			var event = module.exports.AllEvents[k];
 			var now = moment();
 			var lastchecked = moment(event.lastuploadchecked);
@@ -245,7 +249,7 @@ module.exports = {
 							//push a message to them:
 							if (us.pushcode && _.indexOf(pushes,us.id) == -1)
 							{
-								pushes.push(us.id); 
+								pushes.push(us.id);
 								//console.log("send msg");
 								Gcm.sendMessage(us.platform,us.pushcode,"Upload Videos","Please upload your " + event.data.name + " videos",event.id);
 								Log.logmore('marathondirector',{msg:'GCM Message',userid:us.id,eventid:event.id});
@@ -276,7 +280,7 @@ module.exports = {
 			// Event.findOne(event).done(function(err,event){
 			// 	User.publishUpdate(user,{msg:"You are now on the production team for " + event.name});
 			// });
-			
+
 
 			//CREATE USER
 			module.exports.AllEvents[event].users[user] = {
@@ -291,7 +295,7 @@ module.exports = {
 			};
 
 
-			redisclient.set('busers:'+event, module.exports.AllEvents[event].users);
+			redisclient.set('busers:'+event, JSON.stringify(module.exports.AllEvents[event].users));
 
 			//User.publishUpdate(user,{length:module.exports.AllEvents[event].users[user].length, warning:module.exports.AllEvents[event].users[user].warning,live:module.exports.AllEvents[event].users[user].live,cameragap:module.exports.AllEvents[event].users[user].cameragap});
 
@@ -308,21 +312,21 @@ module.exports = {
 			//reconnect user:
 			//console.log('re-connect user');
 			module.exports.AllEvents[event].users[user].status = 'ready';
-			redisclient.set('busers:'+event, module.exports.AllEvents[event].users);
+			redisclient.set('busers:'+event, JSON.stringify(module.exports.AllEvents[event].users));
 			//User.publishUpdate(user,{msg:'Welcome back...'});
 			//User.publishUpdate(user,{modechange:'selection'});
 			//User.publishUpdate(user,{eventstarted:module.exports.AllEvents[event].hasstarted});
 			Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 			return;
 		}
-		
+
 	},
 
 	//triggered on deliberate disconnect
 	disconnect:function(event, user)
 	{
 		module.exports.AllEvents[event].users[user].status = 'offline';
-		redisclient.set('busers:'+event, module.exports.AllEvents[event].users);
+		redisclient.set('busers:'+event, JSON.stringify(module.exports.AllEvents[event].users));
 		Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 		Log.logmore('marathondirector',{msg:'User lost',userid:user,eventid:event});
 		//delete module.exports.AllEvents[event].users[user];
@@ -355,7 +359,7 @@ module.exports = {
 		try
 		{
 			module.exports.AllEvents[event].users[user].status = 'signedout';
-			redisclient.set('busers:'+event, module.exports.AllEvents[event].users);
+			redisclient.set('busers:'+event, JSON.stringify(module.exports.AllEvents[event].users));
 			Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 			//check for really lost...
 			// setTimeout(function()
@@ -513,14 +517,9 @@ module.exports = {
 
 	checkstatus:function(event)
 	{
-		// console.log("checking status");
-		//console.log(module.exports.AllEvents);
-		var shots = module.exports.AllEvents[event].data.eventtype.shot_types;
-		// shots = _.map(shots,function(s){
-		// 	return s;
-		// });
-		//console.log(module.exports.AllEvents[event].users);
+		//console.log(module.exports.AllEvents[event]);
 
+		var shots = module.exports.AllEvents[event].data.eventtype.shot_types;
 
 		Event.publishUpdate(event,{shots:shots});
 		Event.publishUpdate(event,{phase:module.exports.AllEvents[event].currentphase});
@@ -608,8 +607,8 @@ module.exports = {
 		try
 		{
 			Log.logmore('marathondirector',{msg:'update event',eventid:ev.id});
-			var e = ev;				
-			
+			var e = ev;
+
 			var direction = ev.leadlocation;
 
 			var allroles = ev.eventtype.roles;
@@ -627,7 +626,7 @@ module.exports = {
 			e.roles = allroles;
 			e.eventcss = ev.eventtype.eventcss;
 			e.ispublic = e.public;
-			
+
 			if (e.roleimg == undefined && ev.eventtype.roleimg != undefined)
 				e.roleimg = sails.config.S3_CLOUD_URL + ev.eventtype.roleimg;
 

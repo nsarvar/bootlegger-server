@@ -17,15 +17,16 @@ var _ = require("lodash");
 var path = require('path');
 
 var cancelthese = {};
+var urlencode = require('urlencode');
 
 module.exports = {
-  
+
   /**
    * /post/controller
-   */ 
+   */
   index: function (req,res) {
 
-    // This will render the view: 
+    // This will render the view:
     // D:\Research\Research\bootlegging\server/views/post/controller.ejs
     var lookupid = req.session.event || req.session.passport.user.currentevent;
       //console.log(lookupid);
@@ -37,7 +38,12 @@ module.exports = {
       }
 
       req.session.event = lookupid;
-   
+
+      var cookiesigned = require('cookie-signature');
+      var signed = cookiesigned.sign(req.signedCookies['sails.sid'],req.secret);
+      signed = "s:" + signed;
+      var sessionkey = signed;
+
     //list post production modules that are enabled:
 
 
@@ -45,11 +51,11 @@ module.exports = {
       if (event == undefined)
       {
         //req.session.flash = {err:"Event not found"};
-        return res.redirect('/event/new');
+        return res.redirect('/dashboard');
       }
       //console.log(event);
       event.calcphases();
-      res.view({event:event});
+      res.view({event:event,sessionkey:sessionkey});
     });
   },
 
@@ -142,8 +148,6 @@ module.exports = {
       //console.log(data);
       //missing ?? files
 
-      
-
       _.each(data,function(d)
       {
         if (d.path)
@@ -180,7 +184,7 @@ module.exports = {
 
         User.find({}).exec(function(err,allusers)
         {
-            var usersmissing = _.countBy(missing, function(num) { 
+            var usersmissing = _.countBy(missing, function(num) {
               var x = _.findWhere(allusers, {id: num.created_by});
               if (x)
                 return x.profile.displayName;
@@ -213,7 +217,11 @@ module.exports = {
             {
               //role, shot coverage class
               m.meta.role_ex = ev.eventtype.roles[m.meta.static_meta.role];
+              if (m.meta.role_ex==undefined)
+                m.meta.role_ex = {name:'Unknown'};
               m.user = _.findWhere(users, {id: m.created_by});
+              if (!m.user)
+                m.user = {profile:{displayName:'Unknown'}};
               //console.log(m.meta.static_meta.shot);
               //console.log(_.findWhere(ev.eventtype.shot_types,{id:m.meta.static_meta.shot}));
               m.meta.shot_ex = ev.eventtype.shot_types[m.meta.static_meta.shot];
@@ -229,12 +237,15 @@ module.exports = {
               }
 
               var timestamp = m.meta.static_meta.captured_at.split(' ');
-              var filename =  timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_' + m.user.profile.displayName + path.extname(m.path);
+              //var filename =  timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_' + m.user.profile.displayName + path.extname(m.path);
+              var filename = urlencode((timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.role_ex.name + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_' + m.user.profile.displayName + path.extname(m.path)).replace(/ /g,'_'));
+
+
               m.originalpath = m.path;
               m.thumb = sails.config.S3_CLOUD_URL + m.thumb;
               m.path = filename;
 
-            });            
+            });
             res.view({event:ev,data:data,_layoutFile: '../blank.ejs'});
           });
         });
@@ -243,401 +254,107 @@ module.exports = {
 
   canceldownload:function(req,res)
   {
-    req.session.cancelsync = true;
-    cancelthese[req.session.id] = true;
-    delete req.session.downloading;
+    User.findOne(req.session.passport.user.id).exec(function(err,u)
+    {
+      //u.dropboxsync = {msg:'Cancelled',status:'queue',percentage:0};
+      u.dropboxsynccancel = true;
+      u.save(function(err){
+         return res.json({});
+      });
+    });
 
-    if (req.session.downloadprogress.value==0 || req.session.downloadprogress.value==100)
-      delete req.session.downloadprogress;
-    req.session.save();
-    //console.log(req.session);
-    res.json({msg:'ok'});
-  }, 
+    //TODO -- CANCEL BEANSTALK JOB!
 
-  reset:function(req,res)
-  {
-    delete req.session.downloading;
-    req.session.save();
-    //console.log('reset download: '+req.session.cancelsync);
-    //req.session.flash = 'Download Reset';
-    return res.redirect('/post');
+    //res.json({msg:'ok'});
   },
+
+  // reset:function(req,res)
+  // {
+  //   //delete req.session.downloading;
+  //   //delete req.session.cancelsync;
+  //   //req.session.save();
+  //   //console.log('reset download: '+req.session.cancelsync);
+  //   //req.session.flash = 'Download Reset';
+  //   //return res.redirect('/post');
+  // },
+
 
   downloadprogress:function(req,res)
   {
-    if (!sails.localmode && !req.session.downloading)
+    //console.log("d:"+req.session.downloading);
+    // console.log("c:"+req.session.cancelsync);
+    User.findOne(req.session.passport.user.id).exec(function(err,u)
     {
-      return res.json({msg:'Not currently syncing to dropbox.'});
-    }
-    else
+
+      if (u.dropboxsync && (u.dropboxsync.status!='cancelled') && (u.dropboxsync.status!='done') && !(u.dropboxsynccancel==true && u.dropboxsync.status=='queue'))
+      {
+        return res.json(u.dropboxsync);
+      }
+      else
+      {
+        return res.json({msg:'Not currently syncing to dropbox.',stopped:true});
+      }
+    });
+  },
+
+  myoutputtemplates:function(req,res)
+  {
+    User.findOne(req.session.passport.user.id).exec(function(err,u)
     {
-      //console.log("cancel: " + req.session.cancelsync);
-      return res.json(req.session.downloadprogress);
-    }
-  },  
+      return res.json({outputtemplates:(u.outputtemplates)?u.outputtemplates : []});
+    });
+  },
+
+  updateoutputs:function(req,res)
+  {
+    User.findOne(req.session.passport.user.id).exec(function(err,u)
+    {
+      //console.log(req.param('outputtemplates'));
+      u.outputtemplates = req.param('outputtemplates');
+      u.save(function(err,ok)
+      {
+        //console.log(err);
+         return res.json({msg:'ok'});
+      });
+      // console.log('temps');
+      // console.log(u);
+    });
+  },
 
   downloadall:function(req,res)
   {
-    var from = req.param('from')?moment(req.param('from'),'DD-MM-YY') : null;
-    var to = req.param('to')?moment(req.param('to'),'DD-MM-YY') : null;
-
-    //console.log(from);
-    //console.log(to);
-
-    //console.log(req.session);
-    var eventid = req.param('id');
-    // removed this for now :   !req.session.downloading
-    if (!sails.localmode && !req.session.downloading && req.session.passport.user.dropbox)
+    //SUBMIT THIS JOB TO THE EDIT SERVER
+    User.findOne(req.session.passport.user.id).exec(function(err,u)
     {
-        req.session.downloading = true;
-        delete req.session.cancelsync;
-        delete cancelthese[req.session.id];
-        req.session.save();
+      u.dropboxsync = {msg:'In Queue',status:'queue',percentage:0};
+      u.dropboxsynccancel = false;
+      u.save(function(err){
+         //console.log(req.session);
+         //req.session.passport.user.dropbox
+         var cookiesigned = require('cookie-signature');
+         //console.log(req);
 
-        process.nextTick(function(){
-          var eventid = req.session.passport.user.currentevent;
-          if (eventid==null)
-          {
-            req.session.flash = 'Event not Specified';
-            return res.redirect('/post');
-          }
-          var files = [];
-          var missing = [];
+         var signed = cookiesigned.sign(req.signedCookies['sails.sid'],req.secret);
+         signed = "s:" + signed;
 
+         var config = {
+          event_id:req.param('id'),
+          user_id:req.session.passport.user.id,
+          dropbox_token:req.session.passport.user.dropbox,
+          template:req.param('template'),
+          from:req.param('from'),
+          to:req.param('to'),
+          homog:req.param('homog'),
+          session:signed
+         };
+         //console.log(config);
 
-          //console.log('ok to download');
+         //submit dropbox transfer:
+         Editor.dropbox(config);
 
-          //get list of files...
-          dir = path.normalize(path.dirname(require.main.filename) + uploaddir);
-
-          var calls = [];
-
-          var dbClient = new Dropbox.Client({
-            key         : sails.config.dropbox_clientid,
-            secret      : sails.config.dropbox_clientsecret,
-            sandbox     : false,
-            token       : req.session.passport.user.dropbox.accessToken,
-          });
-
-          process.nextTick(function(){
-
-            //console.log('starting on next tick');
-
-            Event.findOne(eventid,function(err,ev)
-            {
-              User.find({},function(err,users){
-
-                var eventname = ev.name;
-                Media.find({'event_id':eventid},function(err,data)
-                {
-
-                  //call function:
-                  var request = require('request');
-                  //console.log('http://localhost:'+sails.config.port+'/post/document/'+eventid);
-                  request('http://'+sails.config.hostname+':'+sails.config.port+'/post/document/'+eventid,
-                    function(err,resp,doc) 
-                    {
-                      if (doc)
-                      {
-                        var documentfilename = 'upload/'+eventid+".html";
-                        fs.writeFileSync(documentfilename, doc);
-                      }
-                      //console.log('done writing file list');
-                      _.each(data,function(d)
-                      {
-                        if (from && to)
-                        {
-                          var tt = moment(d.meta.static_meta.captured_at,"DD/MM/YYYY HH:mm:ss");
-                          //console.log(tt.toString());
-                          if (from.isBefore(tt) && to.isAfter(tt) && d.path)
-                          {
-                            files.push(d)
-                          }
-                        }
-                        else
-                        {
-                          if (d.path)
-                            files.push(d);
-                          else
-                            missing.push(d);
-                        }
-                      });
-                    
-                    //do some more things:
-                  var busy = false;
-                  var counter = 0;
-                  //console.log(files);
-                  var counter = 0;
-
-                  //upload document to dropbox:
-                  calls.push(function(cb){
-                    
-                    if (cancelthese[req.session.id])
-                    {
-                      return cb(true);
-                    }
-                    else
-                    {
-                      //console.log('making dropbox dir');
-                      req.session.downloadprogress = {value:0,status:'making directory'};
-                      req.session.save();
-                      //console.log(req.session.downloadprogress);
-                      dbClient.mkdir(eventname,function(err,stat)
-                      {
-                        req.session.downloadprogress = {value:0,status:'uploading shotlist'};
-                        req.session.save();
-
-                        fs.readFile(documentfilename, function(error, data) {
-                          var request = dbClient.writeFile(eventname + "/shotlist.html", data, function(error, stat) {
-                          //error or complete
-                            //console.log('uploaded shot list');
-                            if (error)
-                              console.log("error uploading document:" + error);
-
-                            //console.log("checking for : "+dir + ev.id + ".xml")
-                            if (fs.existsSync(dir + ev.id + ".xml"))
-                            {
-                                //console.log("writing xml file");
-                                fs.readFile(dir + ev.id + ".xml", function(error, data) {
-                                  var request = dbClient.writeFile(eventname + "/EDL.xml", data, function(error, stat) {
-                                  //error or complete
-                                    if (error)
-                                      console.log("error uploading xml document:" + error);
-
-                                    cb();
-                                  });
-                                });
-                            }
-                            else
-                            {
-                              cb();
-                            }
-                          });
-                        });
-                      });
-                    }
-                  });
-
-                  //for each file:
-                  _.each(files,function(f){
-
-                    //download it from s3 to temp storage
-                    calls.push(function(cb){
-                     // process.nextTick(function(){
-                                    
-                      //console.log(req.session.cancelsync);
-                      //req.session.cancelsync = true;
-                      
-                      //console.log(req.session);
-                      //console.log("x:"+req.session.cancelsync);
-
-                      if (cancelthese[req.session.id])
-                      {
-                        return cb(true);
-                      }
-                      else
-                      {
-                        var file = f;
-
-                        if (fs.existsSync(dir+"/"+file.path))
-                        {
-                          //console.log(dir+"/"+file.path + ' exists');
-                          counter++;
-                          var prog = counter/(files.length*2);
-                          req.session.downloadprogress = {value:prog*100,status:(counter/2) + ' of ' + files.length};
-                          req.session.save();
-                          
-                          cb();
-                        }
-                        else
-                        {
-                          
-                          var s3 = ss3.createClient({
-                            s3Options: {
-                              accessKeyId: sails.config.AWS_ACCESS_KEY_ID,
-                              secretAccessKey: sails.config.AWS_SECRET_ACCESS_KEY,
-                              region: sails.config.S3_REGION
-                            },
-                          });
-
-                          var params = {
-                            localFile: path.normalize(dir+"/"+file.path),
-                            s3Params: {
-                              Bucket: sails.config.S3_BUCKET,
-                              Key: "upload/"+file.path,
-                            },
-                          };
-
-                          var downloader = s3.downloadFile(params);
-
-                          downloader.on('error', function(err) {
-                            console.error("unable to download:", err);
-                            counter++;
-                            req.session.downloadprogress = {value:(counter/(files.length*2))*100,status:(counter/2) + ' of ' + files.length};
-                            req.session.save();
-                            cb();
-                          });
-                          downloader.on('progress', function() {
-                            var prog = ((downloader.progressAmount/downloader.progressTotal) + counter)/(files.length*2);
-                            //console.log(prog);
-                            if ((downloader.progressAmount/downloader.progressTotal) < 1)
-                            {
-                              //console.log((downloader.progressAmount/downloader.progressTotal) + counter);
-                               req.session.downloadprogress = {value:prog*100,status:(counter/2) + ' of ' + files.length};
-                               //console.log("prog: "+req.session.downloadprogress.value);
-                               req.session.save();
-                            }
-                            //console.log("progress", downloader.progressAmount, downloader.progressTotal);
-                          });
-                          downloader.on('end', function() {
-                            //console.log('s3 end');
-                            //console.log(counter);
-                            counter++;
-                            req.session.downloadprogress = {value:(counter/(files.length*2))*100,status:(counter/2) + ' of ' + files.length};
-                            req.session.save();
-                            
-                            cb();
-                          });
-                        }
-                      }
-                     // });//next tick
-                    });
-
-                      //upload the file to dropbox
-                      calls.push(function(cb){
-                        if (cancelthese[req.session.id])
-                        {
-                          return cb(true);
-                        }
-                        else
-                        {
-
-
-
-                        var file = f;
-                        if (fs.existsSync(dir+"/"+file.path))
-                        {
-                              //var filename = files[c].path;
-                              //console.log(c + " : " + files[c]);
-
-                              //FIXED -- change filename to something useful:
-                              var thisfile = file;
-                              //ev is the current event (for looking up shot names / types)
-                              var thisuser = _.findWhere(users, {id: thisfile.created_by});
-                              //var timestamp = moment(thisfile.createdAt);
-                              var timestamp = thisfile.meta.static_meta.captured_at.split(' ');
-
-                              var shottype = ev.eventtype.shot_types[thisfile.meta.static_meta.shot];
-                              if (!shottype)
-                                shottype = {name:'Unknown'};
-
-                              var cc =  ev.coverage_classes[thisfile.meta.static_meta.coverage_class];
-                              if (cc==undefined)
-                              {
-                                cc = {name:"Unknown"};
-                              }
-
-                              
-                              
-                              var filename = timestamp[1].replace(':','-').replace(':','-') + '_' + shottype.name + '_' + cc.name + '_' + thisuser.profile.displayName + path.extname(thisfile.path);
-
-                              //console.log(filename);
-                              //console.log(files);
-                              //console.log('readingfile')
-                              //var file = fs.openSync(dir+"/"+filename, 'r');
-                              fs.readFile(dir+"/"+file.path, function(error, data) {
-                                //console.log('readfile');
-                                var request = dbClient.writeFile(eventname + "/" + filename, data, function(error, stat) {
-                                  //error or complete
-                                  if (error)
-                                    console.log("error:" + error);
-
-                                  //console.log(stat);
-
-                                  counter++;
-                                  req.session.downloadprogress = {value:(counter/(files.length*2))*100,status:(counter/2) + ' of ' + files.length};
-                                  //console.log('counter: '+counter);
-
-                                  //console.log("prog: "+((counter/(files.length*2))*100);
-                                  req.session.save();
-                                  
-                                  cb();
-                                });
-
-                                // request.upload.addEventListener('progress', function(e)
-                                //   {
-                                //     console.log(e);
-                                //     req.session.downloadprogress = {value:(e)*100,status:'sync'};
-                                //     req.session.save();
-                                //   }, false);
-                              });
-
-                          }//exists;
-                          else
-                          {
-                            counter++;
-                            req.session.downloadprogress = {value:((counter/files.length*2))*100,status:(counter/2) + ' of ' + files.length};
-                            req.session.save();
-                            cb();
-                          }
-                        }
-                      });
-
-                      //delete the file
-                      calls.push(function(cb){
-                        var file = f;
-                        if (fs.existsSync(dir+"/"+file.path))
-                        {
-                          //console.log('delete file');
-                         
-                          //delete file:
-                          fs.unlinkSync(dir+"/"+file.path);
-                          //console.log('file deleted');
-                        }
-                        cb();
-                      });
-                    });
-
-                    //console.log('starting async');
-    
-                    //console.log(files)
-
-                    async.series(calls,function(err)
-                    {
-                      if (err)
-                      {
-                        console.log('sync cancelled');
-                        req.session.downloadprogress = {value:0,status:'sync cancelled'};
-                        delete req.session.downloading;
-                        delete req.session.cancelsync;
-                        req.session.save();
-                      }
-                      else
-                      {
-                          //done all
-                        //console.log("DONE ALL");
-                        req.session.downloadprogress = {value:100,status:'done'};
-                        req.session.save();
-                         var email = req.session.passport.user.profile.emails[0].value;
-                        //THIS LINE FAILS!!
-                        console.log(email);
-                        Email.sendEmail({to:email,subject:"Bootlegger Dropbox Upload Complete",content:"The Dropbox transfer for your Event finished, now you can start editing!"});
-                        console.log('email sent');
-                      }                     
-                    });
-                    //console.log('returning req');
-                    return res.json({ok:files.length, missing:missing.length});           
-                  }); //end of document
-              }); //end of find media
-            }); // end of find user
-          }); // end of find event
-        }); // end of next tick
-      }); // end of next tick
-    }
-    else
-    {
-      console.log("already doing it");
-    }
+         return res.json(u.dropboxsync);
+      });
+    });
   }
 
 };

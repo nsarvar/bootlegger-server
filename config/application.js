@@ -1,6 +1,7 @@
 var passport = require('passport');
 var express = require('express');
 var _ = require('lodash');
+var device = require('express-device');
 
 module.exports = {
 	
@@ -40,6 +41,12 @@ module.exports = {
           app.use('/upload', express.static(process.cwd() + '/upload/'));
           app.use('/cast', express.static(process.cwd() + '/cast/'));
           //app.use(this.bodyParser({ keepExtensions: true, uploadDir: __dirname + "/assets/uploads" }))
+
+          app.use('/api/docs', express.static(process.cwd() + '/doc/'));
+
+          app.use(device.capture());
+          device.enableDeviceHelpers(app);
+          // app.enableDeviceHelpers();
 
           //console.log("production: "+_.contains(process.argv,'--production'));
 

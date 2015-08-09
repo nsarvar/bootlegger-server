@@ -1,15 +1,4 @@
 /**
- * api/services/Utitlity.js
- *
- * @module        Service
- * @name          Utility
- * @memberOf      global
- * @description   Utilities for various common tiny tasks
- * @docs          http://sailsjs.org/#!documentation/services
- * @api           public
- **/
-
-/**
  * Module dependencies
  */
   var util = require('util'),

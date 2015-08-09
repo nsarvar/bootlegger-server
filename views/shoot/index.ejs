@@ -31,7 +31,7 @@
   display: none;
 }
 
-.angular-google-map-container { height: 300px; }
+.angular-google-map-container { height: 500px; }
 
 .circle
 {
@@ -85,7 +85,7 @@
 
 .nicepath::before
 {
-  
+
    content: "\f1c8";
   font-family:'FontAwesome';
   margin-right:3px;
@@ -93,7 +93,7 @@
 
 .clip_length::before
 {
-  
+
    content: "\f07e";
   font-family:'FontAwesome';
   margin-right:3px;
@@ -106,7 +106,7 @@
 
 .filesize::before
 {
-  
+
   content: "\f016";
   font-family:'FontAwesome';
   margin-right:3px;
@@ -116,27 +116,27 @@
 {
   content: "\f02c";
   font-family:'FontAwesome';
-  margin-right:3px; 
+  margin-right:3px;
 }
 .coverage::before
 {
   content: "\f0c9";
   font-family:'FontAwesome';
-  margin-right:3px; 
+  margin-right:3px;
 }
 .phase::before
 {
   content: "\f0cb";
   font-family:'FontAwesome';
-  margin-right:3px; 
-  
+  margin-right:3px;
+
 }
 .role::before
 {
   content: "\f140";
   font-family:'FontAwesome';
-  margin-right:3px; 
-  
+  margin-right:3px;
+
 }
 
 .zoom::before
@@ -144,7 +144,7 @@
 
  content: "\f00e";
   font-family:'FontAwesome';
-  margin-right:3px; 
+  margin-right:3px;
 }
 
 .shot::before
@@ -152,7 +152,7 @@
 
  content: "\f0c0";
   font-family:'FontAwesome';
-  margin-right:3px; 
+  margin-right:3px;
 }
 
 .shot_meta::before
@@ -160,7 +160,7 @@
 
  content: "\f02b";
   font-family:'FontAwesome';
-  margin-right:3px; 
+  margin-right:3px;
 }
 .panel-small
 {
@@ -199,7 +199,7 @@
   border:1px transparent solid;
 }
 
-.mediaitem 
+.mediaitem
 {
   position:relative;
 }
@@ -232,14 +232,34 @@ video
   margin-bottom:-6px;
 }
 
-</style>
-<div class="page-header">
-  <h1>Shoot Monitor <small>Realtime updates from your shoot</small>
-  </h1>
-</div>
-<div ng-app="liveApp" ng-controller="Live">
+.pagination{
+  magin:0;
+}
 
-  <i ng-show="loading" style="position:fixed;top:130px;left:50%;" class="fa fa-spinner fa-spin fa-5x"></i>
+.time_text span
+{
+  opacity: 0.5;
+  color:white;
+  display:block;
+  text-align: center;
+  margin-top:18px;
+  overflow:hidden;
+}
+
+</style>
+<div ng-app="liveApp" ng-controller="Live" ng-cloak>
+<div class="page-header">
+  <h1 style="display:inline-block">Shoot Monitor <small>Realtime updates from your shoot</small>  </h1> <i ng-show="loading" class="fa fa-spinner fa-spin"></i>
+</div>
+
+<!-- <div style="position:absolute;width:100%;height:100%;z-index:100;background:rgba(255,255,255,0.6);" class="text-center" ng-show="loading">
+  <i class="fa fa-spinner fa-4x fa-spin" style="margin-top:20%;"></i>
+</div> -->
+
+<% if (_.contains(sails.config.admin_email,user.profile.emails[0].value)) { %>
+<a href="/shoot/liveedit" class="btn btn-lg btn-primary">Live Editing</a> <a href="/shoot/preedit" class="btn btn-lg btn-primary">Pre-Editing</a>
+<hr>
+<% } %>
 
 <div class="modal fade"  data-show="true" id="playAll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" style="margin:auto auto;margin-top:10%;width:46%;">
@@ -254,81 +274,92 @@ video
   </div>
 </div>
 
- <h2><button class="btn btn-link" ng-click="showControls()"><i  class="fa" ng-class="controlshow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Controls</h2>
-<div class="row" ng-show="controlshow">
+ <!-- <h2><button class="btn btn-link" ng-click="showControls()"><i  class="fa" ng-class="controlshow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Controls</h2> -->
+<div class="well">
+  <h3 class="text-muted">Your shoot should take care of itself, however you can monitor and tweak what's happening here:</h3>
+<!-- <div class="col-xs-12"> -->
+<div class="row" style="margin-bottom:5px;">
+  <form action="/shoot/sendmessage/<%- event.id %>?apikey=<%- apikey %>" method="post">
+      <p class="col-md-6" data-delay="300" data-toggle="tooltip" title="This message gets send to anyone who has contributed using the mobile app to this shoot.">Send a push notification to participants at your shoot. <i style="color:silver" class="fa fa-question-circle"></i></p>
+      <div class="col-sm-6">
+        <div  class="input-group col-sm-12">
+          <input placeholder="text to send" type="text" name="message" class="col-sm-2 form-control" required min="10" />
+          <span class="input-group-btn">
+              <button type="submit" class="btn btn-warning">Send</button>
+          </span>
+      </div><!-- /input-group -->
+    </div>
+  </form>
+</div>
+<!-- </div> -->
 
-<div class="col-xs-3">
+
+<!-- <div class="col-md-3"> -->
 <% if (event.shoot_modules.autodirector == 0) { %>
-
-  <div class="panel panel-info" id="startedbox">
-      <div class="panel-heading">
-        Shots
-      </div>
-      <div class="panel-body panel-small" >
-<p>Want to Adjust What People are Capturing?</p>
-<a href="/commission/live" class="btn btn-lg btn-success" style="width:100%;">Change Shots</a>
+<div class="row" style="margin-bottom:5px;">
+<p class="col-md-6" data-delay="300" data-toggle="tooltip" title="change the individual shots that contributors will be asked to get.">Adjust What participants are capturing. <i style="color:silver" class="fa fa-question-circle"></i></p>
+<div class="col-md-6"><a href="/commission/#2" class="btn btn-success">Change Shots</a></div>
 </div>
-</div>
- <div style="text-align:center;">
-        <div class="label label-success">{{ucount}} <span>Users</span></div>
-        <div class="label label-success"><span>Direction Mode:</span> {{mode}}</div>
-        <div class="label label-success"><span>Style: </span> {{phase}} </div>
-      </div>
-      <% } %>
-</div>
-
-
-
+<% } %>
+<!-- </div> -->
 
 <% if (event.phases) { %>
-<div class="row">
-  <div class="phaset col-xs-3">
-    <div class="panel panel-info">
-  <div class="panel-heading">Shoot Phase</div>
-  <div class="panel-body panel-small">
-    <p>Select a phase that your shoot is currently in:</p>
-  <div class="btn-group-vertical" style="width:100%;" data-toggle="buttons">
-  <% 
+<div class="row" style="margin-bottom:5px;">
+  <!-- <div class="panel-body panel-small"> -->
+    <p class="col-md-6" data-delay="300" data-toggle="tooltip" title=" Used to organise time periods in your shoot, e.g. day or night.">Change the current phase of the shoot. <i style="color:silver" class="fa fa-question-circle"></i></p>
+  <div class="btn-group col-md-6" data-toggle="buttons">
+
+  <%
   var i=0;
-  _.each(event.phases,function(p){ 
+  _.each(event.phases,function(p){
      %>
     <label class="btn btn-primary <% if (event.currentphase == i){%>active<%}%>" onclick="changemetaphase(<%- i %>)">
     <input type="radio" name="options" id="option3" autocomplete="off" ><%- p.name %></label>
   <% i++;}); %>
 </div>
-  </div>
-  </div>
-  </div>
-  <% if (event.shoot_modules.autodirector && event.shoot_modules.autodirector == 1) { %>
-  <div class="col-xs-3">
-    <div class="panel panel-info" id="startedbox">
-      <div class="panel-heading">
-        Shoot Status
-      </div>
-      <div class="panel-body panel-small" style="text-align:center;">
-        <br>
-        <div class="btn-group" style="width:100%;" role="group"> 
-
-          <button class="btn btn-success" onclick="startshoot()">Start</button>
-          <button class="btn btn-danger" onclick="pause()">Pause</button>
-        </div>
-      </div>
-    </div>
-    </div>
-    <% } %>
 </div>
-
 <% } %>
+  <!-- </div> -->
+  <!-- </div> -->
+  <% if (event.shoot_modules.autodirector && event.shoot_modules.autodirector == 1) { %>
+  <!-- <div class="col-md-3"> -->
+    <!-- <div class="panel panel-info" id="startedbox"> -->
+      <!-- <div class="panel-heading"> -->
+      <div class="row" style="margin-bottom:5px;">
+        <p class="col-md-6" data-delay="300" data-toggle="tooltip" title="Start or pause the auto-director allocating shots in real-time">Auto-Director <i style="color:silver" class="fa fa-question-circle"></i></p>
+      <!-- </div> -->
+      <!-- <div class="panel-body panel-small" style="text-align:center;"> -->
+        <!-- <br> -->
+        <div class="col-md-6">
+          <div class="btn-group" style="width:100%;" role="group">
+
+            <button class="btn btn-success" onclick="startshoot()">Start</button>
+            <button class="btn btn-danger" onclick="pause()">Pause</button>
+          </div>
+        </div>
+      <!-- </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
+  </div>
+    <% } %>
+
+    <div class="row">
+      <p class="col-md-6" data-delay="300" data-toggle="tooltip" title="This will enable removal of clips from Bootlegger entirely." >In rare circumstances, you might want to remove clips. <i style="color:silver" class="fa fa-question-circle"></i></p>
+      <div class="col-md-6"><button class="btn btn-danger" ng-click="deletemode()">Delete Clips</button></div>
+    </div>
+
+    <div class="clearfix"></div>
 </div>
+
+
+
 
     <!-- <div class="row"> -->
 
-     
-        
 
-<h2><button class="btn btn-link" ng-click="showMap()"><i  class="fa" ng-class="mapshown ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Media Locations </h2>
-<div ng-show="mapshown">
-  <button ng-click="fit();log('fit');" class="btn btn-default">Re-center</button> <label>Filter by location <input ng-click="log('filterbylocation',{filterbylocation:filterbylocation});" type="checkbox" ng-model="filterbylocation" /></label>
+<!-- <h2><button class="btn btn-link" ng-click="showMap()"><i  class="fa" ng-class="mapshown ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Media Locations </h2> -->
+<!-- <div ng-show="mapshown"> -->
+  <!-- <button ng-click="fit();log('fit');" class="btn btn-default">Re-center</button> <label>Filter by location <input ng-click="log('filterbylocation',{filterbylocation:filterbylocation});" type="checkbox" ng-model="filterbylocation" /></label>
 <ui-gmap-google-map zoom='map.zoom' center='map.center' bounds="map.bounds" events="map.events">
       <ui-gmap-marker ng-repeat="m in media track by $index"
             idKey='m.id'
@@ -337,11 +368,11 @@ video
       </ui-gmap-marker>
       <ui-gmap-circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
                 visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable" control="c.control" events="c.events"></ui-gmap-circle>
-</ui-gmap-google-map>
-</div>
+</ui-gmap-google-map> -->
+<!-- </div> -->
 
-<h2><button class="btn btn-link" ng-click="showCrew()"><i  class="fa" ng-class="crewshow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Crew <!-- <span class="label label-success">{{users.length}}</span> --></h2>
-<div class="row" ng-show="crewshow">
+<h2 ng-show="mode!='timed'"><button class="btn btn-link" ng-click="showCrew()"><i  class="fa" ng-class="crewshow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Current Crew <small style="font-size:11pt;"><span class="label label-success">{{ucount}}</span></small></h2>
+<div class="row" ng-show="crewshow && mode!='timed'">
     <div class="col-xs-12">
       <div ng-class="{'highlighted':user.id==mapfilter.created_by}" ng-click="setUser(user.id);log('filteruser',{user:user.id});" class="user animate-repeat {{'status_'+user.status}}" ng-repeat="user in users" style="position:relative;width:250px;height:60px;overflow:hidden;display:inline-block;float:left;" >
             <div style="background:black;width:100px;height:60px;float:left;margin-right:5px;">
@@ -361,17 +392,85 @@ video
             </div>
         </div>
 
-      <div ng-show="users.length==0" class="text-muted" class="col-sm-12">
+      <div ng-show="ucount==0" class="text-muted" class="col-sm-12">
         No Users Signed In
-      </div>    
+      </div>
   </div>
 </div>
 
+<h2 ng-show="mode=='timed'"><button class="btn btn-link" ng-click="showCrew()"><i  class="fa" ng-class="crewshow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Current Crew <small style="font-size:11pt;"><span class="label label-success">{{ucount}}</span></small></h2>
+  <div class="col-sm-12" id="timeline" ng-show="crewshow && mode=='timed'">
+    <div class="row">
+      <div class="col-sm-4" >
+<!--         <div class="row" ng-repeat="user in users">
+          <div class="col-sm-12 nametag">
+            {{user.name}}
+            <i class="badge primary">{{user.status}}</i>
+          </div>
+        </div> -->
+
+        <div ng-class="{'highlighted':user.id==mapfilter.created_by}" ng-click="setUser(user.id);log('filteruser',{user:user.id});" class="user animate-repeat {{'status_'+user.status}}" ng-repeat="user in users" style="position:relative;width:100%;height:60px;overflow:hidden;display:inline-block;float:left;" >
+            <div style="background:black;width:100px;height:60px;float:left;margin-right:5px;">
+              <img style="height:60px;width:100px;" ng-src="{{shotMap(user)}}"/>
+            </div>
+            <!-- <span>{{user.shot}}</span> -->
+            <!-- <img ng-src="{{user.profileImg}}" style="height:60px;"/> -->
+            <div style="padding:5px;margin-left:5px;">
+            <!-- <img ng-src="{{user.profileImg}}" style="height:30px;width:30px;border-radius:15px;"/> -->
+            <!-- <div style="background:#333;width:100%;height:105px;display:inline-block;"></div> -->
+              <!-- <span ng-bind="user.shot"></span> -->
+              <span style="white-space: nowrap;text-overflow: ellipsis;overflow:hidden;width:100px;display:inline-block;vertical-align:middle;">{{user.name}}</span>
+             </div>
+             <div style="position:absolute;right:0;bottom:0;">
+              <span ng-bind="mediaCount(user.id)"></span>
+              <span class="badge" >{{user.status}}</span>
+            </div>
+        </div>
+
+          <div ng-show="ucount==0" class="text-muted" class="col-sm-12">
+            No Users Signed In
+          </div>
+
+      </div>
+      <div class="col-sm-8" style="border:1px solid #eee;overflow:auto;">
+      <div class="cursor">&nbsp;</div>
+        <div id="mover" ng-style="{'margin-left':-((pixsecs*timer) - 300)}">
+
+          <div class="row" ng-repeat="user in users">
+            <div class="mainrows" ng-style="{width: ((user.offset + user.warning + user.live + user.length)*2*pixsecs)}">
+              <div class="indicator" ng-style="{ 'margin-left': user.offset*pixsecs }">
+
+                <div class="warning time_text" ng-style="{ 'width': user.warning*pixsecs }"><span>allocating</span></div>
+                <div class="live time_text" ng-style="{ 'width': user.live*pixsecs }"><span>countdown</span></div>
+                <div class="shooting time_text" ng-style="{ 'width': user.length*pixsecs }"><span>live</span></div>
+              </div>
+              <div class="allocation_offset"></div>
+              <div class="indicator">
+                <div class="warning time_text" ng-style="{ 'width': user.warning*pixsecs }"><span>allocating</span></div>
+                <div class="live time_text" ng-style="{ 'width': user.live*pixsecs }"><span>countdown</span></div>
+                <div class="shooting time_text" ng-style="{ 'width': user.length*pixsecs }"><span>live</span></div>
+              </div>
+            </div>
+          </div>
+
+            <div ng-show="ucount==0" class="col-sm-12">
+              No Users Signed In
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <div class="allmedia">
-    <h2><button class="btn btn-link" ng-click="showFilter()"><i  class="fa" ng-class="filtershow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button> Filter Results <!-- <span class="label label-success">{{filteredmedia.length}}</span> --></h2>
+    <h2><button class="btn btn-link" ng-click="showFilter()"><i  class="fa" ng-class="filtershow ? 'fa-chevron-down' : 'fa-chevron-right'" ></i></button>Filter Results</h2>
 
     <div ng-show="filtershow" class="well" style="position:relative;">
-  <button ng-click="clearFilters();log('clearfilter');" class="pull-right btn-link"><i class="fa fa-times"></i></button>  <label class="pull-right">Show only Uploaded <input ng-click="log('filteruploaded',{uploaded:hasvideo});"  type="checkbox" ng-model="hasvideo"/></label> 
+  <button ng-click="clearFilters();log('clearfilter');" class="pull-right btn-link"><i class="fa fa-times"></i></button>  <label class="pull-right">Show only Uploaded <input ng-click="log('filteruploaded',{uploaded:hasvideo});"  type="checkbox" ng-model="hasvideo"/></label>
+  <br>
+  <label class="pull-right">Show Tagged for Edit
+    <input ng-click="log('filteredittagged',{uploaded:edit_tag});"  type="checkbox" ng-model="edit_tag" /></label>
 
 <div class="row">
       <div class="col-xs-4">
@@ -380,7 +479,7 @@ video
                 <label ng-repeat="role in roles">
                   <input checklist-model="rolefilter" ng-click="log('filterrole',{role:role,checked:this.checked});" checklist-value="role" type="checkbox" autocomplete="off"><i class="fa fa-check" ng-show="_.contains(rolefilter,role)"></i> {{role}} &nbsp;
                 </label>
-               
+
               </div>
 
                     <div>
@@ -393,7 +492,7 @@ video
 
                       </div>
 <div>
-                              <strong class="col-xs-3 text-muted">Subject</strong>
+          <strong class="col-xs-3 text-muted">Subject</strong>
           <div class="btn-group">
             <label ng-repeat="c in coverage">
               <input checklist-model="coveragefilter" ng-click="log('filtercoverage',{coverage:c,checked:this.checked});" checklist-value="c" type="checkbox" autocomplete="off">{{c}} &nbsp;
@@ -406,7 +505,7 @@ video
       </div>
  <div class="col-xs-5">
       <div>
-        
+
           <div  >
         <label ng-repeat="c in takenshots">
           <input checklist-model="shotfilter" ng-click="log('filtershots',{shots:c,checked:this.checked});" checklist-value="c" type="checkbox" autocomplete="off">{{c}} &nbsp;
@@ -416,18 +515,15 @@ video
       </div>
 
 </div>
-
-
-
       <div class="row">
         <div class="col-xs-3">
           <strong class="col-xs-12 text-muted">Length ({{lengthfilter[0]}}s - {{lengthfilter[1]}}s)</strong>
         </div>
         <div class="col-xs-9">
-        <div ui-slider="{range:true}" 
+        <div ui-slider="{range:true}"
           ng-click="log('filterlength',{min:lengthfilter[0],max:lengthfilter[1]});"
-          min="0" 
-          max="50" 
+          min="0"
+          max="50"
           ng-model="lengthfilter"></div>
         </div>
       </div>
@@ -436,29 +532,46 @@ video
           <strong class="col-xs-12 text-muted">Time Shot</strong>
         </div>
         <div class="col-xs-4">
-            <timepicker ng-click="log('filtertime',{from:timefilterfrom,to:timefilterto});" style="display:inline-block" ng-model="timefilterfrom" show-meridian="ismeridian">From</timepicker>  
+            <timepicker ng-click="log('filtertime',{from:timefilterfrom,to:timefilterto});" style="display:inline-block" ng-model="timefilterfrom" show-meridian="ismeridian">From</timepicker>
           </div>
           <div class="col-xs-4">
             <timepicker ng-click="log('filtertime',{from:timefilterfrom,to:timefilterto});" style="display:inline-block" ng-model="timefilterto" show-meridian="ismeridian">To</timepicker>
           </div>
       </div>
-
-
-
-      <div style="position:absolute;right:0;bottom:0;font-size:30px;line-height:30px;color:silver;">{{filteredmedia.length}}</div>
     </div>
+    <tabset>
+        <tab heading="All Clips  ({{filteredmedia.length}} of {{media.length}})" active="tabs.tab0">
+<br>
 
-    
+<div style="display:block;text-align:center;">
+  <dir-pagination-controls></dir-pagination-controls>
+</div>
 
-    <div class="mediaitem col-sm-6" ng-repeat="m in filteredmedia = (media | hasVideoFilter:hasvideo | rangeFilter:lengthfilter | timeFilter:{from:timefilterfrom, to:timefilterto} | checkFilter:{scope:this,name:'meta.static_meta.role_ex.name', value:rolefilter} | checkFilter:{scope:this,name:'meta.static_meta.shot_ex.name', value:shotfilter} | checkFilter:{scope:this,name:'meta.static_meta.coverage_class_ex.name', value:coveragefilter} | areaFilter:{circle:circlefilter,filterbylocation:filterbylocation} | checkFilter:{scope:this,name:'meta.static_meta.meta_phase.name', value:phasefilter} | filter:mapfilter)" style="float:left;">
-      <div style="float:left;margin-bottom:10px;" class="col-sm-6">
-        <a ng-show="m.path && m.thumb" href="#" ng-click="playThis(m)" style="position:relative;display:inline-block;" data-toggle="lightbox">
-          <img style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
+<div class="alert alert-danger" ng-show="candelete">
+  You are in delete mode - clicking <i style="color:red;" class="fa fa-trash-o"></i> will permenantly remove all media associated with the clip!
+</div>
+    <div class="mediaitem col-sm-6" dir-paginate="m in filteredmedia = (media | hasVideoFilter:hasvideo | hasEditTag:edit_tag | rangeFilter:lengthfilter | timeFilter:{from:timefilterfrom, to:timefilterto} | checkFilter:{scope:this,name:'meta.role_ex.name', value:rolefilter} | checkFilter:{scope:this,name:'meta.shot_ex.name', value:shotfilter} | checkFilter:{scope:this,name:'meta.coverage_class_ex.name', value:coveragefilter} | areaFilter:{circle:circlefilter,filterbylocation:filterbylocation} | checkFilter:{scope:this,name:'meta.meta_phase.name', value:phasefilter} | filter:mapfilter) | itemsPerPage: 20" style="float:left;">
+      <div style="float:left;margin-bottom:10px;overflow:hidden" class="col-sm-6">
+
+        <a ng-show="m.path" href="#" ng-click="playThis(m)" style="position:relative;display:inline-block;" data-toggle="lightbox">
+          <img ng-show="m.thumb" style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
+          <div ng-hide="m.thumb" style="width:200px;height:120px;" ><div class="text-muted text-center"style="padding-top:20%;width:100%;height:100%;background:#f1f1f1">Thumbnail not uploaded
+          <span ng-show="m.deleted"><br>Deleted at {{m.deleted}}</span>
+          </div>
+
+      </div>
           <img src="/images/download.png" style="position:absolute;left:5px;bottom:5px;"/>
+          <a ng-show="m.path" href="{{m.originalpath}}" style="position:absolute;right:10px;top:5px;"><i class="fa fa-download"></i></a>
         </a>
         <img ng-show="m.thumb && !m.path"  style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
-        <div ng-hide="m.thumb" style="width:200px;height:120px;"><span class="text-muted">Waiting for Upload</span></div>
+      <div ng-hide="m.thumb || m.path" style="width:200px;height:120px;"><div class="text-muted text-center"style="padding-top:20%;width:100%;height:100%;background:#f1f1f1">Thumbnail not uploaded <span ng-show="m.deleted"><br>Deleted at {{m.deleted}}</span></div></div>
         <i class="fa" ng-class="{'fa-video-camera':m.meta.static_meta.media_type=='VIDEO', 'fa-photo':m.meta.static_meta.media_type=='PHOTO', 'fa-audio':m.meta.static_meta.media_type=='AUDIO'}" style="position:absolute;right:8px;bottom:2px;"></i>
+        <div style="position:absolute;left:9px; top:-2px;">
+           <button tooltip="Include in Sync" class="btn btn-link" style="color:orange;text-decoration:none;" ng-click="tag(m,$event)"><i style="color:orange;" class="fa" ng-class="{'fa-flag':m.meta.static_meta.edit_tag, 'fa-flag-o':m.meta.static_meta.edit_tag==undefined}"></i></button>
+         </div>
+         <div style="position:absolute;left:30px; top:-2px;">
+            <button ng-show="candelete" class="btn btn-link" style="color:red;text-decoration:none;" ng-click="removeclip(m,$event)"><i style="color:red;" class="fa fa-trash-o"></i></button>
+          </div>
       </div>
       <div class="col-sm-6 allmeta">
           <span class="text-muted">
@@ -468,102 +581,32 @@ video
           <span ng-repeat="(key, value) in m.meta.static_meta"  ng-bind-html="format(key,value)">
 
           </span>
-         
-        
+          <span ng-repeat="(key, value) in m.meta"  ng-bind-html="format(key,value)">
+
+          </span>
       </div>
     </div>
-    </div>
+    <!-- </div> -->
+  </tab>
 
+    <tab heading="Map View" active="tabs.tab1" select="fixMap()">
+      <button tooltip="re-center map" ng-click="fit();log('fit');" class="btn btn-link"><i class="fa fa-dot-circle-o fa-2x"></i></button> <label><input ng-click="log('filterbylocation',{filterbylocation:filterbylocation});" type="checkbox" ng-model="filterbylocation" /> Filter by location</label>
+    <ui-gmap-google-map zoom='map.zoom' center='map.center' bounds="map.bounds" events="map.events">
+          <ui-gmap-marker ng-repeat="m in media track by $index"
+                idKey='m.id'
+                click="setMapFilter(m.id);log('mappin',{media:m.id});"
+                coords='{latitude:m.meta.static_meta.gps_lat,longitude:m.meta.static_meta.gps_lng}'>
+          </ui-gmap-marker>
+          <ui-gmap-circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
+                    visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable" control="c.control" events="c.events"></ui-gmap-circle>
+    </ui-gmap-google-map>
+    </tab>
+</tabset>
+</div>
 <div class="clearfix"></div>
-<!-- <div class="circle">{{timer}} <span>Clock</span></div> -->
 </div>
-<hr>
+<!-- end of scope -->
 
-<!-- OLD STUFF:: -->
-
-
-<div class="col-sm-12" id="timeline">
-
-</div>
-
-<div class="col-sm-12" style="padding:0;" id="map">
-<div id="selectiontimeline">
-</div>
-<div id="map-canvas" style="height:300px;width:100%;">
-</div>
-</div>
-
-
-<script id="selection-template" type="text/x-handlebars-template">
-<div class="row" style="margin-bottom:10px;border:1px solid silver;padding:10px;margin-left:0;margin-right:0;">
-    {{#each this}}
-    <div style="display:relative;height:105px;padding:0;margin-right:5px;" class="col-sm-2">
-    {{#if this.shot}}
-      <img style="width:100%;" src="/static/data/{{shotimage}}"/>
-      {{else}}
-      <div style="background:#333;width:100%;height:105px;display:inline-block;"></div>
-      {{/if}}
-      <div style="width:20px;height:20px;border-radius:10px;background:red;position:absolute;right:5px;bottom:5px;" class="rec_{{this.status}}"></div>
-<i style="position:absolute;top:5px;margin:0;left:5px;">{{this.status}}</i>
-        <i class="badge primary status_{{this.status}}" style="position:absolute;bottom:0px;margin:0;left:0px;">{{this.name}}</i> &nbsp;
-      </div>
-    {{else}}
-    <div class="text-muted" class="col-sm-12">
-      No Users Signed In
-    </div>    
-    {{/each}}
-</div>
-
-</div>
-</script>
-
-<script id="timeline-template" type="text/x-handlebars-template">
-<div class="row">
-  <div class="col-sm-1" >
-    {{#each this}}
-    <div class="row">
-      <div class="col-sm-12 nametag">
-        {{this.name}}
-        <i class="badge primary">{{this.status}}</i>
-      </div>
-    </div>
-    {{else}}
-    
-      <div class="text-muted" class="col-sm-12">
-        No Users Signed In
-      </div>
-    
-    {{/each}}
-  </div>
-  <div class="col-sm-11" style="border:1px solid #eee;overflow:auto;">
-  <div class="cursor">&nbsp;</div>
-    <div id="mover">
-      {{#each this}}
-      <div class="row">
-        <div class="mainrows">
-          <div class="indicator" offset="{{this.offset}}">
-            
-            <div class="warning" length="{{this.warning}}">{{this.warning}}</div>
-            <div class="live" length="{{this.live}}">{{this.live}}</div>
-            <div class="shooting" length="{{this.length}}">{{this.length}}</div>
-          </div>
-          <div class="allocation_offset"></div>
-          <div class="indicator" offset="{{this.offset}}">
-            <div class="warning" length="{{this.warning}}">{{this.warning}}</div>
-            <div class="live" length="{{this.live}}">{{this.live}}</div>
-            <div class="shooting" length="{{this.length}}">{{this.length}}</div>
-          </div>
-        </div>
-      </div>
-      {{else}}
-        <div class="col-sm-12">
-          No Users Signed In
-        </div>
-      {{/each}}
-    </div>
-  </div>
-</div>
-</script>
 
 <style>
 #timeline .col-sm-12
@@ -587,6 +630,8 @@ video
 {
   background:url(/images/timeline_b.png) repeat;
   border-left: 1px solid #eee;
+  transition: margin-left 1s;
+  transition-timing-function: linear;
   /*transition: margin-left 1s linear;*/
 }
 
@@ -649,193 +694,15 @@ function changemetaphase(phaseid)
 
 function startshoot()
 {
-  io.socket.post('/event/started/',{id:'<%= event.id%>'}, function(response){
+  io.socket.post('/event/started/',{eventid:'<%= event.id%>'}, function(response){
     showok('shoot started',$('#startedbox'));
   });
 }
 
 function pause()
 {
-  io.socket.post('/event/pause/',{id:'<%= event.id%>'}, function(response){
+  io.socket.post('/event/pause/',{eventid:'<%= event.id%>'}, function(response){
     showok('shoot paused',$('#startedbox'));
   });
 }
-
-
-// $(function(){
-
-//   io.socket.on('event', function(response){
-
-//         if (response.data.shots != undefined)
-//         {
-//           //console.log('setting shots');
-//           shots = response.data.shots;
-//         }
-
-//           //console.log(response.data.update);
-//           if (response.data.media != undefined)
-//           {
-//               //new media item from this event
-//               //render media:
-//               //add media to the front of the list...
-//               if (response.data.update)
-//               {
-//                 //find the one that matches...
-//                 for (var i=0;i<media.length;i++)
-//                 {
-//                   if (media[i].id == response.data.media.id)
-//                   {
-//                     media[i] = response.data.media;
-//                   }
-//                 }
-
-//                 //update whole table...
-//                 $('#media').html(mediatemplate(media));
-//               }
-//               else
-//               {
-//                 media.unshift(response.data.media);
-//                 $('#media').html(mediatemplate(media));
-//               }
-//           }
-
-//           //add this to the log...
-//           if (response.data.timer != undefined)
-//           {
-//             $('#eventclock').text(response.data.timer);
-//             timer = response.data.timer;
-          
-
-//             $('#mover').animate({marginLeft:-((pixsecs*response.data.timer) - 300)},1000,"linear");
-//             //$('#mover').css('margin-left',-((pixsecs*timer) - 300));
-//           }
-
-//           if (response.data.users != undefined)
-//           {
-            
-//             //$('.mover').css('height',(3*60));
-//             $('#users').text(response.data.ucount);
-
-//             if (mapmode)
-//             {
-//               $('#selectiontimeline').html(selectiontemplate(response.data.users));
-//             }
-//             else
-//             {
-//               $('#timeline').html(timelinetemplate(response.data.users));
-
-//               $('.shooting').each(function()
-//               {
-//                 $(this).css('width',pixsecs*($(this).attr('length')));
-//               });
-
-//               $('.allocation_offset').each(function()
-//               {
-//                 $(this).css('width',pixsecs*1);
-//               });
-
-//               $('.warning').each(function()
-//               {
-//                 $(this).css('width',($(this).attr('length'))* pixsecs);
-//               });
-
-//               $('.live').each(function()
-//               {
-//                 $(this).css('width',$(this).attr('length')* pixsecs);
-//               });
-
-//                $('.indicator').each(function()
-//               {
-//                   var width = 0;
-//                    $(this).children().each(function() {
-//                       width += $(this).outerWidth( true );
-//                   });
-//                  $(this).css('width',width+'px');
-//               });
-
-//               $('.mainrows').each(function()
-//               {
-//                 //console.log("offset: "+$(this).attr('offset'));
-//                 var first = $(this).find('.indicator:first');
-//                 first.css('margin-left',(pixsecs * (Number(first.attr('offset')))));
-//               });
-
-//               if (response.data.ucount)
-//               {
-//                   $('.mainrows').css('width',2*(pixsecs*response.data.users[Object.keys(response.data.users)[0]].length*(response.data.ucount+1)));
-//                   $('#mover').css('width',2*(pixsecs*response.data.users[Object.keys(response.data.users)[0]].length*(response.data.ucount+1)));
-//               }
-
-
-//                $('#mover').css('margin-left',-((pixsecs*timer) - 300));
-//              }
-//           }
-
-//           if (response.data.phase != undefined)
-//           {
-//             $('#mode').text(response.data.phase);
-//             $('#phase').text(response.data.ruleset);
-//             if (response.data.phase == 'selection')
-//             {
-
-//               $('#eventclock').parent().parent().hide();
-//               $('#phase').parent().parent().hide();
-//               $('#timeline').hide();
-//               $('#map').show();
-//               mapmode = true;
-//             } 
-//             else
-//             {
-//               $('#map').hide();
-//             }
-//           }
-//       });
-
-// 	io.socket.on('connect',function()
-// 	{
-//     //console.log('really connected');
-//     //sign up for updates
-// 		io.socket.get('/event/updates/<%= event.id%>', function(response){
-//       		//console.log(response);
-//   	});
-
-//     io.socket.get('/media/event/<%= event.id%>', function(response){
-//           //console.log(response); 
-//           media = response;
-//           $('#media').html(mediatemplate(media));
-//           deleteMarkers();
-//           $.each(media,function(u)
-//           {
-//             if (media[u].meta.static_meta.gps_lat != undefined)
-//             {
-//               addMarker(new google.maps.LatLng(media[u].meta.static_meta.gps_lat,media[u].meta.static_meta.gps_lng));
-//             }
-//           });
-//           showMarkers();
-//       });
-
-		
-// 	});
-// var pixsecs = 15;
-
-// var timelinetemplate;
-// var mediatemplate;
-// var selectiontemplate;
-
-//   //build handlebars templates
-//   var source = $("#timeline-template").html();
-//   timelinetemplate = Handlebars.compile(source);
-//   source = $("#media-template").html();
-//   mediatemplate = Handlebars.compile(source);
-//   source = $("#selection-template").html();
-//   selectiontemplate = Handlebars.compile(source);
-
-
-//   var timer = 0;
-//   var media = new Array();
-//   var mapmode = false;
-
-// });
 </script>
-
-

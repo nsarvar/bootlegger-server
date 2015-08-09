@@ -23,138 +23,133 @@
 	float:right;
 	width:50%;
 }
+
+  .sortorder:after {
+    content: '\25b2';
+  }
+  .sortorder.reverse:after {
+    content: '\25bc';
+  }
 </style>
 
-<h2>Event Admin</h2>
+<div ng-app="adminApp" ng-controller="admin" ng-cloak>
 
-<a href="/log/all/" class="btn btn-primary">Master Server Log</a><br><br>
-<form action="/post/broadcast" method="post">
-	<div class="input-group">
-<input type="text" name="advert" class=" col-sm-2 form-control" />
-<span class="input-group-btn">
-<button type="submit" class="btn btn-warning">Broadcast Message to All Users</button>
-</span>
-</div><!-- /input-group -->
-</form> 
-<br><br>
-<div class="list-group">
-	<a class="list-group-item active" href="#">All Bootlegger Events</a>
-		<% _.each(events,function(evs,server){ %>
-			<div class="list-group-item text-muted">On <%- server %></div>
-			<% _.each(evs,function(e){%>
-	  	<div class="list-group-item">
-		  	<div class="row">
-		  		<div class="col-sm-12">
-		  			<div class="status" rel="<%- e.id %>" id="event_<%- e.id %>"></div>
-		    		<a href="/event/view/<%- e.id %>"><strong><%- e.name %></strong></a>
-		    		<%- e.starts %> at <%- e.starts_time %> to <%- e.ends %> at <%- e.ends_time %>
-		    		<div style="margin-top:5px;">
-						<a href="/event/kill/<%- e.id %>" onclick="return confirm('Really Kill Event?')" class="btn btn-sm btn-danger">Kill Event</a>
-						<a href="/media/transcode/<%- e.id %>" class="btn btn-sm btn-default">Transcode</a>
-						<a href="/log/view/<%- e.id %>" class="btn btn-sm btn-default">Logs</a>
-		    		</div>
+<h2>Server Administration</h2>
+
+<tabset>
+    <tab heading="Shoots">
+			<span class="text-muted">Order By:</span>
+			<a href="" ng-click="ordere('name')">Name</a><span class="sortorder" ng-show="predicatee === 'name'" ng-class="{reverse:reversee}"></span> |
+			<a href="" ng-click="ordere('createdAt')">Joined</a><span class="sortorder" ng-show="predicatee === 'createdAt'" ng-class="{reverse:reversee}"></span> |
+			<a href="" ng-click="ordere('lasttouched')">Last Touched</a><span class="sortorder" ng-show="predicatee === 'lasttouched'" ng-class="{reverse:reversee}"></span> |
+			<a href="" ng-click="ordere('totalmedia')">Total Media</a><span class="sortorder" ng-show="predicatee === 'totalmedia'" ng-class="{reverse:reversee}"></span> |
+			<a href="" ng-click="ordere('participants')">Participants</a><span class="sortorder" ng-show="predicatee === 'participants'" ng-class="{reverse:reversee}"></span> |
+			<a href="" ng-click="ordere('totalfilesize')">Filesize</a><span class="sortorder" ng-show="predicatee === 'totalfilesize'" ng-class="{reverse:reversee}"></span>
+
+			<div class="list-group">
+				<a class="list-group-item" href="#"><input type="text" placeholder="search..." ng-model="search.$" class="form-control input-lg" /></a>
+				<div class="text-center fa fa-spinner fa-spin fa-3x" style="width:100%;" ng-show="loading_shoots"></div>
+
+				<div ng-repeat="(server,events) in events">
+						<div  class="list-group-item text-muted">On {{server}}</div>
+				  	<div ng-repeat="event in events | filter:search | orderBy:predicatee:reversee" class="list-group-item">
+					  			<a href="/event/view/{{event.id}}"><strong>{{event.name}}</strong></a>
+									<br>
+									{{event.starts}} at {{event.starts_time}} to {{event.ends}} at {{event.ends_time}}
+									<br>
+									last touched at <span class="label label-default">{{event.lasttouched}}</span>, <span class="label label-default">{{event.totalmedia}}</span> total clips, <span class="label label-default">{{event.participants}}</span> participants, <span class="label label-default">{{event.totalfilesize}}</span> MB files<br>
+									<a href="#" ng-click="search.$=user.profile.displayName" ng-repeat="user in event.users track by $index">{{user.profile.displayName}}, </a><br>
+					    		<div class="pull-right">
+										<a ng-href="/event/kill/{{event.id}}" onclick="return confirm('Really Kill Event?')" class="btn btn-sm btn-danger">Kill Event</a>
+										<a ng-href="/media/transcode/{{event.id}}" class="btn btn-sm btn-default">Transcode</a>
+										<a ng-href="/log/view/{{event.id}}" class="btn btn-sm btn-default">Logs</a>
+					    		</div>
+									<div class="clearfix"></div>
+					</div>
+</div>
+			</div>
+
+		</tab>
+		<tab heading="Users">
+			<span class="text-muted">Order By:</span>
+			<a href="" ng-click="order('profile.name.familyName')">Name</a><span class="sortorder" ng-show="predicate === 'profile.name.familyName'" ng-class="{reverse:reverse}"></span> |
+			<a href="" ng-click="order('createdAt')">Joined</a><span class="sortorder" ng-show="predicate === 'createdAt'" ng-class="{reverse:reverse}"></span> |
+			<a href="" ng-click="order('owned')">Owned</a><span class="sortorder" ng-show="predicate === 'owned'" ng-class="{reverse:reverse}"></span> |
+			<a href="" ng-click="order('participatedin')">Participated In</a><span class="sortorder" ng-show="predicate === 'participatedin'" ng-class="{reverse:reverse}"></span> |
+			<a href="" ng-click="order('created')">Produced</a><span class="sortorder" ng-show="predicate === 'created'" ng-class="{reverse:reverse}"></span> |
+			<a href="" ng-click="order('edits')">Edits</a><span class="sortorder" ng-show="predicate === 'edits'" ng-class="{reverse:reverse}"></span>
+
+			<div class="list-group">
+				<a class="list-group-item" href="#"><input type="text" placeholder="search..." ng-model="search_users" class="form-control input-lg" /></a>
+				<div style="width:100%;" class="fa fa-spinner fa-spin fa-3x" ng-show="loading_users"></div>
+				<div ng-repeat="user in users | filter:search_users | orderBy:predicate:reverse"  class="list-group-item">
+					<strong>{{user.profile.displayName}}</strong> <em>{{user.profile.emails[0].value}}</em><br>
+					joined {{user.createdAt}},
+					owns {{user.owned}} shoots,
+					participated in {{user.participatedin}} shoots,
+					{{user.created}} clips produced,
+					<span ng-show="user.apiaccess"> api {{user.apiaccess}},</span>
+					{{user.edits}} edits
+					<a ng-show="!user.deleted" href="/event/removeuser/{{user.id}}" onclick="return confirm('Really Remove User?')"  class="btn btn-danger btn-sm pull-right">Remove</a>
+					<a ng-show="user.apiaccess && user.apiaccess=='live'" href="/api/revokeapi/{{user.id}}" class="btn btn-danger btn-sm pull-right">Revoke API</a>
+					<a ng-show="user.apiaccess && user.apiaccess=='locked'" href="/api/unrevokeapi/{{user.id}}" class="btn btn-primary btn-sm pull-right">Un-Revoke API</a>
+					<div class="clearfix"></div>
 				</div>
 			</div>
-		</div>
-		<% });}); %>
+
+		</tab>
+
+		<tab heading="Settings">
+<br><br>
+<p>View Bootlegger System Wide Logs</p>
+			<a href="/log/all/" class="btn btn-warning btn-lg"><i class="fa fa-database"></i> Master Server Log</a>
+			<hr>
+			<form action="/post/broadcast" method="post">
+					<p>Sends a push notification with a full-screen image to all registered users of Bootlegger.</p>
+				<div class="input-group">
+
+			<input placeholder="url of image" type="text" name="advert" class=" col-sm-2 form-control" />
+			<span class="input-group-btn">
+			<button type="submit" class="btn btn-warning">Broadcast Message to All Users</button>
+			</span>
+			</div><!-- /input-group -->
+			</form>
+			<hr>
+			<!-- <div class="panel panel-default">
+				<div class="panel-heading">
+					Add Shot
+				</div>
+				<div class="panel-body"> -->
+			  <form action="/commission/addshot/" method="post" enctype="multipart/form-data">
+					<div class="row">
+						<div class="col-sm-8">
+			<input type="text" class="form-control input-lg" name="name" required placeholder="Shot Title"/>
+			<input type="text" name="description" class="form-control input-lg" required placeholder="Shot Description"/>
+
 </div>
+<div class="col-sm-4">
+			  <div class="fileinput fileinput-new" data-provides="fileinput">
+			    <div class="fileinput-new thumbnail" style="width: 200px; height: 113px;float:left;" >
+			      <img data-src="holder.js/100%x100%" alt="...">
+			    </div>
+			    <div class="fileinput-preview fileinput-exists thumbnail" style="width: 200px; height: 113px;overflow:hidden;float:left;">
 
+			    </div>
+			    <div style="float:right;width:10px;">
+			      <span class="btn btn-link btn-file"><span class="fileinput-new"><i class="fa fa-folder-open"></i></span><span class="fileinput-exists"><i class="fa fa-folder-open"></i></span><input type="file" name="image"></span>
 
-<script id="status-template" type="text/x-handlebars-template">
-	<span class="big">{{users}}<br /><small>users</small></span>
-	<span class="big">{{phase}}<br /><small>phase</small></span>
-	 <span class="big">{{ruleset}}<br /><small>ruleset</small></span>
-	  <span class="big">{{media}}<br /><small>clips</small></span>
-</script>
+			      <a href="#" class="btn btn-link fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i></a>
+			    </div>
+				</div>
+			</div>
+				<div class="clearfix"></div>
+				<input type="submit" value="Add Shot" class="btn btn-lg btn-primary pull-right"/>
+				<div>
 
-<script>
+			</form>
+			<!-- </div> -->
+			<!-- </div> -->
 
-function ev(id)
-{
-	
-	return function(response)
-	{
-		var evid = id;
-		events[evid].media = response.length;
-		$('#event_'+evid).html(statustemplate(events[evid]));
-	}
-}
-
-var events = {};
-
-$(function()
-{
-
-	var source = $("#status-template").html();
-    statustemplate = Handlebars.compile(source);
-
-	io.socket.on('connect',function()
-	{
-		$('.status').each(function()
-		{
-			events[$(this).attr('rel')] = {
-			  	users:0,
-			  	phase:'?',
-			  	ruleset:'?',
-			  	media:0,
-			  	eventid:$(this).attr('rel')
-			  };
-	 		io.socket.get('/event/updates/'+$(this).attr('rel'), function(response){
-	      		//console.log(response);
-	    	});
-
-	 		var callback = ev($(this).attr('rel'));
-			io.socket.get('/media/event/'+$(this).attr('rel'), callback);
-		});
-		 
-
-		io.socket.on('message', function(response){
-
-			if (!response.id)
-			{
-				return;
-			}
-			else
-			{
-			  var eventid = response.id;
-			  var data = events[eventid];
-
-	          if (response.data.users != undefined && response.model == 'event')
-	          {
-	      		  //users
-	      		  data.users = response.data.ucount;
-	          }
-
-	          if (response.data.media != undefined && response.model == 'event' && !response.data.update)
-          		{
-          			data.media = response.data.media.length;
-          		}
-
-	          if (response.data.phase != undefined && response.model == 'event')
-	          {
-	      		 // $('#mode').text(response.data.phase);
-	      		 data.phase = response.data.phase;
-	      		 data.ruleset = response.data.ruleset;
-	            //$('#phase').text(response.data.ruleset);
-	          }
-
-	          //rerender status:
-	          $('#event_'+eventid).html(statustemplate(data));
-			}
-
-      });
-
-	});
-
-
-
-
-
-
-
-	
-});
-//for each event, get status and subscribe for updates: (/event/updates)
-
-//recieve updates..
-</script>
+		</tab>
+</tabset>
+</div>

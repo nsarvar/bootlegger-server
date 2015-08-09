@@ -1,26 +1,86 @@
-<% 
+
+<style>
+.inlay {
+	box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,0.2);
+}
+
+.selected
+{
+	background: #f2f2f2;
+}
+</style>
+
+<div ng-app="exportApp" ng-controller="export" ng-cloak>
+	<div class="well">
+	<h3 class="text-muted">We have saved all the footage from your shoot in a safe place.
+	<br>Here is a summary of what we have for this shoot:</h3>
+
+<div class="row">
+	<div class="col-sm-3">
+		<div class="alert alert-info" style="text-align:center;">
+		  <h1 id="ok">{{nums.ok}} <br><small>clips available</small></h1>
+		</div>
+	</div>
+
+	<div class="col-sm-3">
+		<div class="alert alert-info" style="text-align:center;">
+			<h1 id="fail">{{nums.missing}}<br><small>not uploaded</small></h1>
+	  		<p id="missingfrom"></p>
+		</div>
+	</div>
+
+	<div class="col-sm-3">
+		<div class="alert alert-info" style="text-align:center;">
+		  <h1 id="crew">{{nums.crew}}<br><small>crew</small></h1>
+
+		</div>
+	</div>
+
+	<div class="col-sm-3">
+		<div class="alert alert-info" style="text-align:center;">
+		  <h1 id="mins">{{nums.mins}}'<br><small>{{(nums.filesize / 1024) | number:0}}MB</small></h1>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 text-muted">
+		<strong>Missing clips from </strong>
+		{{nums.missingfrom}} <span ng-show="nums.missingfrom.length==0">Nobody!</span> <a class="btn btn-sm btn-default" href="/post/remind/<%- event.id %>">Send Upload Reminder <i class="fa fa-clock-o"></i></a>
+	</div>
+</div>
+
+</div>
+
+<%
 var showpost = false;
-_.each(event.post_modules,function(p,k) { 
+_.each(event.post_modules,function(p,k) {
   	if (p==1)
   		showpost = true;
   	});
   %>
-<%if (showpost) {%>
-<div class="page-header">
-	<h1>Post Production
+  	<h1>
+		<span class="fa-stack btn-link">
+					  <i class="fa fa-circle-o fa-stack-2x"></i>
+					  <i class="fa fa-stack-1x">1</i>
+					</span>
+					 Post Production
 <small>Perform automated tasks</small>
 	</h1>
+<%if (showpost) {%>
+<div class="page-header">
+
 </div>
 <div class="list-group">
-<a class="list-group-item active" href="#">Select an Action</a>
-  <% _.each(event.post_modules,function(p,k) { 
+<a class="list-group-item" href="#">Available Post Processing</a>
+  <% _.each(event.post_modules,function(p,k) {
   	if (p==1){
   %>
   <div class="list-group-item loading">
     <div class="row">
     <script>
     $(function(){
-		$.get('/post/module/<%- k %>', function( data ) {
+		$.get('/post/module/<%- k %>?apikey='+apikey, function( data ) {
 			$('#<%- k %>').html(data);
 			$('#<%- k %>').parent().parent().parent().removeClass('loading');
 			$(document).on('change', '.btn-file :file', function() {
@@ -30,20 +90,20 @@ _.each(event.post_modules,function(p,k) {
 			  input.trigger('fileselect', [numFiles, label]);
 			});
 
-			
+
 			    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-			        
+
 			        var input = $(this).parents('.input-group').find(':text'),
 			            log = numFiles > 1 ? numFiles + ' files selected' : label;
-			        
+
 			        if( input.length ) {
 			            input.val(log);
 			        } else {
 			            if( log ) alert(log);
 			        }
-			        
+
 			    });
-			
+
 			//alert("done");
 		}).fail(function(err){
 			//alert(err);
@@ -60,221 +120,213 @@ _.each(event.post_modules,function(p,k) {
   <% }); %>
     </div>
 <% }%>
+<div>
+<!-- Split button -->
+<span>View and Download the Meta-Data associated with this shoot:</span>
+<div class="btn-group pull-right">
+	<a type="button" href="/post/document/<%-event.id %>?apikey=<%-apikey %>" class=" btn btn-primary btn-lg" tooltip-popup-delay="300" tooltip="Makes a document with thumbnails of each shot and its metadata"><i class="glyphicon glyphicon-th-list"></i> View Shot List</a>
+
+	<button type="button" class="btn btn-primary dropdown-toggle btn-lg" data-toggle="dropdown" aria-expanded="false">
+		<span class="caret"></span>
+		<span class="sr-only">Toggle Dropdown</span>
+	</button>
+
+	<ul class="dropdown-menu" role="menu">
+		<li><a href="/post/document/<%-event.id %>?apikey=<%- apikey %>">HTML</a></li>
+		<li><a href="/media/nicejson/<%-event.id %>?apikey=<%- apikey %>">JSON</a></li>
+		<li><a href="#">PDF <span class="text-muted">(coming soon)</span></a></li>
+	</ul>
+</div>
+</div>
 <div class="clearfix"></div>
 <div class="page-header">
-<h1>Export
+<h1><span class="fa-stack btn-link">
+					  <i class="fa fa-circle-o fa-stack-2x"></i>
+					  <i class="fa fa-stack-1x">2</i>
+					</span> Select Output Structure
 <small>Export all your footage for editing</small></h1>
 </div>
-<h2>We have saved all the footage from your shoot in a safe place. <br>
-	<span class="text-muted">Here is a summary of what we have for this shoot:</span></h2>
 
+
+<p tooltip-popup-delay="300" tooltip="Organises your footage according to your choice of categories">You can download the footage and meta-data to start editing. <i style="color:silver" class="fa fa-question-circle"></i><br></p>
+
+<div >
+	<div class="row">
+		<div class="col-xs-12"><div class="alert alert-success" ng-show="success">Output Profiles Updated!</div></div>
+		<div class="col-xs-12 text-muted">Bootlegger will export your media according to the following directory structure:<br><br></div>
+	</div>
+<div class="clear-fix"></div>
 <div class="row">
-	<div class="col-sm-3">
-		<div class="alert alert-info" style="text-align:center;min-height:160px;">
-		  <h1 id="ok">-</h1>
-		  <p>Clips Available</p>
-		  <a href="/post/remind/<%- event.id %>" class="btn btn-sm btn-primary">Send Upload Reminder</a>
+	<div class="col-sm-4" style="padding-right:0;">
+		<div class="list-group inlay">
+			<a href="#" class="list-group-item active">My Templates</a>
+			<div class="list-group-item text-muted" style="padding:5px;">
+				<button ng-click="addoutput()" class="btn btn-link pull-left" style="padding:0;margin-right:5px;margin-top:7px;"><i class="fa fa-plus fa-2x"></i></button>
+				<small>Your library of output directory structures. <br>Click to edit.</small>
+			</div>
+			<div style="min-height:250px;max-height:250px;overflow-y:auto">
+				<div style="cursor:pointer;" ng-class="{'selected':(editing.current==output)}" ng-click="edit(output)" ng-repeat="output in mytemplates" class="list-group-item">
+					<div  class="pull-left" style="width:90%;">
+						<input type="text" ng-model="output.title" class="form-control" ng-show="output.editing" />
+						<span ng-hide="output.editing">{{output.title}}</span>
+					</div>
+					  <div style="float:right;width:5%;">
+								<button style="padding:2px" class="btn btn-link" ng-click="remove(output)"><i class="fa fa-times"></i></button>
+				        <button  style="padding:2px" class="btn btn-link" ng-click="output.editing=!output.editing"><i class="fa" ng-class="{'fa-edit':!output.editing,'fa-save':output.editing}"></i></button>
+						</div>
+						<div class="clearfix"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 
-	<div class="col-sm-3">
-		<div class="alert alert-info" style="text-align:center;min-height:160px;">
-			<h1 id="fail">-</h1>
-	  		<p>Clips Not Uploaded by Crew</p>
-	  		<p id="missingfrom"></p>
+	<div class="col-sm-4" style="padding-right:0;">
+		<div class="list-group inlay">
+			<a href="#" class="list-group-item active">Available Directories</a>
+
+			<div style="min-height:300px;max-height:300px;overflow-y:auto"  class="dir-container" ng-model="outputs" ui-sortable="{ connectWith: '.dir-container' }">
+				<div ng-repeat="output in outputs" style="cursor:move;" class="list-group-item">{{output.title}}</div>
+			</div>
 		</div>
 	</div>
 
-	<div class="col-sm-3">
-		<div class="alert alert-info" style="text-align:center;min-height:160px;">
-		  <h1 id="crew">-</h1>
-		  <p>Crew Members</p>
+	<div class="col-sm-4" >
+		<div class="list-group inlay">
+			<a href="#" class="list-group-item active">Example Download Structure</a>
+
+			<div style="min-height:255px;max-height:255px;overflow-y:auto" ng-model="editing.current.outputs" class="dir-container" ui-sortable="{ connectWith: '.dir-container' }">
+				<div  ng-repeat="output in editing.current.outputs" style="cursor:move;" class="list-group-item">
+					<div ng-style="{'padding-left':($index*15)}" >{{output.title}} <small ng-repeat="o in output.examples | limitTo:1"><span class="text-muted">e.g. {{o}}</span></small></div>
+				</div>
+			</div>
+
+			<div class="text-center">
+			<label style="height:40px;"><input ng-model="editing.current.flagged" type="checkbox"/> Only Sync chosen items (using <i class="fa fa-flag"></i>) from the <a href="/shoot">Shoot</a> screen.</label>
+		</div>
 		</div>
 	</div>
+</div>
+<div >
 
-	<div class="col-sm-3">
-		<div class="alert alert-info" style="text-align:center;min-height:160px;">
-		  <h1 id="mins">-</h1>
-		</div>
+	<div class="hidden-xs">
+		<button type="button" class="btn btn-lg btn-success pull-right" ng-click="save()"><i class="fa fa-save"></i> Save Templates</button>
+		<a class="btn btn-primary btn-lg pull-right" style="margin-right:5px;" ng-click="getedl();"><i class="fa fa-download"></i> Download EDL (FCP XML)</a>
 	</div>
-
-
-
+	
+	<div class="hidden-md hidden-sm hidden-lg">
+		<button type="button" class="btn btn-lg btn-success" style="width:100%;" ng-click="save()"><i class="fa fa-save"></i> Save Templates</button>
+		<a class="btn btn-primary btn-lg" style="width:100%;" ng-click="getedl();"><i class="fa fa-download"></i> Download EDL (FCP XML)</a>
+	</div>
+			
+		</div>
 </div>
 
-<hr>
-<h2>You can download the footage and meta-data to start editing.<br>
-	<span class="text-muted">We have a few options:</span>
-</h2>
-
-<div class="text-center" style="position:relative;">
-	<% if (user.dropbox) { %>
-	<div class="popover right" style="display:inline-block;top:30px;right:0;left:inherit;position:absolute;">
-	        <div class="arrow"></div>
-	        <h3 class="popover-title">Notification</h3>
-	        <div class="popover-content">
-	          <p>You do not need to stay on this page. We will send an email to <span class="text-muted"><%= user.profile.emails[0].value %></span> when the copy is finished.</p>
-	        </div>
-	</div>
-
-
-	<div class="alert alert-success" id="done" style="display:none;">
-	  <h1>Copy Finished, Enjoy!</h1>
-	</div>
-
-	<input type="text" class="dial" data-min="0" data-max="100" data-readOnly=true data-val="0" />
-		<div class="progresstext text-muted"></div>
-
-<div class="row" style="margin-bottom:1em;margin-top:1em;">
-	  <a href="#" onclick="doit()" id="transbtn" class="btn btn-success" style="display:none;">Start Copy to Dropbox</a>
-	  <a href="#" onclick="cancel();" id="cancelbtn" class="btn btn-danger" style="display:none;">Stop and Reset Copy</a>
-	  
-</div>
-<div class="row">
-		<div class="input-group col-sm-4 col-sm-push-4 text-center">
-		    <input type="text" class="datepicker input-sm" name="from" id="from"  data-date-format="dd-mm-yy"/>
-		    <span class="input-group-addon input-sm">to</span>
-		    <input type="text" class="datepicker input-sm" name="to" id="to" data-date-format="dd-mm-yy" />
-		</div>
-	</div>
-
-
-<% } %>
-<div class="row" style="height:10px;"></div>
-
-<div class="row">
-<% if (!user.dropbox) { %>
-<a class="btn-lg btn btn-primary" href="/auth/dropbox"><i class="glyphicon glyphicon-cloud-download"></i> Sync to My Dropbox</a>
-<% } %>
-
-
-<!-- Split button -->
-<div class="btn-group">
-  <a type="button" href="/post/document/<%-event.id %>" class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-th-list"></i> View Shot List</a>
-
-  <button type="button" class="btn btn-primary dropdown-toggle btn-lg" data-toggle="dropdown" aria-expanded="false">
-    <span class="caret"></span>
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
-  <ul class="dropdown-menu" role="menu">
-    <li><a href="/post/document/<%-event.id %>">HTML</a></li>
-    <li><a href="/media/nicejson/<%-event.id %>">JSON</a></li>
-    <li><a href="#">PDF <span class="text-muted">(coming soon)</span></a></li>
-    <li><a href="#">EDL <span class="text-muted">(coming soon)</span></a></li>
-  </ul>
+<div class="page-header">
+<h1><span class="fa-stack btn-link">
+					  <i class="fa fa-circle-o fa-stack-2x"></i>
+					  <i class="fa fa-stack-1x">3</i>
+					</span> Select Destination
+<small>Choose where and how to Sync Your files</small></h1>
 </div>
 
-<a class="btn-lg btn btn-primary" href="http://bootleggerstatic.s3.amazonaws.com/apps/s3/S3Downloader.application"><i class="glyphicon glyphicon glyphicon-download-alt"></i> Direct Download <small>(Windows Only)</small></a>
 
-</div>
+<accordion close-others="true">
+    <accordion-group tooltip-popup-delay="300" tooltip="Links Bootlegger to your own dropbox account for downloading footage" heading="Dropbox" is-open="true">
+     <div class="row text-center text-muted">
+				<div class="col-sm-4">
+					<span class="fa-stack fa-5x">
+					  <i class="fa fa-square-o fa-stack-2x"></i>
+					  <i class="fa fa-dropbox fa-stack-1x"></i>
+					</span>
+					<br>
+					<% if (!user.dropbox) { %>
+					<a class="btn btn-link" href="/auth/dropbox">Login to Dropbox</a>
+					<% } else { %>
+					<span>Logged In</span>
+					<% } %>
+				</div>
+				<div class="col-sm-4">
+					<span class="fa-stack fa-5x">
+					  <i class="fa fa-square-o fa-stack-2x"></i>
+					  <i class="fa fa-play fa-stack-1x"></i>
+					</span>
+						<div ng-show="false">
+							    <input type="text" class="datepicker input-sm" name="from" id="from" data-date-format="dd-mm-yy"/>
+							    <div>to</div>
+							    <input type="text" class="datepicker input-sm" name="to" id="to" data-date-format="dd-mm-yy" />
+							</div>
+							<% if (user.dropbox) { %>
+								<br>
+								<label><input type="checkbox" ng-model="options.homog" value="1"> Transcode Output</label>
+					<a ng-click="doit()" id="transbtn" class="btn btn-link btn-success" ng-show="downloadprogress.stopped">Start Copy to Dropbox</a>
+					<br><a ng-click="cancel();" id="cancelbtn" class="btn btn-link btn-danger" ng-hide="downloadprogress.stopped">Stop and Reset Copy</a>
+					<%}%>
+				</div>
+				<div class="col-sm-4" style="padding-top:5px;margin-bottom:20px;">
 
+	                   <knob knob-options="{readOnly :true,width:120,height:120}" knob-data="downloadprogress.percentage"></knob>
+
+							<div class="progresstext text-muted">{{downloadprogress.msg}}</div>
+				</div>
+
+
+			</div>
+			<div  style="margin: -15px;margin-bottom:-25px;background: #eee; clear: both; padding-left: 6px;padding-right:6px;">
+<p>You do not need to stay on this page. We will send an email to <span class="text-muted"><%= user.profile.emails[0].value %></span> when the copy is finished.</p>
+			</div>
+    </accordion-group>
+    <accordion-group tooltip-popup-delay="300" tooltip="Downloads footage directly to your computer or mobile device" heading=" Native Sync Client">
+      			<div class="row text-center text-muted">
+				<div class="col-sm-4">
+					<span class="fa-stack fa-5x">
+					  <i class="fa fa-square-o fa-stack-2x"></i>
+					  <i class="fa fa-download fa-stack-1x"></i>
+					</span>
+					<p>Download Client<br> <a href="<%- sails.config.S3_CLOUD_URL %>../apps/mac/SyncTrayMac.zip"><i class="fa fa-apple fa-2x"></i></a> <a href="<%- sails.config.S3_CLOUD_URL %>../apps/win/SyncTray.zip"><i class="fa fa-windows fa-2x"></i></a> <a href="<%- sails.config.S3_CLOUD_URL %>../apps/win/SyncTray.zip"><i class="fa fa-linux fa-2x"></i></a></p>
+				</div>
+				<div class="col-sm-4">
+					<span class="fa-stack fa-5x">
+					  <i class="fa fa-square-o fa-stack-2x"></i>
+					  <i class="fa fa-play fa-stack-1x"></i>
+					</span>
+					<p>Run Application <br><a tooltip-template=" 'macapp' " ><i class="fa fa-apple fa-2x"></i></a> <a tooltip-template=" 'winapp' "><i class="fa fa-windows fa-2x"></i></a> <a tooltip-template=" 'linuxapp' "><i class="fa fa-linux fa-2x"></i></a></p>
+				</div>
+				<div class="col-sm-4">
+					<span class="fa-stack fa-5x" ng-class="{'text-success':clientconnected,'text-danger':clientfailed}">
+					  <i class="fa fa-square-o fa-stack-2x"></i>
+					  <i class="fa fa-refresh fa-stack-1x"></i>
+					</span>
+					<button ng-click="localconnect()" class="btn btn-lg btn-primary"><i class="glyphicon glyphicon glyphicon-download-alt"></i> Connect and Sync</button>
+				</div>
+			</div>
+    </accordion-group>
+  </accordion>
+
+  <script type="text/ng-template" id="winapp">
+      <ol><li>Download Zip File</li><li>Install .NET 4.5</li><li>Run Application (Windows may ask to open a port - allow this)</li></ol>
+    </script>
+
+    <script type="text/ng-template" id="macapp">
+      <ol><li>Download Zip File</li><li>Follow Instructions to Install Mono MDK</li><li>Run Application (please note it may take a long time for a window to appear on first run. Close the app and try again if no window appears.</li></ol>
+    </script>
+
+    <script type="text/ng-template" id="linuxapp">
+      <ol><li>Download Zip File</li><li>Install mono-complete<br><pre>sudo apt-get install mono-complete</pre></li><li>Run Application<br><pre>mono SyncTray.exe</pre></li></ol>
+    </script>
 
 <script>
-function doit()
-{
-	io.socket.post('/post/downloadall/<%- event.id %>',{from:$('#from').val(),to:$('#to').val()},function(data)
-	{
-		//$('#ok').text(data.ok);
-		//$('#transbtn').attr('disabled','disabled');
-		$('#cancelbtn').show();
-		$('#transbtn').hide();
-		//$('#fail').text(data.missing);
-	});
-}
-
-function cancel()
-{
-	io.socket.get('/post/canceldownload/',function(data)
-	{
-		//$('#transbtn').attr('disabled','disabled');
-		$('#cancelbtn').hide();
-		$('#transbtn').show();
-	});
-}
-
-function getprogress()
-{
-	io.socket.get('/post/downloadprogress/',function(data)
-	{
-		//console.log(data);
-		if (data.msg)
-		{
-			$('.progresstext').text(data.msg);
-			///$('#progresstext').css('width','100%');
-			$('.dial').val(0).trigger('change');
-			$('#cancelbtn').hide();
-			$('#transbtn').show();
-		}
-		else
-		{
-			//console.log(data);
-			$('.progresstext').text(data.status);
-			$('.dial').val(data.value).trigger('change');
-			$('#cancelbtn').show();
-			$('#transbtn').hide();
-			if (data.value == 100)
-			{
-				//finished!! -- do something???
-				$('#done').show();
-				//$('#cancelbtn').hide();
-				//$('#transbtn').show();
-			}
-		}
-	});
-}
-
-var codestemplate;
-var coveragetemplate;
-$(function(){
-
-io.socket.on('connect',function()
-	{
-
-		setInterval(getprogress,1000);
-
-		io.socket.get('/post/getnumbers/<%- event.id %>',function(data)
-		{
-			$('#ok').text(data.ok);
-			$('#fail').text(data.missing);
-			$('#crew').text(data.crew);
-			$('#mins').html(data.mins + 'min<br><span class="text-muted small">' + Math.round(data.filesize/1024) + "MB</span>");
-			$('#missingfrom').text(data.missingfrom);
-		});
-
-	});
-
-
-var nowTemp = new Date();
-var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
- 
-var checkin = $('#from').datepicker({
-  onRender: function(date) {
-    return date.valueOf() < now.valueOf() ? 'disabled' : '';
-  }
-}).on('changeDate', function(ev) {
-  if (ev.date.valueOf() > checkout.date.valueOf()) {
-    var newDate = new Date(ev.date)
-    newDate.setDate(newDate.getDate() + 1);
-    checkout.setValue(newDate);
-  }
-  checkin.hide();
-  $('#to')[0].focus();
-}).data('datepicker');
-var checkout = $('#to').datepicker({
-  onRender: function(date) {
-    return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
-  }
-}).on('changeDate', function(ev) {
-  checkout.hide();
-}).data('datepicker');
-});
-
-
-
+// var codestemplate;
+// var coveragetemplate;
+// $(function(){
+// 	$('#accordion').collapse({
+// 	  toggle: false
+// 	})
+// });
 </script>
 <script>
     $(function() {
         $(".dial").knob();
     });
+
+    var sessionkey = "<%-sessionkey%>";
 </script>
-	

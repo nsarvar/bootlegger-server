@@ -8,7 +8,7 @@ module.exports = function (req, res, ok) {
   //THIS DOES NOT SEEM TO WORK FOR WEBSOCKET CONNECTIONS
 
   //console.log(req.session.passport.user);
-  if (req.session.passport && req.session.passport.user && req.session.passport.user.profile.emails[0].value == sails.config.admin_email) {
+  if (req.session.passport && req.session.passport.user && _.contains(sails.config.admin_email,req.session.passport.user.profile.emails[0].value)) {
     //console.log("logging in");
     return ok();
   }

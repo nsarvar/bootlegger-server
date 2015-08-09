@@ -1,0 +1,540 @@
+
+<script>
+  var editing = true;
+  </script>
+
+<style>
+.status_ready
+{
+  background:#5CB85C;
+}
+
+.status_signedout
+{
+  background:silver;
+}
+
+.status_recording
+{
+  background:#D9534F;
+}
+
+.rec_ready
+{
+  display: none;
+}
+
+.rec_recording
+{
+  display: inline-block;
+}
+
+.rec_signedout
+{
+  display: none;
+}
+
+.angular-google-map-container { height: 500px; }
+
+.circle
+{
+  background:#5cb85c;
+  display:block;
+  width:50px;
+  height: 50px;
+  border-radius: 25px;
+  text-align:center;
+  font-size:18pt;
+  color:white;
+  position:relative;
+  display:inline-block;
+  margin:3px;
+  padding-top:8px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+
+.circle span
+{
+  position:absolute;
+  margin-top:42px;
+  color:#5cb85c;
+  font-size:8pt;
+  text-align: center;
+  left:0;
+  width:50px;
+  text-transform: uppercase;
+}
+
+.captured_at::before
+{
+  content: "\f017";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.displayName::before
+{
+  content: "\f007";
+  font-family:'FontAwesome';
+  margin-right:3px;
+
+}
+.gps::before
+{
+  content: "\f041";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.nicepath::before
+{
+
+   content: "\f1c8";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.clip_length::before
+{
+
+   content: "\f07e";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.meta{
+  display:block;
+  color:#999999;
+}
+
+.filesize::before
+{
+
+  content: "\f016";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.coverage::before
+{
+  content: "\f02c";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+.coverage::before
+{
+  content: "\f0c9";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+.phase::before
+{
+  content: "\f0cb";
+  font-family:'FontAwesome';
+  margin-right:3px;
+
+}
+.role::before
+{
+  content: "\f140";
+  font-family:'FontAwesome';
+  margin-right:3px;
+
+}
+
+.zoom::before
+{
+
+ content: "\f00e";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.shot::before
+{
+
+ content: "\f0c0";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+
+.shot_meta::before
+{
+
+ content: "\f02b";
+  font-family:'FontAwesome';
+  margin-right:3px;
+}
+.panel-small
+{
+  padding:0;
+}
+
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+}
+
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+  opacity:0;
+}
+
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+.highlighted
+{
+  border:5px red solid !important;
+}
+
+.user
+{
+  cursor: pointer;
+  margin-right:5px;
+  margin-bottom:5px;
+  border:1px transparent solid;
+}
+
+.mediaitem
+{
+  position:relative;
+}
+
+.allmeta
+{
+  /*box-shadow: 0 0 5px rgba(0,0,0,0.5);*/
+  overflow-y:hidden;
+  overflow-x:hidden;
+  height:120px;
+  padding:3px;
+}
+
+.mediaitem:hover .allmeta
+{
+  background: white;
+  overflow-y:visible !important;
+  height:inherit;
+  position:absolute;
+  z-index:2;
+  right:0;
+  top:0;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+video
+{
+  width:100%;
+  height:100%;
+  margin-bottom:-6px;
+}
+
+.pagination{
+  magin:0;
+}
+
+
+.time_text span
+{
+  opacity: 0.5;
+  color:white;
+  display:block;
+  text-align: center;
+  margin-top:4px;
+  overflow:hidden;
+}
+
+large_tile
+{
+  position:relative;
+  width:250px;
+  height:60px;
+  overflow:hidden;
+  display:inline-block;
+  float:left;
+}
+
+@keyframes blink { 
+   50% { border-color: transparent; } 
+}
+
+.flash
+{
+  animation: blink .2s step-end infinite alternate;
+}
+
+</style>
+<div ng-app="liveApp" ng-controller="Live" ng-init="start(true)" ng-cloak>
+<!--<div class="page-header">
+  <h1 style="display:inline-block">Live Edit <small>Vision Mixer</small>  </h1> <i ng-show="loading" class="fa fa-spinner fa-spin"></i>
+</div>-->
+
+<!-- <div style="position:absolute;width:100%;height:100%;z-index:100;background:rgba(255,255,255,0.6);" class="text-center" ng-show="loading">
+  <i class="fa fa-spinner fa-4x fa-spin" style="margin-top:20%;"></i>
+</div> -->
+
+<div class="modal fade"  data-show="true" id="playAll" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="margin:auto auto;margin-top:10%;width:46%;">
+    <div class="modal-content" style="text-align:center;height:100%;width:100%;">
+      <div class="modal-body" id="videomodal" style="padding:0;">
+          <videogular vg-player-ready="onPlayerReady($API)" vg-native-controls="true">
+                <vg-media vg-src="sources">
+                </vg-media>
+          </videogular>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--LARGE TILES LIKE A 'LIVE' MONITOR-->
+
+<div class="row">
+  
+  <div style="" class="col-xs-4 ">
+    
+    <div class="alert alert-info">
+      Use the number keys or click on a <strong>live</strong> contributor to add their current shot to the mix. You will see real-time shot allocations and status of the crew, and a thumbnail of the last shot they recorded. We will auto mix to the next live person if none is selected.
+      
+    </div>
+    <div class="col-xs-4 text-center ">
+    <div style="display:inline-block;width:50px;height:50px;background:url(/static/images/key.jpg) no-repeat;background-size:contain;text-align:left;padding-left:10px;padding-top:10px;font-weight:bold;">
+    1
+    </div><br>
+    <span class="text-muted"><small>Camera 1</small></span>
+    </div>
+        <div class="col-xs-4 text-center ">
+    <div style="display:inline-block;width:50px;height:50px;background:url(/static/images/key.jpg) no-repeat;background-size:contain;text-align:left;padding-left:10px;padding-top:10px;font-weight:bold;">
+    2
+    </div><br>
+    <span class="text-muted"><small>Camera 2</small></span>
+    </div>
+        <div class="col-xs-4 text-center ">
+    <div style="display:inline-block;width:50px;height:50px;background:url(/static/images/key.jpg) no-repeat;background-size:contain;text-align:left;padding-left:10px;padding-top:10px;font-weight:bold;">
+    n
+    </div><br>
+    <span class="text-muted"><small>Camera n</small></span>
+    </div>
+  </div>
+  <div style="position:relative;padding:0px;min-height:200px;background:#333;" class="col-xs-4">
+            <div style="width:100%;height:100%;">
+              <img style="width:100%;" ng-src="{{shotMapLarge(currentlive.user)}}"/>
+            </div>
+            <div style="position:absolute;left:5px;top:0;color:limegreen;font-size:30pt;">
+             Program Out
+             </div>
+  </div>
+  </div>
+
+
+<div class="row">
+
+      <div style="position:relative;padding:0px;margin:0;" class="col-xs-4 user animate-repeat {{'status_'+user.status}}"  ng-click="makeLive(user);log('makelive',{user:user.id});" ng-repeat="user in users | orderBy:'id' track by user.id" >
+            <div ng-show="user.id==currentlive.user.id" ng-class="{'flash':(calcTime(user) - user.warning - user.live) >20}" style="border: red 5px solid;position:absolute;width:100%;height:100%;">
+              
+            </div>
+            <div style="background:#333;width:100%;height:100%;">
+              <img style="width:100%;" ng-src="{{shotMapLarge(user)}}"/>
+            </div>
+            
+            <div style="position:absolute;left:0px;bottom:0px;width:100px;">
+              <span style="position:absolute;top:0;color:white;left:3px;">Previous Shot</span>
+              <img style="height:100px;" ng-src="{{latestshot(user).thumb}}"/>
+            </div>
+            
+            <span  style="position:absolute;right:0px;top:0;font-size:20pt;" class="badge" >{{user.status}}</span>
+            
+            <div style="position:absolute;left:0px;top:60px;color:white;font-size:20pt;">
+              {{coverageMap(user.coverage_class)}} of {{user.meta}}
+            </div>
+            
+            
+            <div style="position:absolute;right:0;bottom:0;">
+              <knob knob-options="{readOnly :true,width:80,height:80,max:user.length}" knob-data="(calcTime(user) - user.warning - user.live)"></knob>
+            </div>
+            
+            <div style="position:absolute;left:5px;top:0;color:limegreen;font-size:30pt;">
+             Cam {{$index+1}}
+             </div>
+             
+            <div style="position:absolute;left:5px;top:40px;color:red;">
+              <span style="white-space: nowrap;text-overflow: ellipsis;overflow:hidden;display:inline-block;vertical-align:middle;">{{user.name}}</span>
+             </div>
+        </div>
+
+      <div ng-show="ucount==0" class="text-muted" class="col-sm-12">
+        No Crew Signed In
+      </div>
+
+</div>
+<h2>Current Edit</h2>
+<div class="row" style="overflow:hidden">
+  <div style="width:{{editlist.length*600}}px;text-align:right;scrollRight:{{editlist.length*600}}px;float:right;">
+    <div ng-repeat="edit in editlist" style="position:relative;overflow:hidden;width:{{edit.length/50}}px;background:silver;margin-right:3px;height:60px;display:inline-block;">
+      <div ng-show="edit.media.thumb" style="position:absolute;background-size:auto 60px;background-image:url({{edit.media.thumb}});background-repeat:repeat-x;width:100%;height:100%;"></div>
+    </div>
+  </div>
+</div>
+
+<h2>Crew Status <small>{{ucount}} live</small></h2>
+
+  <div class="col-sm-12" id="timeline">
+    <div class="row">
+      <div class="col-sm-2" >
+
+        <div ng-class="{'highlighted':user.id==mapfilter.created_by}" ng-click="setUser(user.id);log('filteruser',{user:user.id});" class="user animate-repeat {{'status_'+user.status}}" ng-repeat="user in users" style="position:relative;width:100%;height:30px;overflow:hidden;display:inline-block;float:left;" >
+            <div style="padding:5px;margin-left:5px;">
+              <span style="white-space: nowrap;text-overflow: ellipsis;overflow:hidden;width:100px;display:inline-block;vertical-align:middle;">{{user.name}}</span>
+             </div>
+        </div>
+
+          <div ng-show="ucount==0" class="text-muted" class="col-sm-12">
+            No Crew Signed In
+          </div>
+
+      </div>
+      <div class="col-sm-10" style="border:1px solid #eee;overflow:auto;">
+      <div class="cursor">&nbsp;</div>
+        <div id="mover" ng-style="{'margin-left':-((pixsecs*timer) - 300)}">
+
+          <div class="row" ng-repeat="user in users">
+            <div class="mainrows" ng-style="{width: ((user.offset + user.warning + user.live + user.length)*2*pixsecs)}">
+              <div class="indicator" ng-style="{ 'margin-left': user.offset*pixsecs }">
+
+                <div class="warning time_text" ng-style="{ 'width': user.warning*pixsecs }"><span>allocating</span></div>
+                <div class="live time_text" ng-style="{ 'width': user.live*pixsecs }"><span>countdown</span></div>
+                <div class="shooting time_text" ng-style="{ 'width': user.length*pixsecs }"><span>live</span></div>
+              </div>
+              <div class="allocation_offset"></div>
+              <div class="indicator">
+                <div class="warning time_text" ng-style="{ 'width': user.warning*pixsecs }"><span>allocating</span></div>
+                <div class="live time_text" ng-style="{ 'width': user.live*pixsecs }"><span>countdown</span></div>
+                <div class="shooting time_text" ng-style="{ 'width': user.length*pixsecs }"><span>live</span></div>
+              </div>
+            </div>
+          </div>
+
+            <div ng-show="ucount==0" class="col-sm-12">
+              No Users Signed In
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+<div class="clearfix"></div>
+</div>
+<!-- end of scope -->
+
+
+<style>
+#timeline .col-sm-12
+{
+  height:30px;
+}
+
+#timeline .col-sm-12.nametag
+{
+  background:#eee;
+  height:30px;
+  border-bottom:1px solid #bbb;
+}
+
+.mainrows
+{
+  height:32px;
+}
+
+#mover
+{
+  background:url(/images/timeline_b.png) repeat;
+  border-left: 1px solid #eee;
+  transition: margin-left 1s;
+  transition-timing-function: linear;
+  /*transition: margin-left 1s linear;*/
+}
+
+.indicator
+{
+margin-top:3px;
+height:30px;
+float:left;
+}
+
+.warning
+{
+  background: orange;
+  height: 100%;
+  float:left;
+}
+
+.live
+{
+  background: red;
+  height: 100%;
+  float:left;
+}
+
+.cursor
+{
+  margin-left:300px;
+  width: 2px;
+  background: black;
+  height: 100%;
+  position: absolute;
+  z-index: 20;
+}
+
+.shooting
+{
+  float:left;
+  background: green;
+  height: 100%;
+}
+
+.allocation_offset
+{
+  float:left;
+  background:silver;
+  margin-top:3px;
+  height:30px;
+}
+
+</style>
+
+<script>
+
+function changemetaphase(phaseid)
+{
+  io.socket.post('/event/changephase/<%= event.id%>',{phase:phaseid}, function(response){
+    location.reload();
+  });
+}
+
+function startshoot()
+{
+  io.socket.post('/event/started/',{eventid:'<%= event.id%>'}, function(response){
+    showok('shoot started',$('#startedbox'));
+  });
+}
+
+function pause()
+{
+  io.socket.post('/event/pause/',{eventid:'<%= event.id%>'}, function(response){
+    showok('shoot paused',$('#startedbox'));
+  });
+}
+
+$(function(){
+    $('.container').addClass('container-fluid').removeClass('container');
+});
+</script>

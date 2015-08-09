@@ -25,16 +25,19 @@
 		<label>Title Generator</label>
 	</div>
 <div class="col-sm-6">
-	<a class="btn btn-lg btn-primary" href="/post/module_function/titles?func=getedl&event=<%-event %>">Download Titles (zip)</a>
+<p>If you want to credit contributors, you can download the full list of people:</p>
+	<a class="btn btn-primary" href="/post/module_function/titles?func=getedl&event=<%-event %>&apikey=<%-apikey %>"><i class="fa fa-download"></i> Download Titles</a>
 </div>
 
-	<div class="col-sm-4">
-		<div class="popover" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
-		    <div class="arrow"></div>
-		    <h3 class="popover-title"><%- name %></h3>
-		    <div class="popover-content">
-		      <p><%- description %></p>
-		    </div>
+
+		<div class="col-sm-4" id="desc">
+			<div class="" style="margin-right: -40px;margin-left:20px;margin-top: -10px;margin-bottom: -13px;display:inline-block;right:25px;left:inherit;position:relative;float:right;">
+			    <div class="arrow"></div>
+			    <h3 class="popover-title"><%- name %></h3>
+			    <div class="popover-content">
+			      <p><%- description %></p>
+			    </div>
+			</div>
 		</div>
-	</div>
+
 </div>

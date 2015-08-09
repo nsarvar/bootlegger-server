@@ -5,7 +5,8 @@
  * @description :: A short summary of how this model works and what it represents.
  *
  */
-
+var os = require("os");
+var uuid = require('node-uuid');
 module.exports = {
 
   attributes: {
@@ -14,21 +15,49 @@ module.exports = {
 
   logmore:function(module,o)
   {
-  	sails.winston['info'](module,o);
+    meta = {module:module};
+  	sails.winston['info'](module + ':' + o.msg,_.merge(meta,o));
+    Log.publishCreate({id:uuid.v4(),message:module + ':' + o.msg,timestamp:new Date(),level:'info',meta:_.merge(meta,o),hostname:os.hostname()});
   },
-
-  //Log.logmore('marathondirector',{msg:'User signin',userid:user,eventid:event});
 
   log:function(msg)
 	{
 		sails.winston['info'](msg);
+    Log.publishCreate({id:uuid.v4(),message:msg,timestamp:new Date(),level:'info',hostname:os.hostname()});
 	},
 
   logModel:function(model,o)
 	{
-		sails.winston['info'](model,o);
-	}
+    meta = {module:model};
+		sails.winston['verbose'](model + ' Create',_.merge(meta,o));
+    Log.publishCreate({id:uuid.v4(),message:model + ' Create',timestamp:new Date(),level:'info',meta:_.merge(meta,o),hostname:os.hostname()});
+	},
 
+  error:function(module,message,meta)
+  {
+    if (!meta)
+      meta = {};
+    meta.module = module;
+    sails.winston['error'](message,meta);
+    Log.publishCreate({id:uuid.v4(),message:message,timestamp:new Date(),level:'error',meta:meta,hostname:os.hostname()});
+  },
 
+  info:function(module,message,meta)
+  {
+    if (!meta)
+      meta = {};
+    meta.module = module;
+    sails.winston['info'](message,meta);
+    Log.publishCreate({id:uuid.v4(),message:message,timestamp:new Date(),level:'info',meta:meta,hostname:os.hostname()});
+  },
 
+  verbose:function(module,message,meta)
+  {
+    //console.log(message);
+    if (!meta)
+      meta = {};
+    meta.module = module;
+    sails.winston.log('verbose',message,meta);
+    Log.publishCreate({id:uuid.v4(),message:message,timestamp:new Date(),level:'verbose',meta:meta,hostname:os.hostname()});
+  }
 };

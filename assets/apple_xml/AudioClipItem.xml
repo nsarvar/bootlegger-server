@@ -1,0 +1,33 @@
+<clipitem id="audio-%%audioid%%" frameBlend="FALSE" PannerCurrentValue="0.5" PannerKeyframes="" PannerStartKeyframe="-91445760000000000,0.5,0,0,0,0,0,0" PannerIsInverted="true" PannerName="Balance">
+						<masterclipid>masterclip-%%id%%</masterclipid>
+						<name>%%name%%</name>
+						<enabled>TRUE</enabled>
+						<duration>%%duration%%</duration>
+						<rate>
+							<timebase>29.9</timebase>
+							<ntsc>TRUE</ntsc>
+						</rate>
+						<start>%%start%%</start>
+						<end>%%end%%</end>
+						<in>%%inpoint%%</in>
+						<out>%%outpoint%%</out>
+						<file id="file-%%id%%" />
+						<sourcetrack>
+							<mediatype>audio</mediatype>
+							<trackindex>1</trackindex>
+						</sourcetrack>
+						<link>
+							<linkclipref>clipitem-%%id%%</linkclipref>
+							<mediatype>video</mediatype>
+							<clipindex>1</clipindex>
+							<groupindex>1</groupindex>
+							<trackindex>%%trackindex%%</trackindex>
+						</link>
+						<link>
+							<linkclipref>audio-%%audioid%%</linkclipref>
+							<mediatype>audio</mediatype>
+							<clipindex>1</clipindex>
+							<groupindex>1</groupindex>
+							<trackindex>%%trackindex%%</trackindex>
+						</link>
+					</clipitem>

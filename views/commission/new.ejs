@@ -2,54 +2,113 @@
 .carousel .item {
   background: none;
 }
+
+.searchable
+{
+  overflow: scroll;overflow-x: hidden;height:80%;
+}
+
+.infobox
+{
+  margin-right:10px;
+  float:right;
+  display:block;
+  margin-top:3px;
+  text-align:right;
+}
+
+.gobtn
+{
+  width:100%;
+  height:84px;
+  padding-top:30px;
+}
+
+@media (max-width:785px)
+{
+  .searchable
+  {
+    overflow-y:hidden;
+    overflow-x: hidden;
+    height:auto;
+  }
+
+  .gobtn
+  {
+    width:100%;
+    height:84px;
+
+  }
+
+  .sp{
+    display:none;
+  }
+
+  .infobox
+  {
+    margin-right:0;
+    float:right;
+    display:inline-block;
+    margin-top:0;
+    text-align:right;
+  }
+
+  .carousel .item {
+    height:inherit;
+  }
+}
 </style>
-<% if (myevents.length > 0) { %>
-<div class="panel panel-default" style="padding:10px;">
-  You have recently contributed to film shoots. View footage here for   
-<% _.each(myevents,function(e){ %>
-<a href="/watch/<%- e.id %>"><%- e.name %></a>, 
-<%});%>
+
+<% if(firstlogin){  %>
+<div class="jumbotron text-center">
+<h1>Welcome to Bootlegger</h1>
+<h2 class="alert-info" style="background:none;">Interested in contributing to a film shoot? <br>Just download the mobile app.
+</h2>
+<a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger"><img src="/static/images/abadge.png"/></a>
+
+<h2>Or, if you are looking at commissioning, start your first shoot right away...</h2>
 </div>
 <% } %>
 
 <h1 >Bootlegger film shoots start with a template <br><small>Choose an existing one or create your own from one of ours</small></h1>
-<form class="form-horizontal" role="form" method="post" action="/event/addevent">
+<form class="form-horizontal" role="form" method="post" action="/event/addevent?apikey=<%- apikey %>">
 <input type="hidden" name="eventtype" value="-1" id="evtyp" />
 <div id="carousel-example-generic" data-interval="false" class="carousel slide" style="margin-bottom:0;" data-ride="carousel">
   <!-- Wrapper for slides -->
   <div class="carousel-inner" role="listbox">
+
     <div class="item active">
       <!-- <div class="well"> -->
 <div class="list-group-item search"><input id="filter" type="text" class="form-control input-lg" placeholder="Search Templates..."></div>
-<ul class="list-group searchable" id="searchlist" style="overflow: scroll;overflow-x: hidden;height:80%;border-bottom:#ddd 1px solid;">
+<ul class="list-group searchable" id="searchlist" style="border-bottom:#ddd 1px solid;">
 
 <% for (i=0;i<types.length;i++){ %>
-    <li class="list-group-item" style="min-height:86px;">
+    <li class="list-group-item" style="min-height:86px;max-height:86px;">
 
    <!--  <input type="radio" name="eventtype" id="eventtype<%= i %>" value="<%= types[i].id %>" class="myradio" style="margin-right:15px;height:60px;display:block;" checked/> -->
 
 <div class="pull-right right" style="margin-top:-10px;margin-right:-15px;">
-<a href="#carousel-example-generic" role="button" onclick="go('<%= types[i].id %>');" style="width:100%;height:84px;padding-top:30px;" class=" btn btn-lg btn-primary">
-    Setup My Shoot <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+<a href="#carousel-example-generic" role="button" onclick="go('<%= types[i].id %>');" class=" btn btn-lg btn-primary gobtn">
+    <span class="sp">Setup My Shoot</span> <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
 </a>
 </div>
 
 
-<div style="margin-right:10px;float:right;display:block;margin-top:3px;text-align:right;">
-    <% if (!types[i].user_id && !types[i].original){ %>
-    <i class="badge" style="border:silver 1px solid;border-radius:3px;color:silver;padding:2px;background:none;font-weight:normal;"><i class="fa fa-users"></i> Community Contribution</i>
+<div class="infobox">
+    <% if (types[i].community){ %>
+    <i class="badge" style="border:silver 1px solid;border-radius:3px;color:silver;padding:2px;background:none;font-weight:normal;"><i class="fa fa-users"></i> <span class="sp">Community Contribution</span></i>
     <% } else if (types[i].user_id) { %>
     <!-- <a style="float:right;" href="/commissioning/edit/<%- types[i].id %>">edit this template</a> -->
-    <i class="label label-success" ><i class="fa fa-users"></i> Created by Me</i>
+    <i class="label label-success" ><i class="fa fa-users"></i> <span class="sp">Created by Me</span></i>
     <% } %>
     <br>
     <% if (types[i].updatedAt) { %>
-     <div class="text-muted" style="float:right;"><%= moment(types[i].updatedAt).format('MMMM Do YYYY') %></div>
+     <div class="text-muted" style="float:right;"><span class="sp"><%= moment(types[i].updatedAt).format('MMMM Do YYYY') %></span></div>
      <% } %>
 </div>
 
 <h4 class="list-group-item-heading"><b><%= types[i].name %></b></h4>
-<%= types[i].description %>
+<p style="max-height:44px;overflow:hidden;"><%= types[i].description %></p>
 
     </li>
   <% }; %>
@@ -80,82 +139,112 @@
       <div class="form-group">
           <label for="inputEmail3" class="col-sm-2 control-label">Shoot Name</label>
           <div class="col-sm-10">
-            <input type="text" name="name" class="form-control input-lg" id="inputEmail3" placeholder="name">
+            <input type="text" name="name" class="form-control input-lg" id="inputEmail3" placeholder="name" required pattern=".{5,}"  title="Name more than 5 characters long">
           </div>
         </div>
 
   <div class="form-group">
     <label for="inputEmail2" class="col-sm-2 control-label">Shoot Starts on</label>
     <div class="col-sm-3">
-      <div class="input-group input-group-lg" id="dp3" >
-            <input name="starts" class="col-sm-2 form-control datepicker" size="16" type="text" data-date-format="dd-mm-yyyy">
+      <div class="input-group input-group-lg col-xs-12" id="dp3" >
+            <input name="starts" class="col-sm-2 form-control datepicker" style="background:white;" size="16" type="text" data-date-format="dd-mm-yyyy" readonly required>
            <!--  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
           </div>
 
     </div>
 
     <div class="col-sm-1" style="width:50px;">
-      <h2 style="margin:0;padding:0;"> at </h2>
+      <label class="control-label"> at </label>
     </div>
     <div class="col-sm-2">
-          <input name="starts_time" class="input-lg col-sm-2 form-control" size="5" type="text" value="8pm">
-        </div>    
+          <input name="starts_time" class="input-lg col-sm-2 form-control" size="5" type="text" value="8pm" placeholder="hh(am|pm)"   required pattern="\d{1,2}([apAP][mM]){1}">
+        </div>
 </div>
 
 
   <div class="form-group">
     <label for="inputEmail4" class="col-sm-2 control-label">Shoot Finishes on</label>
     <div class="col-sm-3">
-      <div class="input-group input-group-lg" id="dp4">
-            <input name="ends" class="col-sm-2 form-control datepicker" size="16" type="text" data-date-format="dd-mm-yyyy">
+      <div class="input-group input-group-lg col-xs-12" id="dp4">
+            <input name="ends" class="col-sm-2 form-control datepicker" size="16" style="background:white;" type="text" data-date-format="dd-mm-yyyy" readonly required>
             <!-- <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
           </div>
     </div>
     <div class="col-sm-1" style="width:50px;">
-      <h2 style="margin:0;padding:0;"> at </h2>
+      <label class="control-label"> at </label>
     </div>
     <div class="col-sm-2">
-          <input name="ends_time" class="input-lg col-sm-2 form-control" size="5" type="text" value="11pm">
+          <input name="ends_time" class="input-lg col-sm-2 form-control" size="5" type="text" placeholder="hh(am|pm)" value="11pm" required pattern="\d{1,2}([apAP][mM]){1}">
         </div>
   </div>
 
-<a href="#carousel-example-generic" role="button" onclick="$('#carousel-example-generic').carousel(0);">
-    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Select Another Template
-  </a>
-
-<div class="pull-right">
-  <a class="btn btn-info btn-lg" href="/commissioning/create/" id="adjust"> Adjust this Template First <i class="fa fa-cog"></i></a>
-
-  <button type="submit" class="btn btn-success btn-lg">Start this Shoot <i class="fa fa-chevron-right"></i></button>
+<div class="row">
+  <div class="col-xs-12 col-sm-offset-2">
+  <label><input type="checkbox" name="agree" required/> I agree to the <a href="/terms">Terms and Conditions</a> of using Bootlegger.</label>
 </div>
+</div>
+<div class="row">&nbsp;</div>
 
-      <div class="panel" style="margin-top:20px;">
-        <h2 class="text-muted">You will be asked for shots such as</h2>
-        <div id="exampleshots"></div>
-      </div>
 
-    </div>
+  <div class="row hidden-xs">
+     <a href="#carousel-example-generic" class="btn btn-link btn-lg" role="button" onclick="$('#carousel-example-generic').carousel(0);">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Select Another Template
+    </a>
+
+    <div class="pull-right">
+      <button type="submit" class="btn btn-info btn-lg " name="adjust" value="1">Adjust this Template First <i class="fa fa-cog"></i></button>
+      <!-- <a class="btn btn-info btn-lg" href="/commissioning/create/" id="adjust"> Adjust this Template First <i class="fa fa-cog"></i></a> -->
     
+      <button type="submit" class="btn btn-success btn-lg ">Start this Shoot <i class="fa fa-chevron-right"></i></button>
+    </div>
+  </div>
+  
+   <div class="row visible-xs-block">
+     <a href="#carousel-example-generic" class="btn btn-link btn-lg" role="button" onclick="$('#carousel-example-generic').carousel(0);">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Select Another Template
+    </a>
+
+    <div class="row">
+      <button type="submit" class="btn btn-info btn-lg col-xs-6" name="adjust" value="1">Adjust <i class="fa fa-cog"></i></button>
+      <!-- <a class="btn btn-info btn-lg" href="/commissioning/create/" id="adjust"> Adjust this Template First <i class="fa fa-cog"></i></a> -->
+    
+      <button type="submit" class="btn btn-success btn-lg col-xs-6" >Start <i class="fa fa-chevron-right"></i></button>
+      </div>
+      <div class="clearfix"></div>
   </div>
 
-  <!-- Controls -->
-  
-</div> 
+      <div class="panel hidden-xs" style="margin-top:40px;display:block;width:100%;clear:both;">
+        <div id="exampleshots"></div>
+      </div>
+    
+    </div>
+</div>
 
-<!-- 
+  <!-- Controls -->
+
+</div>
+</div>
+<!--
 </div> -->
 </form>
 
+
+
 <script id="shots-template" type="text/x-handlebars-template">
+  <div class="text-center">
 {{#each this}}
-   <img src="/data/icons/{{icon}}" />
+   <img src="/data/icons/{{icon}}" style="width:120px;" class="panel panel-default" />
 {{/each}}
+<div class="clearfix"></div>
+</div>
 </script>
 <script>
 var shotstemplate;
 $(function(){
   var source = $("#shots-template").html();
   shotstemplate = Handlebars.compile(source);
+  // if (typeof(flashmsg) != 'undefined')
+  //   go();
 });
 
 function go(ev)
@@ -165,7 +254,7 @@ function go(ev)
   $('#adjust').attr('href','/commissioning/create/'+ev);
   io.socket.get('/commission/example/'+ev,function(result)
   {
-    console.log(result);
+    //console.log(result);
     $('#exampleshots').html(shotstemplate(result));
   });
 }

@@ -1,0 +1,141 @@
+/* Frontpage CSS */
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    padding-top: 0px;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    border-radius:3px;
+}
+::-webkit-scrollbar-track {
+    background-color: #eaeaea;
+    /*border-left: 1px solid #ccc;*/
+}
+::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa;
+}
+
+/* Main Header */
+
+.main-header {
+    background-image: url('/images/black-50.png'), url('/images/background.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
+.footer-links a
+{
+    color:#777;
+    text-decoration: none;
+}
+
+.footer-links a:hover
+{
+    color:white;
+    text-decoration: none;
+}
+
+/* Hero Text */
+
+#hero-text {
+    padding: 160px 0 130px 0;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+
+    #hero-text {
+        padding: 200px 0;
+    }
+
+}
+
+#icon-logo {
+    height: 90px;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 1);
+}
+
+#tagline {
+    color: #fff;
+    font-size: 42px;
+    font-weight: 200;
+    letter-spacing: 1px;
+    margin: 30px 10px 20px 10px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+}
+
+.main-header p {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 200;
+    margin: 0px auto 50px auto;
+    max-width: 600px;
+}
+
+#app-download-button,.mylink {
+    border: #fff 1px solid;
+    border-radius: 50px;
+    color: #fff;
+    padding: 12px 25px;
+    -webkit-transition: all 200ms linear;
+    -moz-transition: all 200ms linear;
+    -o-transition: all 200ms linear;
+    -ms-transition: all 200ms linear;
+    transition: all 200ms linear;
+}
+
+#app-download-button:hover,.mylink:hover {
+    background-color: #fff;
+    color: #222;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* Highlights */
+
+#highlights {
+    padding: 40px 0;
+}
+
+#highlights img {
+    margin: 0 auto;
+    max-width: 160px;
+}
+
+.highlights-column {
+    padding: 20px 25px;
+    text-align: center;
+}
+
+/* Upcoming Shoots */
+#upcoming-shoots {
+    padding: 30px 10px;
+    text-align: center;
+}
+
+#upcoming-shoots .upcoming-shoot-column {
+    background-color: #f2f2f2;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+#upcoming-shoots .upcoming-shoot-column h4 {
+    color: #444;
+    font-size: 19px;
+}
+
+#upcoming-shoots .upcoming-shoot-column p {
+    color: #777;
+    font-size: 13px;
+}
