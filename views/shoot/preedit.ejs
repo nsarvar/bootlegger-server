@@ -31,7 +31,9 @@
   display: none;
 }
 
-.angular-google-map-container { height: 500px; }
+.angular-google-map-container { 
+  height: 320px;
+   }
 
 .circle
 {
@@ -207,9 +209,9 @@
 .allmeta
 {
   /*box-shadow: 0 0 5px rgba(0,0,0,0.5);*/
-  overflow-y:hidden;
+  /*overflow-y:hidden;*/
   overflow-x:hidden;
-  height:120px;
+  /*height:120px;*/
   padding:3px;
 }
 
@@ -257,7 +259,7 @@ video
   <div class="modal-dialog modal-lg" style="margin:auto auto;margin-top:10%;width:46%;">
     <div class="modal-content" style="text-align:center;height:100%;width:100%;">
       <div class="modal-body" id="videomodal" style="padding:0;">
-          <videogular vg-player-ready="onPlayerReady($API)" vg-native-controls="true">
+          <videogular vg-player-ready="onPlayerReady($API)" vg-native-controls="true" vg-loop="true">
                 <vg-media vg-src="sources">
                 </vg-media>
           </videogular>
@@ -266,16 +268,23 @@ video
   </div>
 </div>
 
-<div class="col-xs-6">
+<div class="col-xs-6" >
 
-    <div class="well" style="position:relative;">
+    <div class="well" style="height:490px;overflow-y:scroll;position:relative;">
+      <div class="row">
+      <input placeholder="search..." class="input input-sm form-control" ng-model="searchterm.$" />
+      
+      
   <button ng-click="clearFilters();log('clearfilter');" class="pull-right btn-link"><i class="fa fa-times"></i></button>  <label class="pull-right">Show only Uploaded <input ng-click="log('filteruploaded',{uploaded:hasvideo});"  type="checkbox" ng-model="hasvideo"/></label>
-  <br>
+  
+   
   <label class="pull-right">Show Tagged for Edit
     <input ng-click="log('filteredittagged',{uploaded:edit_tag});"  type="checkbox" ng-model="edit_tag" /></label>
+    
+    </div>
 
 <div class="row">
-  <input class="input input-sm form-control" ng-model="searchterm.$" />
+  
       <div class="col-xs-4">
               <strong class="col-xs-3 text-muted">Role</strong>
            <div >
@@ -326,7 +335,7 @@ video
         <div ui-slider="{range:true}"
           ng-click="log('filterlength',{min:lengthfilter[0],max:lengthfilter[1]});"
           min="0"
-          max="50"
+          max="1200"
           ng-model="lengthfilter"></div>
         </div>
       </div>
@@ -352,31 +361,33 @@ video
   <dir-pagination-controls></dir-pagination-controls>
 </div>
 
-<div style="height:440px;overflow-y:scroll">
-<div class="mediaitem col-sm-6" dir-paginate="m in filteredmedia = (media | filter:searchterm:false | hasVideoFilter:hasvideo | hasEditTag:edit_tag | rangeFilter:lengthfilter | timeFilter:{from:timefilterfrom, to:timefilterto} | checkFilter:{scope:this,name:'meta.role_ex.name', value:rolefilter} | checkFilter:{scope:this,name:'meta.shot_ex.name', value:shotfilter} | checkFilter:{scope:this,name:'meta.coverage_class_ex.name', value:coveragefilter} | areaFilter:{circle:circlefilter,filterbylocation:filterbylocation} | checkFilter:{scope:this,name:'meta.meta_phase.name', value:phasefilter} | filter:mapfilter) | itemsPerPage: 20" style="float:left;">
-      <div style="float:left;margin-bottom:10px;overflow:hidden" class="col-sm-6">
+<div style="height:370px;overflow-y:scroll">
+  <div style="display:inline-block;"  dir-paginate="m in (filteredmedia = (media | filter:searchterm:false | hasVideoFilter:hasvideo | hasEditTag:edit_tag | rangeFilter:lengthfilter | timeFilter:{from:timefilterfrom, to:timefilterto} | checkFilter:{scope:this,name:'meta.role_ex.name', value:rolefilter} | checkFilter:{scope:this,name:'meta.shot_ex.name', value:shotfilter} | checkFilter:{scope:this,name:'meta.coverage_class_ex.name', value:coveragefilter} | areaFilter:{circle:circlefilter,filterbylocation:filterbylocation} | checkFilter:{scope:this,name:'meta.meta_phase.name', value:phasefilter} | filter:mapfilter)) | itemsPerPage: 30">
+<div popover-trigger="mouseenter" ng-mouseup="playThis(m)" popover-animation="false" popover-append-to-body="true" popover-template=" 'winapp' " ng-mouseenter="currentm=m" data-drag="true" class="list-group-item" style="overflow:hidden;padding:0;height:60px;width:100px;" data-id="{{m.id}}" data-masterindex="{{$index}}" data-jqyoui-options="{revert: 'invalid', appendTo: 'body',helper:'clone'}"  jqyoui-draggable="{index: {{$index}}}"  class="mediaitem">
+      
+      <!--<div style="overflow:hidden" class="col-xs-12">-->
 
-        <a ng-show="m.path" href="#" ng-click="playThis(m)" style="position:relative;display:inline-block;" data-toggle="lightbox">
-          <img ng-show="m.thumb" style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
-          <div ng-hide="m.thumb" style="width:200px;height:120px;" ><div class="text-muted text-center"style="padding-top:20%;width:100%;height:100%;background:#f1f1f1">Thumbnail not uploaded
+        <a ng-show="m.path" href="#" style="position:relative;display:inline-block;" data-toggle="lightbox">
+          <img ng-show="m.thumb" style="width:100px;height:60px;" ng-src="{{m.thumb}}" />
+          <div ng-hide="m.thumb" style="width:100px;height:60px;" ><div class="text-muted text-center"style="padding-top:20%;width:100%;height:100%;background:#f1f1f1">Thumbnail not uploaded
           <span ng-show="m.deleted"><br>Deleted at {{m.deleted}}</span>
           </div>
 
-      </div>
-          <img src="/images/download.png" style="position:absolute;left:5px;bottom:5px;"/>
-          <a ng-show="m.path" href="{{m.originalpath}}" style="position:absolute;right:10px;top:5px;"><i class="fa fa-download"></i></a>
+          </div>
         </a>
-        <img ng-show="m.thumb && !m.path"  style="width:200px;height:120px;" ng-src="{{m.thumb}}" />
-      <div ng-hide="m.thumb || m.path" style="width:200px;height:120px;"><div class="text-muted text-center"style="padding-top:20%;width:100%;height:100%;background:#f1f1f1">Thumbnail not uploaded <span ng-show="m.deleted"><br>Deleted at {{m.deleted}}</span></div></div>
+        <img ng-show="m.thumb && !m.path"  style="width:100px;height:60px;" ng-src="{{m.thumb}}" />
+      <div ng-hide="m.thumb || m.path" style="width:100px;height:60px;"><div class="text-muted text-center"style="padding-top:20%;width:100%;height:100%;background:#f1f1f1">Thumbnail not uploaded <span ng-show="m.deleted"><br>Deleted at {{m.deleted}}</span></div></div>
         <i class="fa" ng-class="{'fa-video-camera':m.meta.static_meta.media_type=='VIDEO', 'fa-photo':m.meta.static_meta.media_type=='PHOTO', 'fa-audio':m.meta.static_meta.media_type=='AUDIO'}" style="position:absolute;right:8px;bottom:2px;"></i>
-        <div style="position:absolute;left:9px; top:-2px;">
-           <button tooltip="Include in Sync" class="btn btn-link" style="color:orange;text-decoration:none;" ng-click="tag(m,$event)"><i style="color:orange;" class="fa" ng-class="{'fa-flag':m.meta.static_meta.edit_tag, 'fa-flag-o':m.meta.static_meta.edit_tag==undefined}"></i></button>
+        <div style="position:absolute;left:0; top:0;">
+           <button style="padding:0;" tooltip="Include in Sync" class="btn btn-link" style="color:orange;text-decoration:none;" ng-click="tag(m,$event)"><i style="color:orange;" class="fa" ng-class="{'fa-flag':m.meta.static_meta.edit_tag, 'fa-flag-o':m.meta.static_meta.edit_tag==undefined}"></i></button>
          </div>
          <div style="position:absolute;left:30px; top:-2px;">
             <button ng-show="candelete" class="btn btn-link" style="color:red;text-decoration:none;" ng-click="removeclip(m,$event)"><i style="color:red;" class="fa fa-trash-o"></i></button>
           </div>
-      </div>
-      <div class="col-sm-6 allmeta">
+      <!--</div>-->
+      
+      
+      <!--<div class="allmeta">
           <span class="text-muted">
             <span class="displayName" ng-click="setUser(m.created_by);log('filteruser',{user:m.created_by});" style="cursor:pointer;">{{m.user.profile.displayName}}</span>
           </span>
@@ -387,9 +398,11 @@ video
           <span ng-repeat="(key, value) in m.meta"  ng-bind-html="format(key,value)">
 
           </span>
-      </div>
+      </div>-->
+    <!--</div>-->
     </div>
     <!-- </div> -->
+    </div>
     </div>
   </tab>
 
@@ -411,13 +424,53 @@ video
 
 <div class="clearfix"></div>
 
-<div class="row" style="overflow:hidden">
-  <div style="width:{{editlist.length*600}}px;text-align:right;scrollRight:{{editlist.length*600}}px;float:right;">
-    <div ng-repeat="edit in editlist" style="position:relative;overflow:hidden;width:{{edit.length/50}}px;background:silver;margin-right:3px;height:60px;display:inline-block;">
-      <div ng-show="edit.media.thumb" style="position:absolute;background-size:auto 60px;background-image:url({{edit.media.thumb}});background-repeat:repeat-x;width:100%;height:100%;"></div>
-    </div>
+<div class="alert alert-info">
+  Here you can group shots together in a rough representation of a timeline, which will be exported alongside a timestamped EDL. Drag clips from the box above onto the timeline.
   </div>
+  <div>
+  <div>
+    <div class="pull-left">
+      
+      <div style="width:200px;"
+        ui-slider="{range:false,step:0.1}"
+          ng-click="log('zoom_edit',{val:masterpix});"
+          min="2"
+          max="10"
+          ng-model="masterpix"></div>
+        </div>
+    </div>
+    
+<div ng-show="dirtyflag" class="pull-right text-muted"><i class="fa fa-spin fa-spinner"></i> These changes are currently being saved.</div>
+<div ng-hide="dirtyflag" class="pull-right text-muted">Last saved at {{lastsaved | date}}</div>
 </div>
+
+<div class="clearfix"></div>
+
+<div style="width:100%;overflow-x:scroll;position:relative;">
+ 
+  <div style="width:50000px">
+  <div  ng-repeat="track in tracks track by $index" data-index="{{$index}}" jqyoui-droppable="{onDrop:'dothisondrop'}" data-drop="true" ng-model="track.items" style="position:relative;border:1px solid silver;height:62px;width:100%;">
+    <div ng-mouseup="playThis(clip)" popover-animation="false" popover-trigger="mouseenter" ng-mouseenter="currentm=clip" popover-append-to-body="true" popover-template=" 'winapp' " ng-repeat="clip in track.items track by $index" data-media-id="{{clip.id}}" data-index="{{$index}}" data-track="{{tracks.indexOf(track)}}" jqyoui-draggable="{index: {{$index}},onDrag:'dothisondrag'}" data-jqyoui-options="{axis:'x'}" ng-style="{'left':clip.left+'px',width:(getClipLength(clip)*masterpix)+'px'}"   style="position:absolute;overflow:hidden;background:silver;margin-right:3px;height:60px;display:inline-block;cursor:pointer" data-drag="true"> <div ng-show="clip.thumb" style="position:absolute;background-size:auto 60px;background-image:url({{clip.thumb}});background-repeat:repeat-x;width:100%;height:100%;"></div></div>
+  </div>
+  </div>
+  <div ng-hide="fullyloaded" style="position:absolute;left:0;top:0;background:rgba(0,0,0,0.3);width:100%;height:100%;text-align:center;padding-top:100px;"><i style="color:white;" class="fa fa-spin fa-spinner fa-3x"></i></div>
+</div>
+
+<script type="text/ng-template" id="winapp">
+        <div class="allmeta">
+          <span class="text-muted">
+            <span class="displayName" ng-click="setUser(currentm.created_by);log('filteruser',{user:currentm.created_by});" style="cursor:pointer;">{{currentm.user.profile.displayName}}</span>
+          </span>
+
+          <span ng-repeat="(key, value) in currentm.meta.static_meta"  ng-bind-html="format(key,value)">
+
+          </span>
+          <span ng-repeat="(key, value) in currentm.meta"  ng-bind-html="format(key,value)">
+
+          </span>
+      </div>
+    </script>
+
 <div class="clearfix"></div>
 
 </div>

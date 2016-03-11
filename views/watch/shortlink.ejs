@@ -45,6 +45,7 @@
         <% if (typeof(edit) != 'undefined'){ %>
         <title><%- edit.title %></title>
         <meta property="og:title" content="<%- edit.title %>" />
+        <meta property="og:description" content="<%- edit.description %>" />
         <meta property="og:type" content="video.other" />
         <meta property="og:image" content="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>-00001.png" />
         <meta property="og:url" content="<%- sails.config.master_url %>/v/<%- edit.shortlink %>" />
@@ -60,13 +61,18 @@
         <meta name="twitter:player:width" content="854">
         <meta name="twitter:player:height" content="480">
         <meta name="twitter:player:stream" content="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>.mp4">
-        <meta name="twitter:player:stream:content_type" content="video/mp4">        
+        <meta name="twitter:player:stream:content_type" content="video/mp4">
+        <meta property="author" content="<%- edit.user.profile.displayName %>">
+        <% } else { %>
+        <title>This video cannot be shared</title>
+        <% } %>
+        
     </head>
+    <% if (typeof(edit) != 'undefined'){ %>
     <body style="height:100%;width:100%;overflow:hidden;background:#1f1f1f">
-
-        <% if (edit.path) { %>
+     <% if (edit.path) { %>
         <video controls autoplay >
-            <source src="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>.mp4"></source>
+            <source src="<%- sails.config.S3_TRANSCODE_URL + edit.shortlink %>.mp4" />
         </video>
         <% } else { %>
         <% if (edit.failed) { %>
@@ -76,9 +82,9 @@
         <% }} %>
         <h1 style="color:white;text-align:center;"><%- edit.title %><br><small><%- edit.description %></small></h1>
     </body>
-    <% } else {%>
-         <body style="height:100%;width:100%;overflow:hidden;background:#1f1f1f">
+    <% } else { %>
+    <body style="height:100%;width:100%;overflow:hidden;background:#1f1f1f">
         <h1 style="color:white;text-align:center;"> Micro-Edits from this shoot cannot be shared, sorry.</h1>
     </body>
-      <% } %>
+    <% } %>
 </html>

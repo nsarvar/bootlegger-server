@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * PostController
  *
  * @module		:: Controller
@@ -28,16 +33,16 @@ module.exports = {
 
     // This will render the view:
     // D:\Research\Research\bootlegging\server/views/post/controller.ejs
-    var lookupid = req.session.event || req.session.passport.user.currentevent;
+    //var lookupid = req.session.event;
       //console.log(lookupid);
 
       //if event is explicitally set in GET
-      if (req.params.id)
-      {
-        lookupid = req.params.id;
-      }
+      //if (req.params.id)
+      //{
+      var lookupid = req.params.id;
+      //}
 
-      req.session.event = lookupid;
+      //req.session.event = lookupid;
 
       var cookiesigned = require('cookie-signature');
       var signed = cookiesigned.sign(req.signedCookies['sails.sid'],req.secret);
@@ -55,7 +60,7 @@ module.exports = {
       }
       //console.log(event);
       event.calcphases();
-      res.view({event:event,sessionkey:sessionkey});
+      res.view({event:event,sessionkey:sessionkey,pagetitle:'Export'});
     });
   },
 
@@ -88,7 +93,7 @@ module.exports = {
           });
 
           req.session.flash = {msg:"Upload reminder sent!"};
-          res.redirect('/post');
+          res.redirect('/post/'+req.params.id);
         });
       });
     });
@@ -134,7 +139,7 @@ module.exports = {
     var module = req.param('id');
     //console.log(module);
 
-    sails.eventmanager.post_settings(module,req.session.event,res);
+    sails.eventmanager.post_settings(module,req.param('event'),res);
   },
 
   getnumbers:function(req,res)
@@ -254,10 +259,11 @@ module.exports = {
 
   canceldownload:function(req,res)
   {
+    var eventid = req.params.id;
     User.findOne(req.session.passport.user.id).exec(function(err,u)
     {
       //u.dropboxsync = {msg:'Cancelled',status:'queue',percentage:0};
-      u.dropboxsynccancel = true;
+      u.sync[eventid].dropboxsynccancel = true;
       u.save(function(err){
          return res.json({});
       });
@@ -281,14 +287,16 @@ module.exports = {
 
   downloadprogress:function(req,res)
   {
+    var eventid = req.params.id;
+    
     //console.log("d:"+req.session.downloading);
     // console.log("c:"+req.session.cancelsync);
     User.findOne(req.session.passport.user.id).exec(function(err,u)
-    {
-
-      if (u.dropboxsync && (u.dropboxsync.status!='cancelled') && (u.dropboxsync.status!='done') && !(u.dropboxsynccancel==true && u.dropboxsync.status=='queue'))
+    { 
+      //console.log(u.sync);
+      if (u.sync && u.sync[eventid] && u.sync[eventid].dropboxsync && (u.sync[eventid].dropboxsync.status!='cancelled') && (u.sync[eventid].dropboxsync.status!='done') && !(u.sync[eventid].dropboxsynccancel==true && u.sync[eventid].dropboxsync.status=='queue'))
       {
-        return res.json(u.dropboxsync);
+        return res.json(u.sync[eventid].dropboxsync);
       }
       else
       {
@@ -301,7 +309,7 @@ module.exports = {
   {
     User.findOne(req.session.passport.user.id).exec(function(err,u)
     {
-      return res.json({outputtemplates:(u.outputtemplates)?u.outputtemplates : []});
+        return res.json({outputtemplates:(u && u.outputtemplates)?u.outputtemplates : []});
     });
   },
 
@@ -326,8 +334,9 @@ module.exports = {
     //SUBMIT THIS JOB TO THE EDIT SERVER
     User.findOne(req.session.passport.user.id).exec(function(err,u)
     {
-      u.dropboxsync = {msg:'In Queue',status:'queue',percentage:0};
-      u.dropboxsynccancel = false;
+      if (!u.sync) u.sync = {};
+      u.sync[req.params.id] = {dropboxsync: {msg:'In Queue',status:'queue',percentage:0}};
+      u.sync[req.params.id].dropboxsynccancel = false;
       u.save(function(err){
          //console.log(req.session);
          //req.session.passport.user.dropbox
@@ -351,8 +360,7 @@ module.exports = {
 
          //submit dropbox transfer:
          Editor.dropbox(config);
-
-         return res.json(u.dropboxsync);
+         return res.json(u.sync[req.params.id].dropboxsync);
       });
     });
   }

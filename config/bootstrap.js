@@ -10,8 +10,8 @@
 
 var fs = require('fs');
 
-module.exports.bootstrap = function (cb) {
-	//starrt http redirect server:
+module.exports.bootstrap = function (cb) {	
+	//start http redirect server:
 	var request = require('request');
 
 	var myIP = require('my-ip');
@@ -22,7 +22,7 @@ module.exports.bootstrap = function (cb) {
     require('winston-mongodb').MongoDB;
 
     sails.winston.add(sails.winston.transports.MongoDB, {
-			level:'verbose',
+		level:'verbose',
     	host     : sails.config.db_host,
         port     : sails.config.db_port,
         username : sails.config.db_user,
@@ -32,15 +32,34 @@ module.exports.bootstrap = function (cb) {
         storeHost:true,
         //handleExceptions: true
     });
+	
+	//check variables are set:
+	if ((sails.config.google_clientid == "googleid") && (sails.config.FACEBOOK_APP_ID == "facebookid"))
+	{
+		Log.error("config","*** Enter Google or Facebook OAuth Details in config/local.js ***");
+		throw new Error('OAuth Config Error');
+	}
+	
+	//console.log(sails.config.admin_email);
+	
+	//check admin emails:
+	if (sails.config.admin_email.length == 0)
+	{
+		Log.error("config","*** Add a super admin email address ***");
+		throw new Error('No Admin Email Address Set');
+	}
 
-  Log.info('bootstrap',"Connected to MongoDB on "+sails.config.db_host);
+  	Log.info('bootstrap',"Connected to MongoDB on "+sails.config.db_host);
 
     //sails.winston.remove(sails.winston.transports.Console);
 	Log.info('bootstrap','started',{local:sails.localmode});
 
 	//Log.error('bootstrap','test',{arg1:'testarg1'});
 
-	//load init data:
+
+    /**
+     * FIRST INSTALL SCRIPTS
+     */
 	Shot.find({}).exec(function(err, shots){
 		if (shots.length == 0)
 		{
@@ -74,26 +93,58 @@ module.exports.bootstrap = function (cb) {
 			{
 				Log.info('bootstrap','Init Templates');
 			});
+            
+            //update default backgrounds to s3:
+            var ss3 = require('s3');
+            var s3 = ss3.createClient({
+                s3Options: {
+                    accessKeyId: sails.config.AWS_ACCESS_KEY_ID,
+                    secretAccessKey: sails.config.AWS_SECRET_ACCESS_KEY,
+                    region: sails.config.S3_REGION
+                },
+            });
+            var params = {
+                localDir: 'assets/backgrounds/',
+                s3Params: {
+                    Bucket: sails.config.S3_BUCKET,
+                    Prefix: "upload/backgrounds/",
+                    ACL: 'public-read'
+                },
+            };
+            var uploader = s3.uploadDir(params);
+            uploader.on('error', function(err) {
+                console.error("unable to sync:", err.stack);
+                Log.error('bootstrap','Default Image Sync Error',err);
+            });
+            uploader.on('progress', function() {
+                process.stdout.write("Default backgrounds upload: " + ((uploader.progressAmount/uploader.progressTotal)*100).toString().substr(0,4) + "%\r")
+            });
+            uploader.on('end', function() {
+                Log.info('bootstrap','Default Image Sync Complete');
+            });
 		}
 	});
-
-
-
-	// Media.find({}).exec(function(err,media)
-	// {
-	// 	_.each(media,function(m)
-	// 	{
-	// 		if (m.thumb)
-	// 		{
-	// 			m.thumb = m.thumb.replace('https://bootlegger.s3.amazonaws.com/upload/','');
-	// 			//console.log(m.thumb);
-	// 			m.save(function(err,done)
-	// 			{
-	// 				console.log('updated '+done.id);
-	// 			});
-	// 		}
-	// 	});
-	// });
+    
+    //checkfix old server media links
+    Media.find({
+        thumb : {
+            'startsWith' : 'http://bootlegger.s3.amazonaws.com'
+        }}).exec(function(err,media){
+       _.each(media,function(m){
+           if (m.thumb)
+           {
+            m.thumb = m.thumb.replace('http://bootlegger.s3.amazonaws.com','');
+            m.save(function(err,done){
+             //done 
+            });
+           }
+       });
+    });
+    
+    
+    /**
+     * END INSTALL SCRIPTS
+     */
 
 	//start passport authentication
 	var passport = require('passport');
@@ -105,17 +156,18 @@ module.exports.bootstrap = function (cb) {
 	var DropboxOAuth2Strategy = require('passport-dropbox-oauth2').Strategy;
 
 
-	passport.use(new LocalStrategy(
-	  function(username, password, done) {
-	  	//console.log("u:"+username);
-	  	//console.log("p:"+password);
-	    User.findOne({ localcode: password }, function(err, user) {
-    		//console.log("logged in");
-    		//console.log(user);
-    		return done(err, user);
-	    });
-	  }
-	));
+    //REMOVED AS OFFLINE SERVERS NOW NOT SUPPORTED
+	// passport.use(new LocalStrategy(
+	//   function(username, password, done) {
+	//   	//console.log("u:"+username);
+	//   	//console.log("p:"+password);
+	//     User.findOne({ localcode: password }, function(err, user) {
+    // 		//console.log("logged in");
+    // 		//console.log(user);
+    // 		return done(err, user);
+	//     });
+	//   }
+	// ));
 
 	var protocol = (_.contains(process.argv,'--prod')? 'https' : 'http');
 
@@ -158,7 +210,7 @@ module.exports.bootstrap = function (cb) {
 	  	//console.log(profile);
 	    profile._json.picture = profile.photos[0].value.replace('?sz=50','');
 	    User.findOrCreate({ uid: String(profile.id) },{ uid: String(profile.id), profile:profile }, function(err, user) {
-				 	Log.info('google','Login',{user_id:profile.id});
+			Log.info('google','Login',{user_id:profile.id});
 	      	return done(err, user);
 	    });
 	  }
@@ -168,15 +220,23 @@ module.exports.bootstrap = function (cb) {
 	    clientID: sails.config.FACEBOOK_APP_ID,
     	clientSecret: sails.config.FACEBOOK_APP_SECRET,
     	callbackURL: sails.config.master_url+'/auth/facebook_return',
-			profileFields: ['id', 'name','picture.type(small)', 'emails', 'displayName'],
+		profileFields: ['id', 'name','picture.type(small)', 'emails', 'displayName']
 	  },
 	  function(token, tokensecret,profile,done) {
 			//console.log(profile);
-			Log.info('facebook','Login',{user_id:profile.id});
-			profile._json.picture = 'http://graph.facebook.com/'+profile.id+'/picture';
-	    User.findOrCreate({ uid: String(profile.id) },{ uid: String(profile.id), profile:profile }, function(err, user) {
-						return done(err, user);
-	    });
+		Log.info('facebook','Login',{user_id:profile.id});
+		profile._json.picture = 'http://graph.facebook.com/'+profile.id+'/picture';
+		
+		if (profile.emails)
+		{
+			User.findOrCreate({ uid: String(profile.id) },{ uid: String(profile.id), profile:profile }, function(err, user) {
+				return done(err, user);
+			});
+		}
+		else
+		{
+			return done(null, false, { message : 'Please allow Bootlegger access to your email address!' });
+		}
 	  }
 	));
 
@@ -188,6 +248,20 @@ module.exports.bootstrap = function (cb) {
 	    done(null, user);
 	});
 
+
+	//setting current application version:
+	var NodeGit = require("nodegit");
+	NodeGit.Repository.open(".").then(function (repo) {
+  		// Inside of this function we have an open repo
+		  repo.getHeadCommit().then(function(head){
+			 sails.config.git_version = {date:head.date(),time:head.time(),message:head.message()};
+			 repo.head().then(function(reference) {
+				 //console.log(reference.name());
+				sails.config.git_version.branch = reference.shorthand(); 
+			 });
+		  });
+	});
+	
 
 	sails.localmode = false;
 	if (_.contains(process.argv, '--local'))

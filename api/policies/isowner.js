@@ -1,9 +1,14 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * Allow any authenticated user.
  */
 module.exports = function (req, res, ok) {
 
-  var ev = req.session.event || req.params.id || req.session.passport.user.currentevent;
+  var ev = req.param('event') || req.params.id;
   //console.log(req.session.passport.user.profile.emails[0].value);
 
   //console.log(ev);
@@ -19,9 +24,11 @@ module.exports = function (req, res, ok) {
     {
       //console.log(req.session.passport.user.id);
       Event.find().where({id:ev}).exec(function (err,e){
-        //console.log(e);
+        //console.log(_.contains(e[0].ownedby,req.session.passport.user.id));
+        //console.log(ev);
         if (e.length == 1 && _.contains(e[0].ownedby,req.session.passport.user.id))
         {
+          //console.log("ok perm");
           return ok();
         }
         else
@@ -36,7 +43,8 @@ module.exports = function (req, res, ok) {
             {
               req.session.flash = {msg:'No can do, sorry (you are not the owner of this event).'};
             }
-            return res.redirect('commission/new');
+            //console.log("fail perm");
+            return res.redirect('/dashboard');
           }
         }
       });

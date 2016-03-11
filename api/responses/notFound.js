@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * 404 (Not Found) Handler
  *
  * Usage:
@@ -30,6 +35,8 @@ module.exports = function notFound (data, options) {
   res.locals.user = false;
   res.locals.event = false;
   res.locals.flash = false;
+  res.locals.action='error';
+  res.locals.rtl = false;
   res.locals.notonthisserver = false;
   res.locals.apikey='';
   // Log error to console
@@ -47,7 +54,7 @@ module.exports = function notFound (data, options) {
 
   // If the user-agent wants JSON, always respond with JSON
   if (req.wantsJSON || req.param('apikey')) {
-    return res.jsonx({error:data.toString()});
+    return res.jsonx(data);
   }
 
   // If second argument is a string, we take that to mean it refers to a view.

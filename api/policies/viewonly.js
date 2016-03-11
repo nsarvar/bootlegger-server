@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * Allow any user with view rights user.
  */
 module.exports = function (req, res, ok) {
@@ -27,18 +32,25 @@ else
             }
             else
             {
-              //check that the user has contributed footage:
-              Media.find({event_id:e.id,created_by:req.session.passport.user.id}).exec(function(err,media){
-                if (media.length > 0)
-                {
-                  return ok();
-                }
-                else
-                {
-                  req.session.flash = {msg:'No can do, sorry (you are not the owner or a participant of this event).'};
-                  return res.redirect('commission/new');
-                }
-              });
+              if (e.publicedit)
+              {
+               return ok(); 
+              }
+              else
+              {
+                //check that the user has contributed footage:
+                Media.find({event_id:e.id,created_by:req.session.passport.user.id}).exec(function(err,media){
+                  if (media.length > 0)
+                  {
+                    return ok();
+                  }
+                  else
+                  {
+                    req.session.flash = {msg:'No can do, sorry (you are not the owner or a participant of this event).'};
+                    return res.redirect('/dashboard');
+                  }
+                });
+              }
 
               // if (req.session.isios)
               // {
@@ -54,14 +66,14 @@ else
         {
           //no event specified
             req.session.flash = {msg:'No event specified.'};
-            return res.redirect('commission/new');
+            return res.redirect('/dashboard');
         }
       });
     }
     else
     {
        req.session.flash = {msg:'No can do, sorry (you are not logged in).'};
-       return res.redirect('commission/new');
+       return res.redirect('/dashboard');
     }
   }
   // }

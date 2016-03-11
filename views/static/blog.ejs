@@ -1,0 +1,41 @@
+<style>
+	h3{
+		margin:0;
+	}
+    
+    .panel-body img{
+        max-width: 400px;
+        display:block;
+        /*border:1px solid silver;*/
+        padding:5px;
+        background:#efefef;
+        /*float:right;*/
+        margin-left:20px;
+        margin-bottom:20px;
+        float:right;
+    }
+	</style>
+<div class="col-xs-12 col-sm-10  col-sm-offset-1 col-lg-8  col-lg-offset-2">
+<% _.each(blog,function(b) { %>
+	<div class="blog panel panel-default">
+    <div class="panel-body">
+        <h3><%- b.meta.title %></h3>
+        <div class="clearfix" style="margin:20px;"></div>
+        <p><%- b.markdown %></p>
+        <div class="clearfix"></div>
+        <div style="margin-top:30px;">
+        <span class="pull-right text-muted">by <span class="text-primary"><%- b.meta.author %></span> on <span class="text-primary"><%- b.created.format('MMM Do YYYY') %></span></span>
+        </div>
+    </div>
+</div>
+	
+<% }); %>
+
+
+<% if (!blog.length) { %>
+<div class="text-center text-muted">
+    <h1><i class="fa fa-cogs fa-3x"></i></h1> 
+        <span>Awaiting update...</span>
+ </div>
+<% } %>
+</div>

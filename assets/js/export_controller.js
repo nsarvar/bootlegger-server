@@ -1,29 +1,29 @@
 'use strict';
 
-var exportApp = angular.module('exportApp', [
-      "ngSanitize",
-      'ngLoadingSpinner',
-      'ngAnimate',
-      'angularSails.io',
-      'ui.slider',
-      'ui.bootstrap',
-      'ui.inflector',
-      'ui.format',
-      'ui.sortable',
-       'ui.knob'
-    ]);
+// var exportApp = angular.module('exportApp', [
+//       "ngSanitize",
+//       'ngLoadingSpinner',
+//       'ngAnimate',
+//       'angularSails.io',
+//       'ui.slider',
+//       'ui.bootstrap',
+//       'ui.inflector',
+//       'ui.format',
+//       'ui.sortable',
+//        'ui.knob'
+//     ]);
 
-exportApp.factory('socket',['$sailsSocket', function($sailsSocket){
-      return $sailsSocket();
-  }]);
+// exportApp.factory('socket',['$sailsSocket', function($sailsSocket){
+//       return $sailsSocket();
+//   }]);
 
-exportApp.controller('export',['$scope','socket','$timeout','$sce','usSpinnerService','$interval','$filter','$rootScope','$http', function ($scope,socket,$timeout,$sce,usSpinnerService,$interval,$filter,$rootScope,$http) {
+bootleggerApp.controller('export',['$scope','socket','$timeout','$sce','usSpinnerService','$interval','$filter','$rootScope','$http', function ($scope,socket,$timeout,$sce,usSpinnerService,$interval,$filter,$rootScope,$http) {
 
   // window.onbeforeunload = function(e) {
   //  return "Are you sure you want to leave this page? Changes are not auto-saved!";
   // };
 
-  $scope.loading = true;
+  $scope.loading = 0;
 
 
   //$scope.chosen = [];
@@ -96,7 +96,7 @@ $scope.remove = function(output){
 
 $scope.getprogress = function()
 {
-  socket.get('/post/downloadprogress/').then(function(resp)
+  socket.get('/post/downloadprogress/'+ mastereventid).then(function(resp)
   {
       $scope.downloadprogress = resp.data;
   });
@@ -129,15 +129,16 @@ $scope.getprogress = function()
           delete $scope.success;
         },2000);
       });
-  }
+  };
 
-   socket.connect().then(function(sock){
-    console.log('connected',sock)
-  },function(err){
-      console.log('connection error',err)
-  },function(not){
-      console.log('connection update',not)
-  });
+  //  socket.connect().then(function(sock){
+  //   console.log('connected',sock)
+  // },function(err){
+  //     console.log('connection error',err)
+  // },function(not){
+  //     console.log('connection update',not)
+  // });
+
 
   (function () {
     //usSpinnerService.spin('spinner-1');
@@ -146,20 +147,21 @@ $scope.getprogress = function()
     socket.get('/media/availableoutputs/'+mastereventid)
       .then(function(resp){
          $scope.alloutputs = resp.data;
-         $scope.loading = false;
+         $scope.loading++;;
       });
 
     socket.get('/post/myoutputtemplates/')
       .then(function(resp){
          $scope.mytemplates = resp.data.outputtemplates;
 
-         $scope.loading = false;
+         $scope.loading++;
       });
 
       $scope.nums = {};
     socket.get('/post/getnumbers/'+mastereventid).then(function(resp)
     {
       $scope.nums = resp.data;
+      $scope.loading++;
       setInterval($scope.getprogress,1000);
     });
   })();

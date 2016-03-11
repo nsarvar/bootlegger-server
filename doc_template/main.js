@@ -322,7 +322,7 @@ require([
     });
 
     // Content-Scroll on Navigation click.
-    $('.sidenav').find('a').on('click', function(e) {
+    $('.sidenav').find('a').not('.reallink').on('click', function(e) {
         e.preventDefault();
         var id = $(this).attr('href');
         if ($(id).length > 0)
@@ -398,6 +398,12 @@ require([
     initDynamic();
 
     // Pre- / Code-Format
+    $(document).ready(function() {
+        $(this).find("code").not('.prettyprint').each(function(){
+            $(this).addClass("prettyprint");
+        }); 
+    });
+    
     prettyPrint();
 
     //

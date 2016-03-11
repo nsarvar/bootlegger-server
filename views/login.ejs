@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%- req.getLocale() %>" dir="<%- rtl %>">
 
 <head>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Bootlegger: Your personal film director and way to contribute to shoots all over the world.">
+    <meta name="description" content="<%- __('tagline') %>">
     <meta name="author" content="Bootlegger">
     <link rel="shortcut icon" href="/static/favicon.png">
     <title>Bootlegger</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="/static/styles-frontpage/bootstrap.min.css" rel="stylesheet">
+    <!--<link href="/static/styles-frontpage/bootstrap.min.css" rel="stylesheet">-->
+    
+    <link href="/static/styles-frontpage/frontpage.min.css" rel="stylesheet">
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
@@ -22,19 +24,86 @@
 
     <!-- Custom Fonts -->
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    
+    <link rel="stylesheet" href="/static/styles-frontpage/odometer-theme-minimal.css">
+    <link rel="stylesheet" href="/styles/flags.css">
+    
+    <style>
+        .odometer
+        {
+            color:#0088aa;
+            font-size:30pt;
+        }
+        
+        #mins
+        {
+            min-width:125px;
+        }
+        
+        #users
+        {
+            min-width:70px;
+        }
+        
+        #media
+        {
+            min-width:105px;
+        }
+        
+        .odo
+        {
+            font-size:20pt;
+         text-align: center;
+         color:silver;
+         margin-left:5%;
+         margin-right:5%;
+         font-weight: 300;
+         visibility:hidden;
+        }
+    </style>
 
-    <!-- Custom CSS -->
-    <link href="/static/styles-frontpage/animate.css" rel="stylesheet">
-    <link href="/static/styles-frontpage/modal.css" rel="stylesheet">
-    <link href="/static/styles-frontpage/navbar.css" rel="stylesheet">
-    <link href="/static/styles-frontpage/frontpage.css" rel="stylesheet">
-    <link href="/static/styles-frontpage/timeline.css" rel="stylesheet">
-    <link href="/static/styles-frontpage/footer.css" rel="stylesheet">
-
-
-    <!-- Custom JS -->
-    <script type="text/javascript" src="/static/js-extra/frontpage.js"></script>
-    <script type="text/javascript" src="/static/js-extra/covervid.min.js"></script>
+    
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+    ga('create', 'UA-66367290-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+    
+    <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
+    <script type="text/javascript">
+        window.cookieconsent_options = {"message":"This website uses cookies to keep you logged into Bootlegger, and to help us improve your experience.","dismiss":"Got it!","learnMore":"More info","link":"https://bootlegger.tv/privacy","theme":"dark-bottom"};
+    </script>
+    
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.9/cookieconsent.min.js"></script>
+    <!-- End Cookie Consent plugin -->
+    
+     <script type="text/javascript" src="/static/js-extra/frontpage.min.js"></script>
+     <script type="text/javascript" src="/static/js-extra/odometer.min.js"></script>
+     <script>
+         window.odometerOptions = {
+            format: '(,ddd).dd', // Change how digit groups are formatted, and how many digits are shown after the decimal point
+            };
+         $(function(){
+            //odometer:
+            var currentdata;
+            $.get('/auth/totalstatus').success(function(data){
+                $('#mins').html(Math.round(data.mins/60));
+                $('#media').html(data.media);
+                $('#users').html(data.users);
+                currentdata = data;
+                //$('.odo').css('visibility','inherit');
+               $('.odo').css('visibility','visible').hide().fadeIn('slow');
+                setInterval(function(){
+                    currentdata.mins = currentdata.mins + 0.2;
+                    $('#mins').html(Math.round(currentdata.mins/60));
+                },5000);
+            });
+         });
+     </script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -49,27 +118,29 @@
     top: 0;
     left: 0;
     width: 100%;
-    height:706px;
+    height:550px;
 }
 </style>
 </head>
 
 <body>
-    <div class="covervid-wrapper">
+    <% if (sails.config.maintenance) { %>
+        <div style="position:fixed;width:100%;z-index:1000;height:50px;border-radius:0" class="alert alert-warning text-center"><i class="fa fa-warning"></i> <%- sails.config.maintenance %></div>
+    <% } %>
+    
+    <% if (flash && flash.error) { %>
+        <div style="position:fixed;width:100%;z-index:1000;height:50px;border-radius:0" class="alert alert-danger text-center"><i class="fa fa-warning"></i> <%- flash.error %></div>
+    <% } %>
+    
+    <div class="covervid-wrapper" >
         <video class="covervid-video hidden-xs" style="display:none;" autoplay muted loop>
-             <source src="/static/BootleggerHighlights.webm" type="video/webm">
-            <source src="/static/BootleggerHighlights.mp4" type="video/mp4">
+             <source src="https://bootleggerlive.s3.amazonaws.com/static/BootleggerHighlights.webm" type="video/webm">
+            <source src="https://bootleggerlive.s3.amazonaws.com/static/BootleggerHighlights.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- <div class="covervid-wrapper" style="height:706px;position:absolute;top:0;width:100%;left:0;">
-        <video muted autoplay loop poster="/images/background.jpg" class="covervid-video">
-            <source src="/BootleggerHighlights.mp4" />
-        </video>
-    </div> -->
-
     <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" <% if (sails.config.maintenance) { %>style="margin-top:50px"<%}%> <% if (flash && flash.error) { %>style="margin-top:50px"<%}%>>
         <div class="container">
 
             <div class="navbar-header">
@@ -85,13 +156,13 @@
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#" data-section="#timeline-container">How it Works</a>
+                        <a href="#" data-section="#timeline-container"><%- __('How it Works') %></a>
                     </li>
                     <li>
-                        <a href="#" data-section="#recent-shoots">Recent Shoots</a>
+                        <a href="#" data-section="#recent-shoots"><%- __('Recent Shoots') %></a>
                     </li>
                     <li>
-                        <a href="mailto:info@bootlegger.tv">Contact</a>
+                        <a href="mailto:info@bootlegger.tv"><%- __('Contact') %></a>
                     </li>
                     <li class="google-oauth">
                         <a href="/auth/google">
@@ -117,36 +188,53 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <div id="hero-text">
+                    <div id="hero-text" style="padding-bottom:99px;padding-top:165px;">
+                        
                         <img id="icon-logo" src="/images/icon-black.png" />
-                        <h1 id="tagline">Your Community Film Crew</h1>
-                        <p>Bootlegger makes it possible for anyone to plan, shoot and contribute to great video projects using mobile devices.</p>
-                        <a class="animated pulse" id="app-download-button" href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger">
-                            Download for Android
-                        </a>
+                        
+                        <h1 id="tagline"><%- __('Your Community Film Crew') %></h1>
+                        <p><%- __('hometag') %></p>
                     </div>
+                    
+
                 </div>
             </div>
         </div>
     </header>
 
-    <div id="highlights">
+     <h1 class="odo" style="margin-top:30px;">
+                            <div><span class="odometer" id="mins"></span> <%- __('mins of video in') %> <span class="odometer" id="media"></span> <%- __('contributions from') %> <span class="odometer" id="users"></span> <%- __('people have been commissioned') %></div>
+                        </h1>
+
+    <div style="text-align:center;margin-bottom:30px;margin-top:30px;">
+        <a style="margin-right:10px;color:black;border-color:black;" class="animated pulse visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline" id="app-download-button" href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger">
+            <i class="fa fa-android" style="display:inline-block;transform:none;"></i> <%- __('Download for Android') %>
+        </a>
+                       
+        <img src="/images/androiddemo.png" style="height:400px;margin-right:20px;"/>
+        <img src="/images/iosdemo.png" style="height:400px;margin-left:20px;"/>
+        <a class="animated pulse text-muted visible-xs-block visible-sm-inline visible-md-inline visible-lg-inline" id="app-download-button" href="https://itunes.apple.com/us/app/bootlegger/id1053074626?ls=1&mt=8" style="margin:10px;color:black;border-color:black;">
+            <i class="fa fa-apple" style="display:inline-block;transform:none;"></i> <%- __('iOS') %>
+        </a>
+        </div>
+
+    <div id="highlights" style="margin-top:10px;">
 
         <div class="container">
 
             <div class="col-sm-4 highlights-column">
                 <img class="img-responsive img-center" src="/images/join-the-crew.png" alt="">
-                <h2>Join the Crew</h2>
+                <h2><%- __('Join the Crew') %></h2>
                 <p>Bootlegger uses graphic overlays and real-time coordination so you can shoot great video. Download the app, join a shoot and get creative.</p>
             </div>
             <div class="col-sm-4 highlights-column">
                 <img class="img-center" src="/images/directors-chair.png" alt="">
-                <h2>A Personal Director</h2>
+                <h2><%- __('A Personal Director') %></h2>
                 <p>Even first-time film-makers can plan complex video productions with Bootlegger’s easy-to-use Shoot Designer. Let Bootlegger direct your crew, collect your footage and organise your editing with rich metadata.</p>
             </div>
             <div class="col-sm-4 highlights-column">
                 <img class="img-responsive img-center" src="/images/production-control.png" alt="">
-                <h2>Production Control</h2>
+                <h2><%- __('Production Control') %></h2>
                 <p>You control everything from who’s in your crew to exactly what they’re asked to shoot. Use genre templates or create your own projects to help the crew collect what you need.</p>
             </div>
 
@@ -297,29 +385,6 @@
             <h4><a href="/howtobootleg" class="animated pulse mylink">Find Out More <i class="fa fa-chevron-right"></i></a></h4>
         </div>
 
-        <div id="upcoming-shoots" style="display: none">
-
-            <div class="container">
-
-                <div class="col-sm-4 upcoming-shoot-column">
-                    <h4>Haneen's pilot</h4>
-                    <p>Wed 17th Jun '15 to Wed 8th Jul '15</p>
-                </div>
-                <div class="col-sm-4 upcoming-shoot-column">
-                    <h4>Alia's Bootlessger Shoot</h4>
-                    <p>Tue 30th Jun '15 to Tue 30th Jun '15</p>
-                </div>
-                <div class="col-sm-4 upcoming-shoot-column">
-                    <h4>ReelLives: Ouseburn Festival</h4>
-                    <p>Sat 4th Jul '15 to Sun 5th Jul '15</p>
-                </div>
-
-                <div class="clearfix"></div>
-
-            </div>
-
-        </div>
-
         <!-- Footer -->
         <div id="footer">
             <div class="container">
@@ -362,10 +427,23 @@
                 <div id="sub-footer">
 
                     <div class="col-lg-12 footer-links">
-                        <p>Copyright &copy; Bootlegger 2015</p> |
-                        <a href="/api/docs">The Bootlegger Platform API</a>
-                        |
-                        <a href="http://github.com/digitalinteraction/bootlegger-server">Bootlegger on GitHub</a>
+                        
+                        <div class="pull-left">
+                        <!--<a href="#lang" data-toggle="popover" data-placement="top" data-html="true" data-content="<ul class='locale-selector'><% _.each(_.without(sails.config.i18n.locales,req.getLocale()),function(l){ %><li> <a href='/auth/locale/<%- l %>'><%- __(l) %> <div style='display:inline-block;float:right;' class='flag flag-<%- l %>' /></div> </a> </li><% }) %></ul>" data-title="<%- __('Select Language') %>">
+                            <div style="display:inline-block;margin-top: 5px;margin-right: 8px;" class="flag flag-<%- req.getLocale() %>" /></div>
+                        </a>-->
+                        <p class="visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block">&copy; Bootlegger <%- new Date().getFullYear() %></p>
+                            
+                            <span class="visible-sm-inline visible-md-inline visible-lg-inline">|</span>
+                            
+                            <a class="visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" href="/privacy">Privacy Policy</a>
+                            <span class="visible-sm-inline visible-md-inline visible-lg-inline">|</span>
+                            <a class="visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" href="/terms">Terms</a>
+                            <span class="visible-sm-inline visible-md-inline visible-lg-inline">|</span>
+                        <a class="visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" href="/platform">The Bootlegger Platform</a>
+                        <span class="visible-sm-inline visible-md-inline visible-lg-inline">|</span>
+                        <!--<a class="visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" href="http://github.com/digitalinteraction/bootlegger-server">Bootlegger on GitHub</a>-->
+                        </div>
                         <ul>
                             <li>
                                 <a href="https://twitter.com/BootleggerTV">
@@ -406,10 +484,10 @@
     </div>
 
     <!-- jQuery -->
-    <script src="/static/js/dependencies/2jquery-2.0.3.min.js"></script>
+    <!--<script src="/static/js/dependencies/2jquery-2.0.3.min.js"></script>-->
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="/static/js/bootstrap.min.js"></script>
+    <!--<script src="/static/js/bootstrap.min.js"></script>-->
 <script>
 $(function()
 {

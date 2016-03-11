@@ -12,7 +12,7 @@
 @media(min-width: 768px) {
 
     #timeline-container {
-        background: linear-gradient(90deg, #428EC9 0%, #42C98D 100%);
+        background: linear-gradient(90deg, #0088aa 0%, #42C98D 100%);
         padding: 60px;
     }
 

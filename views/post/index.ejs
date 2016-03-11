@@ -8,45 +8,58 @@
 {
 	background: #f2f2f2;
 }
+
+h1 .fa.fa-stack-1x
+{
+    font-family: 'Open Sans'
+}
 </style>
 
 <div ng-app="exportApp" ng-controller="export" ng-cloak>
-	<div class="well">
-	<h3 class="text-muted">We have saved all the footage from your shoot in a safe place.
-	<br>Here is a summary of what we have for this shoot:</h3>
+    
+    <div class="progress" style="height:2px;width:auto;width: 65%; margin: auto auto;margin-top: -27px;" ng-show="loading<3" >
+      <div class="indeterminate"></div>
+    </div>
+    
+	<div >
+	<h3 class="text-muted text-center">All your videos are in a safe place.
+	<br>Here's a summary:</h3>
 
 <div class="row">
 	<div class="col-sm-3">
-		<div class="alert alert-info" style="text-align:center;">
-		  <h1 id="ok">{{nums.ok}} <br><small>clips available</small></h1>
+		<div style="text-align:center;">
+		  <h2 id="ok" class="text-primary">{{nums.ok}} <br><small>clips available</small></h2>
 		</div>
 	</div>
 
 	<div class="col-sm-3">
-		<div class="alert alert-info" style="text-align:center;">
-			<h1 id="fail">{{nums.missing}}<br><small>not uploaded</small></h1>
+		<div style="text-align:center;" >
+			<h2 id="fail" class="text-primary">{{nums.missing}}<br><small>not uploaded</small></h2>
 	  		<p id="missingfrom"></p>
 		</div>
 	</div>
 
 	<div class="col-sm-3">
-		<div class="alert alert-info" style="text-align:center;">
-		  <h1 id="crew">{{nums.crew}}<br><small>crew</small></h1>
+		<div style="text-align:center;">
+		  <h2 id="crew" class="text-primary">{{nums.crew}}<br><small>crew</small></h2>
 
 		</div>
 	</div>
 
 	<div class="col-sm-3">
-		<div class="alert alert-info" style="text-align:center;">
-		  <h1 id="mins">{{nums.mins}}'<br><small>{{(nums.filesize / 1024) | number:0}}MB</small></h1>
+		<div style="text-align:center;">
+		  <h2 id="mins" class="text-primary">{{nums.mins + "'"}}<br><small>{{(nums.filesize / 1024 / 1024) | number:0}}GB</small></h2>
 		</div>
 	</div>
 </div>
 
-<div class="row">
-	<div class="col-xs-12 text-muted">
+<div class="row" ng-show="nums.missingfrom.length>0" style="margin-top:20px;">
+	<div class="col-xs-12 text-muted text-center">
 		<strong>Missing clips from </strong>
-		{{nums.missingfrom}} <span ng-show="nums.missingfrom.length==0">Nobody!</span> <a class="btn btn-sm btn-default" href="/post/remind/<%- event.id %>">Send Upload Reminder <i class="fa fa-clock-o"></i></a>
+		{{nums.missingfrom}} <span ng-show="nums.missingfrom.length==0">Nobody!</span> 
+        <br>
+        <br>
+        <a class="btn btn-sm btn-default" href="/post/remind/<%- event.id %>?apikey=<%- apikey %>">Send Upload Reminder <i class="fa fa-clock-o"></i></a>
 	</div>
 </div>
 
@@ -59,7 +72,7 @@ _.each(event.post_modules,function(p,k) {
   		showpost = true;
   	});
   %>
-  	<h1>
+  	<h1 style="text-align:left !important">
 		<span class="fa-stack btn-link">
 					  <i class="fa fa-circle-o fa-stack-2x"></i>
 					  <i class="fa fa-stack-1x">1</i>
@@ -80,7 +93,7 @@ _.each(event.post_modules,function(p,k) {
     <div class="row">
     <script>
     $(function(){
-		$.get('/post/module/<%- k %>?apikey='+apikey, function( data ) {
+		$.get('/post/module/<%- k %>?event=<%- event.id %>&apikey='+apikey, function( data ) {
 			$('#<%- k %>').html(data);
 			$('#<%- k %>').parent().parent().parent().removeClass('loading');
 			$(document).on('change', '.btn-file :file', function() {
@@ -132,15 +145,15 @@ _.each(event.post_modules,function(p,k) {
 	</button>
 
 	<ul class="dropdown-menu" role="menu">
+        <li><a ng-click="getedl();"><i class="fa fa-download"></i> Download EDL (FCP XML)</a></li>
 		<li><a href="/post/document/<%-event.id %>?apikey=<%- apikey %>">HTML</a></li>
 		<li><a href="/media/nicejson/<%-event.id %>?apikey=<%- apikey %>">JSON</a></li>
-		<li><a href="#">PDF <span class="text-muted">(coming soon)</span></a></li>
 	</ul>
 </div>
 </div>
 <div class="clearfix"></div>
 <div class="page-header">
-<h1><span class="fa-stack btn-link">
+<h1 style="text-align:left !important"><span class="fa-stack btn-link">
 					  <i class="fa fa-circle-o fa-stack-2x"></i>
 					  <i class="fa fa-stack-1x">2</i>
 					</span> Select Output Structure
@@ -210,19 +223,18 @@ _.each(event.post_modules,function(p,k) {
 
 	<div class="hidden-xs">
 		<button type="button" class="btn btn-lg btn-success pull-right" ng-click="save()"><i class="fa fa-save"></i> Save Templates</button>
-		<a class="btn btn-primary btn-lg pull-right" style="margin-right:5px;" ng-click="getedl();"><i class="fa fa-download"></i> Download EDL (FCP XML)</a>
 	</div>
 	
 	<div class="hidden-md hidden-sm hidden-lg">
 		<button type="button" class="btn btn-lg btn-success" style="width:100%;" ng-click="save()"><i class="fa fa-save"></i> Save Templates</button>
-		<a class="btn btn-primary btn-lg" style="width:100%;" ng-click="getedl();"><i class="fa fa-download"></i> Download EDL (FCP XML)</a>
+		<!--<a class="btn btn-primary btn-lg" style="width:100%;" ng-click="getedl();"><i class="fa fa-download"></i> Download EDL (FCP XML)</a>-->
 	</div>
 			
 		</div>
 </div>
 
 <div class="page-header">
-<h1><span class="fa-stack btn-link">
+<h1 style="text-align:left !important"><span class="fa-stack btn-link">
 					  <i class="fa fa-circle-o fa-stack-2x"></i>
 					  <i class="fa fa-stack-1x">3</i>
 					</span> Select Destination
@@ -240,7 +252,7 @@ _.each(event.post_modules,function(p,k) {
 					</span>
 					<br>
 					<% if (!user.dropbox) { %>
-					<a class="btn btn-link" href="/auth/dropbox">Login to Dropbox</a>
+					<a class="btn btn-link" href="/auth/dropbox/<%-event.id%>">Login to Dropbox</a>
 					<% } else { %>
 					<span>Logged In</span>
 					<% } %>

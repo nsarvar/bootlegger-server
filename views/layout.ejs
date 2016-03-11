@@ -1,53 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%- req.getLocale() %>" dir="<%- rtl %>" >
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="9VV37JlFo9nMYNnmxw_iMZ0uEeONLE59qc7m4rzDUQ4" />
+    <link rel="shortcut icon" href="/static/favicon.png">
+    <!-- Go to www.addthis.com/dashboard to customize your tools -->
+    
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#async=1&pubid=ra-550c037118e0ae97"></script>
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-66367290-1', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+
+    <% if (typeof(publicevent)!='undefined') { %>
+    <title><%- publicevent.name %></title>
+    <meta property="og:title" content="<%- publicevent.name %>" />
+    <meta property="og:description" content="<%- publicevent.datetext %>" />
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="<%- publicevent.iconbackground %>" />
+    <meta property="og:url" content="<%- sails.config.master_url %>/s/<%- publicevent.offlinecode %>" />
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@BootleggerTV">
+    <meta name="twitter:title" content="<%- publicevent.name %>">
+    <meta name="twitter:description" content="<%- publicevent.datetext %>">
+    <meta name="twitter:image" content="<%- publicevent.iconbackground %>">
+    <meta property="author" content="<%- publicevent.user.profile.displayName %>">
+    <% } else { %>
+    <title>Bootlegger <%- (sails.config.beta)?'BETA':'' %></title>
     <meta name="description" content="Bootlegger connects fans together in realtime to act as a coordinated camera crew.
 It produces high quality, content rich footage with no expense">
     <meta name="author" content="Bootlegger.tv">
-    <meta name="google-site-verification" content="9VV37JlFo9nMYNnmxw_iMZ0uEeONLE59qc7m4rzDUQ4" />
-    <link rel="shortcut icon" href="/static/favicon.png">
+    <% } %>
+    
+    <script>
+    var apikey = '<%- (typeof(apikey)!='undefined')?apikey:'' %>';
+    </script>
 
-    <title>Bootlegger <%- (typeof(sails.config.beta) != 'undefined')?'BETA':'' %></title>
- <!--<script src="/static/min/production.js"></script>-->
-
-<script>
-var apikey = '<%- apikey %>';
-</script>
-
-<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
-<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
 <!--<link rel="stylesheet" href="/static/min/production.css">-->
 <!--SCRIPTS-->
 <script src="/js/dependencies/1sails.io.js"></script>
 <script src="/js/dependencies/2jquery-2.0.3.min.js"></script>
 <script src="/js/dependencies/3angular.min.js"></script>
+<script src="/js/1app.js"></script>
 <script src="/js/admin_controller.js"></script>
 <script src="/js/angular-animate.min.js"></script>
 <script src="/js/angular-bootstrap-switch.js"></script>
+<script src="/js/angular-dragdrop.js"></script>
 <script src="/js/angular-google-maps.min.js"></script>
 <script src="/js/angular-knob.js"></script>
 <script src="/js/angular-loading-spinner.js"></script>
 <script src="/js/angular-sanitize.min.js"></script>
 <script src="/js/angular-spinner.min.js"></script>
 <script src="/js/angular-ui-sortable.js"></script>
-<script src="/js/app.js"></script>
+<script src="/js/api_controller.js"></script>
 <script src="/js/bootstrap-datepicker.js"></script>
 <script src="/js/bootstrap-switch.js"></script>
 <script src="/js/bootstrap-tokenfield.min.js"></script>
-<script src="/js/bootstrap-wysiwyg.js"></script>
+<script src="/js/bootstrap-wysiwyg.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/bootstro.min.js"></script>
 <script src="/js/checklist-model.js"></script>
 <script src="/js/commission_controller.js"></script>
+<script src="/js/controller_api.js"></script>
 <script src="/js/dashboard_controller.js"></script>
 <script src="/js/dirPagination.js"></script>
 <script src="/js/export_controller.js"></script>
 <script src="/js/handlebars-v1.1.2.js"></script>
-<script src="/js/holder.min.js"></script>
+<script src="/js/holder.js"></script>
 <script src="/js/jasny-bootstrap.min.js"></script>
 <script src="/js/jquery-ui.js"></script>
 <script src="/js/jquery-ui.min.js"></script>
@@ -56,9 +86,10 @@ var apikey = '<%- apikey %>';
 <script src="/js/lodash.min.js"></script>
 <script src="/js/log_controller.js"></script>
 <script src="/js/modernizr.js"></script>
-<script src="/js/moment.min.js"></script>
+<script src="/js/moment.js"></script>
 <script src="/js/ngStorage.min.js"></script>
 <script src="/js/ngsails.io.js"></script>
+<script src="/js/rzslider.min.js"></script>
 <script src="/js/shoot_controller.js"></script>
 <script src="/js/skrollr.min.js"></script>
 <script src="/js/slider.js"></script>
@@ -66,6 +97,8 @@ var apikey = '<%- apikey %>';
 <script src="/js/ui-bootstrap-tpls-0.13.0.min.js"></script>
 <script src="/js/ui-grid.min.js"></script>
 <script src="/js/ui-utils.js"></script>
+<script src="/js/vg-buffering.min.js"></script>
+<script src="/js/vg-controls.min.js"></script>
 <script src="/js/videogular.min.js"></script>
 <script src="/js/watch_controller.js"></script>
 <!--SCRIPTS END-->
@@ -76,11 +109,14 @@ var apikey = '<%- apikey %>';
 <link rel="stylesheet" href="/styles/carousel.css">
 <link rel="stylesheet" href="/styles/datepicker.css">
 <link rel="stylesheet" href="/styles/ekko-lightbox.min.css">
+<link rel="stylesheet" href="/styles/flags.css">
 <link rel="stylesheet" href="/styles/font-awesome.css">
 <link rel="stylesheet" href="/styles/importer.css">
 <link rel="stylesheet" href="/styles/jasny-bootstrap.min.css">
 <link rel="stylesheet" href="/styles/jquery-ui.css">
+<link rel="stylesheet" href="/styles/rzslider.min.css">
 <link rel="stylesheet" href="/styles/ui-grid.min.css">
+<link rel="stylesheet" href="/styles/videogular.css">
 <link rel="stylesheet" href="/styles/x_app.css">
 <!--STYLES END-->
 
@@ -92,64 +128,13 @@ var apikey = '<%- apikey %>';
       <%}%>
     </script>
 
-    <script id="eventlist-template" type="text/x-handlebars-template">
-    <li><p style="margin-top:-5px;" class="bg-primary menuitem">My Shoots</p></li>
-      {{#each this}}
-        {{#if group}}
-                {{#if events}}
-                    <li>
-                      <a href="#"><span class="text-muted">{{group}}</span></a>
-                    </li>
-                          {{#each events}}
-                          <li>       
-                          <a href="/event/view/{{this.id}}">&nbsp;&nbsp;&nbsp;{{this.name}}</a>
-                          </li>
-                          {{/each}}
-                  {{/if}}
-            {{else}}
-              <li>
-              
-              <a href="/event/view/{{this.id}}">{{this.name}}</a>
-             
-              </li>
-            {{/if}}
-      {{else}}
-      <li><a href="#" ><span class="text-muted">no shoots owned</span></a></li>
-      {{/each}}
-
-<!--
-      <li><p class="bg-primary menuitem" style="margin-top:10px;">Participating In</p></li>
-      {{#each codeevents}}
-        {{#if group}}
-          {{#if events}}
-            <li>
-              <a href="#"><span class="text-muted">{{group}}</span></a>
-            </li>
-                {{#each events}}
-                <li><a href="/watch/{{this.id}}">&nbsp;&nbsp;&nbsp;{{this.name}}</a></li>
-                {{/each}}
-                {{/if}}
-            {{else}}
-              <li><a href="/watch/{{this.id}}">{{this.name}}</a></li>
-          {{/if}}
-      {{else}}
-      <li><a href="#" ><span class="text-muted">no shoots joined</span></a></li>
-      {{/each}} -->
-      <li>&nbsp;</li>
-      <li class="bg-primary menuitem">Join a Shoot</li>
-      <li>
-      <div class="input-group" style="padding:3px 5px;">
-      <input type="text" id="mycode" class="form-control" placeholder="Join Code">
-      <span class="input-group-btn">
-        <button class="btn btn-default" type="button" onclick="registercode()">Go!</button>
-      </span>
-      </li>
-
-    </script>
   </head>
 
-  <body>
-    <div class="container">
+  <body ng-app="bootleggerApp">
+    <% if (typeof(sails.config.maintenance)!='undefined') { %>
+        <div style="position:absolute;top:0;width:100%;z-index:1000;height:50px;border-radius:0" class="alert alert-warning text-center"><i class="fa fa-warning"></i> <%- sails.config.maintenance %></div>
+    <% } %>
+    <div class="container" <% if (typeof(sails.config.maintenance)!='undefined') { %>style="margin-top:50px"<%}%>>
 
       <div class="modal fade" id="nameModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog" style="margin:auto auto;margin-top:10%;" role="document">
@@ -157,11 +142,11 @@ var apikey = '<%- apikey %>';
               <div class="modal-content">
                 <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title" id="myModalLabel">Edit Name</h4>
+                  <h4 class="modal-title" id="myModalLabel"><%- __('Edit Name') %></h4>
                 </div>
                 <div class="modal-body">
-                  <p>Change the name that will be used on credits for shoots you participate in.</p>
-                  <input type="text" name="name" class="form-control" placeholder="Dave Bootlegger" value="<%- user.profile.displayName %>" required min="10"/>
+                  <p><%- __('Change the name that will be used on credits for shoots you participate in.') %></p>
+                  <input type="text" name="name" class="form-control" placeholder="Dave Bootlegger" value="<%- (user)?user.profile.displayName:'' %>" required min="10"/>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -171,85 +156,108 @@ var apikey = '<%- apikey %>';
             </form>
           </div>
         </div>
-
-      <div class="masthead">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" style="margin-left:0;margin-right:0;" data-target="#main-menu">
-            <i class="fa fa-bars fa-2x"></i>
-          </button>
-          <% if (!user) { %>
-            <img src="/images/main_logo.png" style="height:48px;margin-top:5px;" />
-            <% } %>
-          <% if (user) { %>
-            <% if(event.name != "") { %>
-            <h3 class="visible-xs pull-left" style="margin-top:20px;width:75%;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;"><%= event.name %></h3>
-          <% } else { %>
-              <img src="/images/main_logo.png" style="height:48px;margin-top:5px;" class="visible-xs" />
-        <%  }
-        } %>
-        <div class="header row" style="position:relative;margin-bottom:18px;height:auto">
-
-          <a href="/" class="hidden-xs" style="width:30%;min-height:90px;display:inline-block;float:left;" data-placement="bottom" data-toggle="tooltip" title="Back to My Dashboard">
-          <% if(typeof(sails.config.beta) != 'undefined') { %>
-            <div class="hidden-xs"><span class="label label-warning" style="margin-left:172px;float:left;">BETA</span></div>
-            <% } %>
-          </a>
-
-
-
-          <% if (user) { %>
-          <div data-bootstro-title="Your Profile Information" data-bootstro-content="List shoots you are part of, and logout of Bootlegger." data-bootstro-placement="bottom" class="bootstro alert alert-info hidden-xs" style="display:inline-block;float:right;min-width:236px;margin:0;">
-            <img style="border-radius:30px;float:left;width:60px;height:60px;margin-left:-5px;margin-top:-5px;margin-right:10px;margin-bottom:-10px;" src="<%= user.profile._json.picture %>" />
-            <!-- <i style="opacity:0.5;float:left;font-size:40pt;margin-left:-5px;margin-top:-3px;margin-right:10px;margin-bottom:-10px;" class="glyphicon glyphicon-user"></i> -->
-            <span class="lead">Hello <%= user.profile.displayName.split(' ')[0] %>!</span> <a href="#" class="super" data-toggle="modal" data-target="#nameModal"><sup><i class="fa fa-edit text-muted" data-placement="bottom" data-toggle="tooltip" title="Change My Name"></i></sup></a><br>
-            <div class="dropdown" style="display:inline-block">
-              <a href="#" id="myeventsbtn" data-toggle="dropdown">my shoots <span class="caret"></span></a>
-              <ul class="dropdown-menu eventlist" style="z-index:3000" role="menu">
-                <li class="loading"></li>
-              </ul>
-            </div>
-
-            <!-- | <a id="offlineaccess" data-container="body" data-toggle="popover" style="cursor:pointer" data-title="Offline Access" data-placement="bottom">offline access</a>
- -->
-             | <a href="/auth/logout">logout</a>
+        
+        <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" style="margin:auto auto;margin-top:10%;" role="document">
+              <div class="modal-content">
+                <div class="modal-body" style="padding:0">
+                  <iframe src="https://docs.google.com/forms/d/1CQeW6MT3XmK_O8GUhNomax9EGJ6WNaqylt6qwxCK9BI/viewform?embedded=true" style="width:100%;height:100%;min-height:550px;" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+                </div>
+              </div>
           </div>
-          <% } %>
-
-          <div class="hidden-xs" style="float:right;display:inline-block;width:150px;padding-top:8px;text-align:center;margin-bottom:8px;">
-            <a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger"><img style="margin-bottom:5px;" alt="Android app on Google Play" src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" /></a>
-            <br>
-            <a href="/howtobootleg">How to Use the App</a>
-          </div>
-
-
-<div class="hidden-xs" style="position:absolute;right:0;bottom:-25px;">
-
-<% if (typeof showhelp == 'undefined') { %>
-    <a class="hidden" href="#" class="text-muted" onclick="bootstro.start('.bootstro',{stopOnBackdropClick:false});"><i class="fa fa-question-circle"></i> How do I use this page?</a>
-<% } %>
-
-<% if (user && _.contains(sails.config.admin_email,user.profile.emails[0].value)) { %> <a class="text-muted" href="/event/admin"><i class="fa fa-cog"></i> Adminstration</a>
-<% } %>
-</div>
         </div>
 
+      <div class="header row">
+          
+          <div class="col-sm-2 col-xs-6" style="padding-left:0">
+                <% if (!user) { %>
+                    <img class="visible-xs" src="/images/logo_mobile.svg" style="height:30px;" />
+                <% } %>
+                <% if (user) { %>
+                    <% if(event.name != "") { %>
+                        <h3 class="visible-xs" style="margin:0;white-space: nowrap;text-overflow: ellipsis;overflow:hidden;"><%= event.name %></h3>
+                    <% } else { %>
+                        <img src="/images/logo_mobile.svg" style="height:30px;" class="visible-xs" />
+                    <%  }
+                } %>
+            </div>
+          
+          <% if (user) { %>
+          <div class="col-sm-4 col-sm-push-6 text-right col-xs-6" style="padding-right: 0;" ng-controller="myprofile">
+            <img style="border-radius:15px;width:30px;height:30px;margin-right:2px;" src="<%= user.profile._json.picture %>" />
+            <a  href="#" class="super hidden-xs hidden-sm" data-toggle="modal" data-target="#nameModal"><%= user.profile.displayName %></a>
+            <a href="/auth/logout"><i style=" vertical-align: middle;margin-left:2px;" class="fa fa-2x fa-sign-out"></i></a>
+            </div>
+          <% } %>
 
+          <div class="clearfix visible-xs-block" style="height:42px"></div>
 
-      <% if (user) { %>
+          <div class="mainmenunew col-sm-6 col-xs-12 text-center col-sm-pull-3">
+              <a href="/commission/new">New Shoot</a>
+              <a href="/dashboard">My Shoots</a>
+              <a href="/watch">My Videos</a>
+          </div>
+          
+        </div>
 
-      <div style="margin-bottom:10px;" class="hidden-xs">
+        <div class="hidden-xs row">
+            <div class="col-xs-12 text-right">
+            <% if (typeof showhelp == 'undefined') { %>
+                <a class="hidden" href="#" class="text-muted" onclick="bootstro.start('.bootstro',{stopOnBackdropClick:false});"><i class="fa fa-question-circle"></i> How do I use this page?</a>
+            <% } %>
+
+            <% if (user && _.contains(sails.config.admin_email,user.profile.emails[0].value)) { %>
+            <span ng-controller="adminlists">
+            <span class="text-small text-warning">{{edits['current-jobs-ready']}} jobs pending | </span>
+            <span class="text-muted text-small">Version <span class="text-info"><%- sails.config.git_version.branch %> branch</span> from <span class="text-info"><%- moment(sails.config.git_version.date).calendar() %></span> <em><%- sails.config.git_version.message %></em></span> 
+            <input type="text" ng-model="shootsearch"  typeahead-on-select="searchEvent($item, $model, $label)" style="display:inline-block;width:200px;padding: 0;height: inherit;position:relative;" typeahead-loading="loadingShoots" placeholder="search shoots" typeahead="n.name for n in getShoot($viewValue) | filter:$viewValue | limitTo:8" class="form-control input-sm">
+            <i ng-show="loadingShoots" class="fa fa-spin fa-spinner"></i>
+
+            <a class="text-muted" href="/event/admin"><i class="fa fa-cog"></i> <%- __('Administration') %></a>
+            </span>
+            <% } %>
+            </div>
+            </div>
+ <!--</div>-->
+    <div class="clear:both"></div>
+      <% if (user && typeof(viewonly)=='undefined') { %>
+      <div style="margin-bottom:10px;" class="container text-center hidden-xs">
         <% if(event.name != "") { %>
-        <h2 class="bootstro thetitle" data-bootstro-title="Current Shoot Title" data-bootstro-content="The title of the shoot you are currently working on." data-bootstro-placement="bottom"><span><%= event.name %></span> <a  style="font-size:10pt;padding-bottom:10px;vertical-align:middle" href="#" onclick="edittitle();"><sup><i data-toggle="tooltip" title="Change Shoot Title" class="glyphicon glyphicon-pencil text-muted"></i></sup></a></h2>
+        <h1 class="thetitle" style="clear:both">
+            <div class="text-primary" style="display:inline"><% if (typeof(pagetitle)!='undefined'){ %><%- pagetitle %><% }%></div>
+            <span><%= event.name %></span> <a  style="font-size:10pt;padding-bottom:10px;vertical-align:middle" href="#" onclick="edittitle();"><sup><i data-toggle="tooltip" title="Change Shoot Title" class="glyphicon glyphicon-pencil text-muted"></i></sup></a>
+        </h1>
         <% } %>
       </div>
       <% } %>
 
-      </div>
+      
       </div> <!-- /container -->
+<% if (event.name && typeof(viewonly)=='undefined') { %>
+<div class="container">
+    <div class="progressmenu">
+        <a data-toggle="tooltip" data-delay="500" title="prepare for your shoot" class="col-sm-offset-2 col-xs-3 col-sm-2 mainmenu text-muted <% if (page=='event') { %>active<%}%>" href="/event/view/<%- event.id %>">Settings
+        </a>
+        <a data-toggle="tooltip" data-delay="500" title="decide what to shoot" class="col-xs-3 col-sm-2 mainmenu text-muted <% if (page=='commission') { %>active<%}%>" href="/commission/<%- event.id %>">Adjust
+        </a>
+        <a data-toggle="tooltip" data-delay="500" title="real-time view of your footage" class="col-xs-3 col-sm-2 mainmenu text-muted <% if (page=='shoot') { %>active<%}%>" href="/shoot/<%- event.id %>">Review
+        </a>
+        <a data-toggle="tooltip" data-delay="500" title="download your video for editing" class="col-xs-3 col-sm-2 mainmenu text-muted <% if (page=='post') { %>active<%}%>" href="/post/<%- event.id %>">Export</a>
+        
+    </div>
+</div>
+<%}%>
 
       <div class="container" style="padding-top:10px;">
+        <% if (event.name) { %>
+          <a href="bootlegger://connect/?eventid=<%- event.id %>" class="visible-xs-block btn btn-lg btn-success" style="margin-bottom:20px">
+            <i class="fa fa-mobile"></i> Launch App to Start Filming
+          </a>
+          <%}%>
         <% if(flash && flash.msg) { %>
           <script>var flashmsg=true;</script>
         <ul class="myalert alert alert-info">
+          
           <li><i class="fa fa-info"></i> <%- flash.msg %></li>
         </ul>
         <br>
@@ -280,122 +288,9 @@ var apikey = '<%- apikey %>';
 
 <div class="row">
 
-<% if (typeof showhelp == 'undefined') { %>
-<!-- start menu div -->
-
-<nav>
-<div class="col-md-2 navbar-collapse collapse" style="overflow-y:visible !important; margin-bottom:20px;padding-bottom:20px;" id="main-menu">
-<div data-spy="affix" data-offset-top="145" style="top:20px;" class="menuaffix">
-
-<div class="list-group bootstro" data-bootstro-title="Shoot Menu" data-bootstro-content="Main settings for your shoot. These steps occur in order, ending with you exporting your video to Dropbox." data-bootstro-placement="right" >
-
-<% if (user) { %>
-<div class="visible-xs">
-    <div class="list-group-item">Hello <%= user.profile.name.givenName %>! <a href="/auth/logout" class="pull-right"> <i class="fa fa-sign-out fa-2x"></i></a></div>
-      <div class="dropdown list-group-item">
-        <a href="#" id="myeventsbtn" data-toggle="dropdown">my shoots <span class="caret"></span></a>
-        <ul class="dropdown-menu eventlist" style="z-index:3000" role="menu">
-          <li class="loading"></li>
-        </ul>
-      </div>
-
-</div>
-
-<% } %>
 
 
-
-<% if (event.name) { %>
-<a class="shootchecklist list-group-item list-group-item-info" style="background:#d9edf7;color:#31708f" href="#">Checklist</a>
-
-
-<a data-toggle="tooltip" data-delay="500" title="decide what to shoot" class="list-group-item mainmenu <% if (page=='commission') { %>active<%}%>" href="/commission/<%- event.id %>">Commission
-  <% if (event.iscommission){ %>
-    <i class="fa fa-fw fa-check fa-lg pull-right"></i>
-    <% } else { %>
-    <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
-    <% } %>
-</a>
-<a data-toggle="tooltip" data-delay="500" title="who can participate and when" class="list-group-item mainmenu <% if (page=='event') { %>active<%}%>" href="/event/view/<%- event.id %>">Prepare
-  <% if (event.isprepare){ %>
-    <i class="fa fa-fw fa-check fa-lg pull-right"></i>
-    <% } else { %>
-    <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
-    <% } %></a>
-<a data-toggle="tooltip" data-delay="500" title="real-time view of your footage" class="list-group-item mainmenu text-muted <% if (page=='shoot') { %>active<%}%>" href="/shoot/<%- event.id %>">Shoot
-  <% if (event.isshoot){ %>
-    <i class="fa fa-fw fa-check fa-lg pull-right"></i>
-    <% } else { %>
-    <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
-    <% } %>
-  </a>
-  <!-- <a class="list-group-item mainmenu text-muted <% if (page=='watch') { %>active<%}%>" href="/watch">Watch
-  <% if (event.ispost){ %>
-    <i class="fa fa-fw fa-check fa-lg pull-right"></i>
-    <% } else { %>
-    <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
-    <% } %></a> -->
-<a data-toggle="tooltip" data-delay="500" title="download your video for editing" class="list-group-item mainmenu text-muted <% if (page=='post') { %>active<%}%>" href="/post/<%- event.id %>">Export
-  <% if (event.ispost){ %>
-    <i class="fa fa-fw fa-check fa-lg pull-right"></i>
-    <% } else { %>
-    <i class="fa fa-fw fa-clock-o fa-lg pull-right text-muted"></i>
-    <% } %></a>
-
-<%}%>
-</div>
-
-<% if (action!='new') { %>
-<a data-toggle="tooltip" data-delay="500" title="setup a new shoot" class="btn btn-success" style="width:100%;margin-bottom:15px;" href="/commission/new"><span class="glyphicon glyphicon-plus pull-left"></span> New Shoot</a>
-<% }%>
-<a class="btn btn-primary" data-toggle="tooltip" data-delay="500" title="view all videos and edits I have produced" style="width:100%;margin-bottom:15px;" href="/watch"><span class="glyphicon glyphicon-film pull-left"></span> My Footage</a>
-
-<% if (typeof(myevents) != 'undefined' && myevents.length > 0) { %>
-<div class="popover bottom" style="z-index:inherit !important;width:inherit !important;margin-top:-10px;padding:10px;display:inline-block;position:relative;">
-  <div class="arrow"></div>
-      <small>You have recently contributed to:
-    <% _.each(myevents,function(e){ %>
-    <a href="/watch/view/<%- e.id %>"><%- e.name %></a>,
-    <%});%></small>
-</div>
-<% } %>
-
-<% if (event.name && _.contains(sails.config.admin_email,req.session.passport.user.profile.emails[0].value)) { %>
-<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
-<script src="/cast/playlist_sender.js"></script>
-  <div id="cast_wrapper" style="display:none;" >
-    <a tabindex="0" class="btn btn-default" style="width:100%;" role="button" data-html="true" data-toggle="popover" data-placement="top" data-trigger="click" id="chromecast" title="Chromecast"><img src="/cast/images/cast_icon_idle.png" style="width:1.5em;float:left;"/> Cast Event</a>
-    <div style="display:none;">
-    <div id="cast_content">
-      <div style="width:100%;">
-        <img style="opacity:0.7;float:left;margin-left:-5px;margin-top:-5px;margin-right:10px;" src="/cast/images/cast_icon_idle.png" id="casticon" />
-        <span id="playerstate" style="margin-top:12px;float:right;" class="badge">IDLE</span>
-      </div>
-      <div style="clear:both;">
-          <a onclick="launchApp()" href="#">cast event</a> | <a onclick="stopApp()" href="#">stop cast</a>
-      </div>
-        <button id="playpauseresume" onclick="playMedia()" style="display:none;">Play</button>
-      <div style="width:100%;position:absolute;left:0;bottom:0;background:rgba(255,255,255,0.4);">
-        <div id="progress" style="background:#428bca;opacity:0.6;transition: width 1s linear;height:5px;width:0;padding:0;margin:0;"></div>
-      </div>
-      <textarea rows="20" cols="70" id="debugmessage" style="display:none;">
-      </textarea>
-    </div>
-  </div>
-</div>
-<% } %>
-
-</div>
-</div>
-
-</nav>
-
-<% } %>
-<% if (typeof showhelp == 'undefined') { %>
-<div class="col-md-10">
-<% } else { %>
 <div class="col-md-12">
-<% } %>
 
   <% if (notonthisserver) { %>
             <div class="jumbotron">
@@ -414,17 +309,20 @@ var apikey = '<%- apikey %>';
 
  <div class="container">
       <!-- Site footer -->
-      <div class="footer text-muted" style="min-height:100%;">
-        <a class="text-muted" href="/privacy">Privacy Policy</a> | <a class="text-muted" href="/terms">Terms</a> | <a class="text-muted" href="/howtobootleg">Help</a> | <a class="text-muted" href="/api/signup">Developers</a>  |  <a class="text-muted" href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger">Download Android App</a> | <span>&copy; Bootlegger <%- new Date().getFullYear() %></span>
+      <div class="footer text-muted" style="min-height:100%;text-align:center;">
+        <!--<a href="#lang" data-toggle="popover" data-placement="top" data-html="true" data-content="<ul class='locale-selector'><% _.each(_.without(sails.config.i18n.locales,req.getLocale()),function(l){ %><li> <a href='/auth/locale/<%- l %>'><%- __(l) %> <div style='display:inline-block;float:right;' class='flag flag-<%- l %>' /></div> </a> </li><% }) %></ul>" data-title="<%- __('Select Language') %>">
+          <div style="display:inline-block;float:left;" class="flag flag-<%- req.getLocale() %>" /></div>
+        </a>-->
+        <a class="text-muted" href="/privacy">Privacy</a> | <a class="text-muted" href="/terms">Terms</a> | <a class="text-muted" href="/howtobootleg">Help</a> | <a class="text-muted" href="/platform">Platform</a>  |  <a class="text-muted" href="/getapp">Download App</a> | <span>&copy; Bootlegger <%- new Date().getFullYear() %></span>
       </div>
-    </div>
-    
+</div>
     <% if (event.name) { %>
     <script>
-    var mastereventname = "<%- event.name %>";
+    var mastereventname = "<%- encodeURIComponent(event.name) %>";
     var mastereventid = "<%- event.id %>";
     var masteruserid = "<%- user.id %>";
     </script>
     <% } %>
+    
   </body>
 </html>

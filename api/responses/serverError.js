@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * 500 (Server Error) Response
  *
  * Usage:
@@ -25,6 +30,8 @@ module.exports = function serverError (data, options) {
   res.locals.user = false;
   res.locals.event = false;
   res.locals.flash = false;
+  res.locals.action='error';
+    res.locals.rtl = false;
   res.locals.notonthisserver = false;
   res.locals.apikey = '';
 
@@ -42,8 +49,7 @@ module.exports = function serverError (data, options) {
   //console.log("**** "+req.is());
 
   // If the user-agent wants JSON, always respond with JSON
-  if (req.wantsJSON || req.param('apikey')) {
-    //console.log("returning now");
+  if (req.wantsJSON && req.param('apikey')) {
     return res.json({error:data.toString()});
   }
 
@@ -59,12 +65,12 @@ module.exports = function serverError (data, options) {
   // Otherwise try to guess an appropriate view, or if that doesn't
   // work, just send JSON.
   if (options.view) {
-    return res.view(options.view, { data: data,_layoutFile:null });
+    return res.view(options.view, { data: data });
   }
 
   // If no second argument provided, try to serve the default view,
   // but fall back to sending JSON(P) if any errors occur.
-  else return res.view('500', { data: data,_layoutFile:null }, function (err, html) {
+  else return res.view('500', { data: data }, function (err, html) {
 
     // If a view error occured, fall back to JSON(P).
     if (err) {
@@ -87,4 +93,3 @@ module.exports = function serverError (data, options) {
   });
 
 };
-

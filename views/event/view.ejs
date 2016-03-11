@@ -88,16 +88,26 @@ input[readonly] {
 }
 
 #editor {overflow-y:scroll; max-height:300px;min-height:300px;}
+
+.page-header
+{
+  position:relative;
+}
+
+.updated
+{
+  position:absolute;
+  right:25px;
+  top:20px;
+  font-size:10pt;
+}
 </style>
 
 <div class="thispage">
 
-<div class="page-header">
-  <h1>Prepare Shoot
-<small>Adjust specific settings for your shoot.</small>
-  </h1>
-</div>
-<div class="panel panel-default">
+<span class="updated"><i style="display:none;" class="fa fa-spin fa-spinner"></i> <span class="inner text-muted"></span> </span>
+
+<div class="panel panel-default hidden-xs">
 <div class="alert alert-success" style="margin:0;">
   <i class="fa fa-check fa-4x" style="float:left;margin-top:15px;margin-right:10px;"></i>
   <h2>All Systems Go! Download the App to get started.
@@ -155,29 +165,29 @@ This page will include phase editing and template updates. Stay tuned!
         </div>
   </div>
   <div class="row">
-    <div class="text-muted text-info col-sm-8 col-sm-offset-4" style="display:block;">This shoot is built on the <%- event.eventtype.name %> template.</div>
-  </div>  
+    <div class="text-muted col-sm-8 col-sm-offset-4" style="display:block;"><i class="fa fa-code-fork fa-rotate-90"></i> This shoot is built on the <%- event.eventtype.name %> template.</div>
+  </div>
 </div>
 <div class="row">
   <form action="/event/image/<%- event.id %>?apikey=<%- apikey%>" method="post" enctype="multipart/form-data">
     <label class="col-sm-4 control-label" data-delay="300" data-toggle="tooltip" title="Loads an icon that contributors will see when they log into the mobile app">Shoot Icon <i style="color:silver" class="fa fa-question-circle"></i></label>
   <div class="col-sm-6">
-   
+
 
   <div class="fileinput fileinput-new" data-provides="fileinput">
     <div class="fileinput-new thumbnail" style="width: 60px; height: 60px;float:left;" >
-      <img data-src="holder.js/100%x100%" alt="...">
+      <img data-src="holder.js/50x50?text=png \n jpg" alt="...">
     </div>
     <div class="fileinput-preview fileinput-exists thumbnail" style="width: 60px; height: 60px;overflow:hidden;float:left;">
 
     </div>
     <div style="float:right;width:10px;">
-      <span class="btn btn-link btn-file"><span class="fileinput-new"><i class="fa fa-folder-open"></i></span><span class="fileinput-exists"><i class="fa fa-folder-open"></i></span><input type="file" name="image" required></span>
+      <span class="btn btn-link btn-file"><span class="fileinput-new"><i class="fa fa-folder-open"></i></span><span class="fileinput-exists"><i class="fa fa-folder-open"></i></span><input type="file" accept="image/png, image/jpeg" name="image" required></span>
       <a href="/event/clearicon/<%- event.id %>?apikey=<%- apikey%>" class="btn btn-link" data-toggle="tooltip" title="remove icon"><i class="fa fa-times"></i></a>
       <!--<a href="#" class="btn btn-link fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i></a>-->
     </div>
-    
-    
+
+
   </div>
 </div>
 <!--
@@ -189,21 +199,21 @@ This page will include phase editing and template updates. Stay tuned!
   <form action="/event/background/<%- event.id %>?apikey=<%- apikey%>" method="post" enctype="multipart/form-data">
     <label class="col-sm-4 control-label" data-delay="300" data-toggle="tooltip" title="Loads a background that contributors will see when they log into the mobile app">Tile Background <i style="color:silver" class="fa fa-question-circle"></i></label>
   <div class="col-sm-6">
-   
+
 
   <div class="fileinput fileinput-new" data-provides="fileinput">
     <div class="fileinput-new thumbnail" style="width: 150px; height: 60px;float:left;" >
-      <img data-src="holder.js/100%x100%" alt="...">
+      <img data-src="holder.js/140x50?text=png \n jpg" alt="...">
     </div>
     <div class="fileinput-preview fileinput-exists thumbnail" style="width: 150px; height: 60px;overflow:hidden;float:left;">
 
     </div>
     <div style="float:right;width:10px;">
-      <span class="btn btn-link btn-file"><span class="fileinput-new"><i class="fa fa-folder-open"></i></span><span class="fileinput-exists"><i class="fa fa-folder-open"></i></span><input type="file" name="image" required></span>
+      <span class="btn btn-link btn-file"><span class="fileinput-new"><i class="fa fa-folder-open"></i></span><span class="fileinput-exists"><i class="fa fa-folder-open"></i></span><input type="file" accept="image/png, image/jpeg" name="image" required></span>
       <a href="/event/clearbackground/<%- event.id %>?apikey=<%- apikey%>" class="btn btn-link" data-toggle="tooltip" title="remove background"><i class="fa fa-times"></i></a>
       <!--<a href="#" class="btn btn-link fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i></a>-->
     </div>
-    
+
   </div>
 </div>
 
@@ -212,23 +222,19 @@ This page will include phase editing and template updates. Stay tuned!
 </form>
 </div>
 
-<div class="row">
-         
-            <div style="position:relative;background:url(/images/event_back.png);background-size:cover;width:350px;height:86px;border-radius:3px;margin:auto auto; margin-bottom:10px;overflow:hidden;box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);">
-             <% if (event.iconbackground) { %>
+<div class="row text-center">
+
+            <div class="panel panel-default col-sm-4 col-sm-offset-4" style="position:relative;background:url(/images/event_back.png);background-size:cover;height:170px;margin-bottom:20px;">
+                <% if (event.iconbackground) { %>
                   <img src="<%-event.iconbackground %>" style="position:absolute;width:100%;height:100%;top:0;left:0;"/>
                 <% } %>
-                  <div style="background:rgba(0,0,0,0.3);position:absolute;width:100%;height:100%;top:0;left:0;"></div>                  
+                  <div style="background:rgba(0,0,0,0.3);position:absolute;width:100%;height:100%;top:0;left:0;"></div>
                <% if (event.icon) { %>
-                <img src="<%-event.icon%>" style="position:absolute;left:15px;top:15px;width:60px;height:60px;display:inline-block;margin-right:5px;"/>
+                <img src="<%-event.icon%>" style="position:absolute;bottom:-30px;margin-left:-30px;width:60px;height:60px;display:inline-block;border-radius:100px;"/>
               <%} else {%>
-                <div style="position:absolute;width:60px;height:60px;padding-top:14px;left:18px;top:10px;display:inline-block;float:left;margin-right:5px;color:white;"><i class="fa fa-calendar-o fa-3x"></i></div>
+                <div style="position:absolute;bottom:-30px;padding-top:10px;margin-left:-30px;width:60px;height:60px;display:inline-block;border-radius:100px;background:white;"><i class="fa fa-calendar-o fa-3x"></i></div>
               <% } %>
-              <div style="position:absolute;color:white;font-size:14pt;left:85px;top:9px;">
-              <%- event.name %>  
-              </div>
-               
-            </div>  
+            </div>
   </div>
 
   <!--<% if (user.currentevent != event.id) { %>
@@ -241,13 +247,14 @@ This page will include phase editing and template updates. Stay tuned!
 <label for="inputEmail5" class="col-sm-6 col-sm-offset-4">This is your default shoot</label>
    </div>
 <% } %>-->
-  
+
 </div>
 
 
 <div class="clearfix"></div>
 <div class="page-header">
-<h1>Privacy, Sharing and Access</h1>
+<h1>Privacy, Sharing and Access  <span class="dirty text-danger" style="display:none;font-size:10pt;">changes not saved</span> <span class="updated"><i style="display:none;" class="fa fa-spin fa-spinner"></i> <span class="inner text-muted"></span> </span></h1>
+
 </div>
 <div class="popover right publicbox" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
     <div class="arrow"></div>
@@ -259,7 +266,7 @@ This page will include phase editing and template updates. Stay tuned!
 
 <div class="pull-left form-horizontal col-md-8">
   <div>
-    <label class="control-label"  data-delay="300" data-toggle="tooltip" title="Terms and conditions for participants to sign up to for the shoot">Media Release <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <label class="control-label"  data-delay="300" data-toggle="tooltip" title="Terms and Conditions that contributors will need to agree to before taking part in the shoot">Media Release <i style="color:silver" class="fa fa-question-circle"></i></label>
     <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
       <div class="btn-group">
         <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
@@ -315,7 +322,7 @@ This page will include phase editing and template updates. Stay tuned!
   </div>
 </div>
   <div class="col-xs-7 col-sm-9">
-    <label data-delay="300" data-toggle="tooltip" data-html="true" title="Shoots with this option enabled will be listed together under then name of the account that created the shoot <strong>(<%- event.ownedby_user.profile.displayName %>)</strong> for participants. Without this option, this shoot will appear in the main list of shoots.">Group this Shoot as Part of a Larger Event <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <label data-delay="300" data-toggle="tooltip" data-html="true" title="Shoots with this option enabled will be listed together under the name of the account that created the shoot <strong>(<%- event.ownedby_user.profile.displayName %>)</strong> for participants. Without this option, this shoot will appear in the main list of shoots.">Group this Shoot as Part of a Larger Event <i style="color:silver" class="fa fa-question-circle"></i></label>
     <!-- <a href="#tooltip" data-toggle="popover" data-html="true" data-content="Shoots with this option enabled will be listed together under then name of the account that created the shoot <strong>(<%- event.ownedby_user.profile.displayName %>)</strong> for participants. Without this option, this shoot will appear in the main list of shoots."></a> -->
     <!-- <p>Shoots with this option enabled will be listed together under then name of the account that created the shoot <strong>(<%- event.ownedby_user.profile.displayName %>)</strong> for participants. Without this option, this shoot will appear in the main list of shoots.</p> -->
   </div>
@@ -329,7 +336,7 @@ This page will include phase editing and template updates. Stay tuned!
     </div>
   </div>
   <div class="col-xs-7 col-sm-9">
-    <label data-delay="300" data-toggle="tooltip" title="Turning this on allows any member of the public with the Bootlegger app to join and contribute to your shoot. If disabled, you can specifically invite contributors to get involved by sending them an invite link below.">Anyone Can Contribute <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <label data-delay="300" data-toggle="tooltip" title="Turning this on enables anyone using the Bootlegger app to contribute to your shoot. Turning it off allows only invited contributors to take part.">Anyone Can Contribute <i style="color:silver" class="fa fa-question-circle"></i></label>
     <!-- <a href="#tooltip" data-toggle="popover" data-html="true" data-content="Turning this on allows any member of the public with the Bootlegger app to join and contribute to your shoot. If disabled, you can specifically invite contributors to get involved by sending them an invite link below."><i class="fa fa-question-circle"></i></a> -->
     <!-- <p>Turning this on allows any member of the public with the Bootlegger app to join and contribute to your shoot. If disabled, you can specifically invite contributors to get involved by sending them an invite link below.</p> -->
 </div>
@@ -344,6 +351,20 @@ This page will include phase editing and template updates. Stay tuned!
   </div>
   <div class="col-xs-7 col-sm-9">
     <label data-delay="300" data-toggle="tooltip" title="If enabled, anyone who <strong>contriibutes</strong> to your shoot can view and micro-edit their, and everyone eles's videos. If disabled, contributors can only playback their own footage." data-html="true">Contributors Can View All Footage <i style="color:silver" class="fa fa-question-circle"></i></label>
+    <!-- <a href="#tooltip" data-toggle="popover" data-html="true" data-content="If enabled, anyone who <strong>contriibutes</strong> to your shoot can view and micro-edit their, and everyone eles's videos. If disabled, contributors can only playback their own footage."><i class="fa fa-question-circle"></i></a> -->
+
+    <!-- <p>If enabled, anyone who <strong>contriibutes</strong> to your shoot can view and micro-edit their, and everyone eles's videos. If disabled, contributors can only playback their own footage.</p> -->
+  </div>
+</div>
+
+<div class="row" style="margin-bottom:5px;">
+  <div class="col-xs-5 col-sm-3">
+    <div  id="publicedit" >
+      <input class="make-switch" name="viewevent" type="checkbox" <%= event.publicedit ? "checked" : ""%>/>
+    </div>
+  </div>
+  <div class="col-xs-7 col-sm-9">
+    <label data-delay="300" data-toggle="tooltip" title="If enabled, anyone (even those who have not contributed to the shoot) who have logged in to Bootlegger can edit the content in the shoot." data-html="true">Any Logged In User Can Edit Footage <i style="color:silver" class="fa fa-question-circle"></i></label>
     <!-- <a href="#tooltip" data-toggle="popover" data-html="true" data-content="If enabled, anyone who <strong>contriibutes</strong> to your shoot can view and micro-edit their, and everyone eles's videos. If disabled, contributors can only playback their own footage."><i class="fa fa-question-circle"></i></a> -->
 
     <!-- <p>If enabled, anyone who <strong>contriibutes</strong> to your shoot can view and micro-edit their, and everyone eles's videos. If disabled, contributors can only playback their own footage.</p> -->
@@ -369,7 +390,10 @@ This page will include phase editing and template updates. Stay tuned!
 
 <div class="clearfix"></div>
 <div class="page-header">
-<h1>Production Team</h1>
+<h1>Production Team
+  <span class="updated"><i style="display:none;" class="fa fa-spin fa-spinner"></i> <span class="inner text-muted"></span> </span>
+
+</h1>
 </div>
     <div class="popover right publicbox" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;<%= event.public ? "display:none;" : ""%>">
         <div class="arrow"></div>
@@ -409,7 +433,10 @@ This page will include phase editing and template updates. Stay tuned!
 
 
 <div class="page-header">
-  <h1>Shoot Meta-Data</h1>
+  <h1>Shoot Meta-Data
+    <span class="updated"><i style="display:none;" class="fa fa-spin fa-spinner"></i> <span class="inner text-muted"></span> </span>
+
+  </h1>
 </div>
     <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
         <div class="arrow"></div>
@@ -447,10 +474,13 @@ This page will include phase editing and template updates. Stay tuned!
 </div>
 </div> -->
 
-<% if (event.eventtype.roleimg) { %>
+<% if (event.eventtype.hasroleimg) { %>
 <div class="clearfix"></div>
 <div class="page-header">
-  <h1>Location Map</h1>
+  <h1>Location Map
+    <span class="updated"><i style="display:none;" class="fa fa-spin fa-spinner"></i> <span class="inner text-muted"></span> </span>
+
+  </h1>
 </div>
     <div class="popover right" style="display:inline-block;right:25px;left:inherit;position:relative;float:right;">
         <div class="arrow"></div>
@@ -476,7 +506,7 @@ This page will include phase editing and template updates. Stay tuned!
 </form>
 <div class="panel" id="map" style="position:relative;">
   <% if (event.eventtype.roleimg === true || typeof event.eventtype.roleimg == 'undefined') { %>
-  <img id="roleimg" src="holder.js/100%x200" style="width:100%;height:200px;opacity:0.6;"/>
+  <img id="roleimg" src="holder.js/598x300?text=png, jpg" style="width:100%;height:300px;opacity:0.6;"/>
   <% } else { %>
   <img id="roleimg" src="<%- event.eventtype.roleimg %>" style="width:100%;opacity:0.6;"/>
 <% } %>
@@ -570,7 +600,7 @@ This page will include phase editing and template updates. Stay tuned!
 <div class="clearfix"></div>
 <br><br>
 <div class="col-xs-12 text-center">
-  <a href="/event/remove/<%= event.id %>" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i> Delete This Shoot Forever</a>
+  <a href="/event/remove/<%= event.id %>?apikey=<%- apikey %>" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i> Delete This Shoot Forever</a>
 </div>
 
 </div>
@@ -605,11 +635,11 @@ This page will include phase editing and template updates. Stay tuned!
 
 <script id="coverage-template" type="text/x-handlebars-template">
 
-<div class="list-group-item active" data-delay="300" data-toggle="tooltip" title="Allows you to identify by name, specific people or objects that you’d like your contributors to capture .">Shoot Meta-Data <i style="color:silver" class="fa fa-question-circle"></i></div>
+<div class="list-group-item active" data-delay="300" data-toggle="tooltip" title="Allows you to identify specific people of objects for your contributors to capture. Change these on the Commission page">Shoot Meta-Data <i style="color:silver" class="fa fa-question-circle"></i></div>
   {{#each coverage_classes}}
   {{setIndex @key}}
   <div class="list-group-item">
-    
+
     <span class="col-sm-2"><strong>{{this.name}}</strong></span>
     <div class="col-sm-10">
 
@@ -630,11 +660,11 @@ This page will include phase editing and template updates. Stay tuned!
               <input type="radio" i1="{{../index}}" i2="{{@index}}" name="leadlocation" value="Right"> Right
             </label>
           </div>
-          
+
            <button class="btn btn-link pull-right" style="margin-right:15px;padding:3px;" onclick="removecoverage({{../index}},{{@index}})"><i class="fa fa-minus"></i></button>
         <!--</div>-->
 
-        
+
         </div>
         {{/each}}
 
@@ -673,7 +703,10 @@ This page will include phase editing and template updates. Stay tuned!
 <a class="list-group-item active" href="#" data-delay="300" data-toggle="tooltip" title="Adds users who can edit the shoot settings via the website">Shoot Administrators <i style="color:silver" class="fa fa-question-circle"></i></a>
   {{#each this}}
   <div class="list-group-item">
-    {{this.name}} <button style="padding:3px;" onclick="removeadmin('{{this.id}}')" class="btn btn-link pull-right"><i class="fa fa-minus"></i></button>
+    {{this.name}}
+    {{#unless this.isme}}
+      <button style="padding:3px;" onclick="removeadmin('{{this.id}}')" class="btn btn-link pull-right"><i class="fa fa-minus"></i></button>
+      {{/unless}}
   </div>
   {{else}}
   <div class="list-group-item"><span class="text-mute">only you have access to this shoot</span></div>
@@ -742,10 +775,11 @@ $(function() {
             stop: function(ev, ui) {
               //dragging stopped -- calculate and update:
               var token = $(ui.helper[0]);
-
+              startupdate();
               console.log($(ui.helper[0]).data('role'));
               io.socket.post('/event/updaterole/<%= event.id %>',{role: $(ui.helper[0]).data('role'), x:ui.position.left / imgwidth, y:ui.position.top / imgheight},function(response)
               {
+                stopupdate();
                 showok('Position Updated',$('#roleimg'));
               });
 
@@ -794,6 +828,11 @@ function bootlegger_init(){
     $('#publicshare').on('switchChange.bootstrapSwitch', function (e, data) {
         var value = data;
         updateshare(data);
+    });
+    
+    $('#publicedit').on('switchChange.bootstrapSwitch', function (e, data) {
+        var value = data;
+        updateedit(data);
     });
 
     $('.make-switch.multi').on('switchChange.bootstrapSwitch', function (e, data) {
@@ -845,21 +884,23 @@ function bootlegger_init(){
               addcoverage($(this).attr('rel'));
             }
           });
-          
+
           $('.addcov').blur(function (e) {
             addcoverage($(this).attr('rel'));
           });
-          
-          
+
+
 
           $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
             //radio button changed (left, right, center)
             //alert($(this).val());
+            startupdate();
             var i1 = $(this).attr("i1");
             var i2 = $(this).attr("i2");
             io.socket.post('/event/updatedirection/<%= event.id %>',{parentindex:i1, index: i2, direction:$(this).val()},function(response)
             {
-              showok('Lead Location Updated',$('[rel='+i1+']'));
+              stopupdate();
+              //showok('Lead Location Updated',$('[rel='+i1+']'));
             });
           });
       });
@@ -882,13 +923,26 @@ function bootlegger_init(){
 }
 //});
 
+function startupdate()
+{
+  $('.updated i').show();
+}
+
+function stopupdate()
+{
+  $('.updated i').hide();
+  $('.updated > .inner').text('last saved at ' + moment().format('HH:mm:ss'));
+}
+
 function addcode()
 {
+  startupdate();
 	if ($('#number').val()!='' || $('#email').val()!='')
 	{
   	io.socket.post('/event/addcode/',{id:'<%= event.id%>', number: $('#number').val(),email:$('#email').val()}, function (response) {
 
   	  io.socket.get('/event/codes/<%= event.id%>', function(response){
+        stopupdate();
       		//console.log(response);
         		$('#eventcodes').html(codestemplate(response));
               $('[data-toggle="tooltip"]').tooltip();
@@ -899,10 +953,12 @@ function addcode()
 
 function resendcode(code)
 {
+  startupdate();
   	io.socket.post('/event/resendcode/',{id:'<%= event.id%>', code:code}, function (response) {
 
   	  io.socket.get('/event/codes/<%= event.id%>', function(response){
       		//console.log(response);
+          stopupdate();
         		$('#eventcodes').html(codestemplate(response));
               $('[data-toggle="tooltip"]').tooltip();
       	});
@@ -911,10 +967,12 @@ function resendcode(code)
 
 function removeadmin(user)
 {
+  startupdate();
   io.socket.post('/event/removeadmin/',{id:'<%= event.id%>', userid:user}, function (response) {
 
     io.socket.get('/event/admins/<%= event.id%>', function(response){
         //console.log(response);
+        stopupdate();
           $('#admins').html(adminstemplate(response));
             $('[data-toggle="tooltip"]').tooltip();
       });
@@ -923,10 +981,13 @@ function removeadmin(user)
 
 function remcode(code)
 {
+  startupdate();
   io.socket.post('/event/remcode/',{id:'<%= event.id%>', code:code}, function (response) {
 
     io.socket.get('/event/codes/<%= event.id%>', function(response){
         //console.log(response);
+
+        stopupdate();
           $('#eventcodes').html(codestemplate(response));
             $('[data-toggle="tooltip"]').tooltip();
       });
@@ -936,11 +997,14 @@ function remcode(code)
 
 function addadmin()
 {
+  
   if ($('#admina').val()!='')
   {
+    startupdate();
     io.socket.post('/event/addadmin/',{id:'<%= event.id%>', email: $('#admina').val()}, function (response) {
       showok(response.msg,$('#admins'));
       io.socket.get('/event/admins/<%= event.id%>', function(response){
+        stopupdate();
           //console.log(response);
             $('#admins').html(adminstemplate(response));
               $('[data-toggle="tooltip"]').tooltip();
@@ -951,12 +1015,15 @@ function addadmin()
 
 function addphase()
 {
+  
   if ($('#phasea').val()!='')
   {
+    startupdate();
     io.socket.post('/event/addphase/',{id:'<%= event.id%>', phase: $('#phasea').val()}, function (response) {
       showok(response.msg,$('#phases'));
       io.socket.get('/event/phases/<%= event.id%>', function(response){
           //console.log(response);
+          stopupdate();
             $('#phases').html(phasetemplate(response));
               $('[data-toggle="tooltip"]').tooltip();
         });
@@ -966,11 +1033,13 @@ function addphase()
 
 function removephase(index)
 {
+  startupdate();
   io.socket.post('/event/removephase/<%= event.id %>',{index: index},function(response)
   {
     showok('Removed Phase',$('#phases'));
     io.socket.get('/event/phases/<%= event.id%>', function(response){
           //console.log(response);
+          stopupdate();
             $('#phases').html(phasetemplate(response));
               $('[data-toggle="tooltip"]').tooltip();
         });
@@ -982,26 +1051,30 @@ function addcoverage(index)
   if ($('[rel='+index+']').val().length > 0)
   {
    //alert($('[rel='+index+']').val());
+   startupdate();
     io.socket.post('/event/addcoverage/<%= event.id %>',{index:index,item:$('[rel='+index+']').val()},function(response)
     {
+      stopupdate();
       $('[rel='+index+']').val('');
       showok('Updated Meta-Data',$('[rel='+index+']'));
       io.socket.get('/event/coverage/<%= event.id%>', function(response){
           //console.log(response);
             $('#coverage_classes').html(coveragetemplate(response));
               $('[data-toggle="tooltip"]').tooltip();
-  
+
             $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
               //radio button changed (left, right, center)
               //alert($(this).val());
+               startupdate();
               var i1 = $(this).attr("i1");
               var i2 = $(this).attr("i2");
               io.socket.post('/event/updatedirection/<%= event.id %>',{parentindex:i1, index: i2, direction:$(this).val()},function(response)
               {
-                showok('Lead Location Updated',$('[rel='+i1+']'));
+                stopupdate();
+                //showok('Lead Location Updated',$('[rel='+i1+']'));
               });
             });
-  
+
             $('.addcov').keyup(function (e) {
               var code = e.keyCode || e.which;
               if (code === 13)
@@ -1017,8 +1090,10 @@ function addcoverage(index)
 
 function removecoverage(index, index1)
 {
+  startupdate();
   io.socket.post('/event/removecoverage/<%= event.id %>',{parentindex: index, index:index1},function(response)
   {
+    stopupdate();
     showok('Updated Meta-Data',$('[rel='+index+']'));
     io.socket.get('/event/coverage/<%= event.id%>', function(response){
         //console.log(response);
@@ -1028,11 +1103,13 @@ function removecoverage(index, index1)
           $(document).on('change', 'input:radio[name=leadlocation]', function (event) {
             //radio button changed (left, right, center)
             //alert($(this).val());
+             startupdate();
             var i1 = $(this).attr("i1");
             var i2 = $(this).attr("i2");
             io.socket.post('/event/updatedirection/<%= event.id %>',{parentindex:i1, index: i2, direction:$(this).val()},function(response)
             {
-              showok('Lead Location Updated',$('[rel='+i1+']'));
+              stopupdate();
+              //showok('Lead Location Updated',$('[rel='+i1+']'));
             });
           });
 
@@ -1047,33 +1124,39 @@ function removecoverage(index, index1)
 
 function updatestart(d)
 {
+  startupdate();
   var td = moment(d).format("DD-MM-YYYY");
   io.socket.post('/event/edit/<%= event.id %>',{starts:td},function(response)
   {
+    stopupdate();
     showok('Event Start Date Updated',$('[name=starts]'));
   });
 }
 
 function updateend(d)
 {
+  startupdate();
   var td = moment(d).format("DD-MM-YYYY");
   io.socket.post('/event/edit/<%= event.id %>',{ends:td},function(response)
   {
+     stopupdate();
     showok('Event End Date Updated',$('[name=ends]'));
   });
 }
 
 function validateTime(time) {
     var re = /\d{1,2}([apAP][mM]){1}/;
-    return re.test(time);
+    return re.test(time) && time.length < 5 && time.length > 2;
 }
 
 function updatestarttime()
 {
   if (validateTime($('[name=starts_time]').val()))
   {
+     startupdate();
     io.socket.post('/event/edit/<%= event.id %>',{starts_time:$('[name=starts_time]').val()},function(response)
     {
+      stopupdate();
       showok('Event Start Time Updated',$('[name=starts_time]'));
     });
   }
@@ -1087,8 +1170,10 @@ function updateendtime()
 {
    if (validateTime($('[name=ends_time]').val()))
   {
+     startupdate();
     io.socket.post('/event/edit/<%= event.id %>',{ends_time:$('[name=ends_time]').val()},function(response)
     {
+      stopupdate();
       showok('Event End Time Updated',$('[name=ends_time]'));
     });
   }
@@ -1102,8 +1187,10 @@ function updateendtime()
 
 function updatepublic(val)
 {
+  startupdate();
   io.socket.post('/event/edit/<%= event.id %>',{public:val},function(response)
   {
+    stopupdate();
     showok('Updated public status',$('#publicevent'));
     if (!val)
       $('.publicbox').show();
@@ -1114,39 +1201,59 @@ function updatepublic(val)
 
 function updategroup(val)
 {
+  startupdate();
   io.socket.post('/event/edit/<%= event.id %>',{groupevent:val},function(response)
   {
+    stopupdate();
     showok('Updated grouping choice',$('#groupevent'));
   });
 }
 
 function updateview(val)
 {
+  startupdate();
   io.socket.post('/event/edit/<%= event.id %>',{publicview:val},function(response)
   {
+    stopupdate();
     showok('Updated public viewing footage',$('#viewevent'));
   });
 }
 
 function updaterelease()
 {
+  startupdate();
   io.socket.post('/event/edit/<%= event.id %>',{release:$('#editor').cleanHtml()},function(response)
   {
+    $('.dirty').hide();
+    stopupdate();
     showok('Updated Participant Release',$('#editor'));
+  });
+}
+
+function updateedit(val)
+{
+  startupdate();
+  io.socket.post('/event/edit/<%= event.id %>',{publicedit:val},function(response)
+  {
+    stopupdate();
+    showok('Updated editing options',$('#publicedit'));
   });
 }
 
 
 function updateshare(val)
 {
+  startupdate();
   io.socket.post('/event/edit/<%= event.id %>',{publicshare:val},function(response)
   {
+    stopupdate();
     showok('Updated sharing options',$('#publicshare'));
   });
 }
 
 function updatemulti(cat,name,val)
 {
+  startupdate();
    var obj = {};
   obj[cat] = {};
   $.each($('[cat='+cat+']'),function(){
@@ -1156,6 +1263,7 @@ function updatemulti(cat,name,val)
 
   io.socket.post('/event/edit/<%= event.id %>',obj,function(response)
   {
+    stopupdate();
     showok('Updated '+name,$('#'+name));
   });
 }
@@ -1170,12 +1278,15 @@ function makedefault()
 
 $(function(){
 
-  if (localStorage["firstrunview"] == undefined)
-  {
-    $('#myModal').modal('show');
-  }
+  // if (localStorage["firstrunview"] == undefined)
+  // {
+  //   $('#myModal').modal('show');
+  // }
 
-  $('#editor').wysiwyg();
+  $('#editor').wysiwyg().on('change', function(){
+     $('.dirty').show();
+  });
+
 
   $( "#phases" ).sortable({
     placeholder: "placeholder",
@@ -1220,7 +1331,7 @@ function tour()
 
 </script>
 
-<div class="modal fade"  data-show="true" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!--<div class="modal fade"  data-show="true" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog" style="margin:auto auto;margin-top:10%;">
     <div class="modal-content" style="text-align:center;">
       <div class="modal-body">
@@ -1232,5 +1343,5 @@ function tour()
       </div>
     </div>
   </div>
-</div>
+</div>-->
 </div>

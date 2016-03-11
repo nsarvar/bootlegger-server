@@ -1,0 +1,357 @@
+<style>
+	
+	.transp {
+  background-color: #FEFEFE;
+  background-image: -webkit-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), -webkit-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  background-image: -moz-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), -moz-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  background-image: -o-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), -o-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  background-image: -ms-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), -ms-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  background-image: linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  -webkit-background-size:30px 30px;
+  -moz-background-size:30px 30px;
+  background-size:30px 30px;
+  background-position:0 0, 15px 15px;
+}
+
+
+.page-header {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+p
+{
+    color:#9A9A9A;
+}
+
+ ul li
+ {
+   color:#9A9A9A;
+ }
+
+h2{
+        color: #0093B8;
+        margin-top:20px;
+}
+
+.noli
+{
+    list-style: none;
+}
+
+.blog h3{
+    margin:0;
+}
+
+.offset-top
+{
+    margin-top:20px;
+}
+
+.panel-body img{
+        max-width: 300px;
+        display:block;
+        /*border:1px solid silver;*/
+        padding:5px;
+        background:#efefef;
+        /*float:right;*/
+        margin-left:20px;
+        margin-bottom:20px;
+        float:right;
+    }
+</style>
+
+<div class="page-header">
+    <a name="start"></a>
+    <h2>The Power of the Platform</h2>
+</div>
+<p class="text-center">Bootlegger is a powerful platform, which can be used to perform many different tasks in the production workflow. Here are three examples of how the API can be applied to your project:</p>
+<div class="row">
+<div class="col-md-4">
+    <h3><i class="fa fa-camera"></i> Produce Content</h3>
+    <p>Make your own production client (instead of our mobile app) to give users a different end experience, or to automate the production of content.</p>
+    
+</div>
+<div class="col-md-4">
+    <h3><i class="fa fa-archive"></i> Manage Content</h3>
+    <p>Use for managing, storing, distributing and editing content making use of our extensive meta-data, micro-editing and pro-editor resources.</p>
+    
+</div>
+<div class="col-md-4">
+    <h3><i class="fa fa-sitemap"></i> Commission Custom Content</h3>
+    <p>Design your own template editor which allows you to commission content in new ways. For example, your application aids the creation of templates for local football competitions using fixture and team information.</p>
+    
+</div>
+ </div>
+ 
+ <div class="row">
+<div class="col-md-4">
+    <p>API features required:</p>
+    <ul>
+        <li>Connecting as a media producer</li>
+        <li>Responding to real-time direction events</li>
+        <li>Creating and uploading media</li>
+    </ul>
+</div>
+<div class="col-md-4">
+    <p>API features required:</p>
+    
+    <ul>
+        <li>Retrieving media for shoots</li>
+        <li>Adjusting and creating meta-data</li>
+        <li>Creating mico-edits</li>
+        <li>Managing file syncronization and output formatting</li>
+    </ul>
+</div>
+<div class="col-md-4">
+    <p>API features required:</p>
+    
+    <ul>
+        <li>Loading seed templates and the shot library</li>
+        <li>Creating and editing of shoot templates</li>
+        <li>Managing media and exporting content</li>
+    </ul>
+</div>
+ </div>
+<div class="text-center row">
+    <a class="btn btn-lg btn-link" href="//apps.bootlegger.tv" > Browse Apps from the Community <i class="fa fa-chevron-right"></i></a>
+</div>
+
+
+<div class="page-header">
+    <h2>Blog</h2>
+</div>
+<% if (blog) { %>
+<div class="col-xs-12 col-sm-10  col-sm-offset-1 col-lg-8  col-lg-offset-2">
+<div class="blog panel panel-default">
+    <div class="panel-body">
+        <h3><%- blog.meta.title %></h3>
+        <div class="clearfix" style="margin-top:20px;"></div>
+        <p>
+            <%- blog.markdown %>
+        </p>
+        <div class="clearfix"></div>
+        <div style="margin-top:20px;">
+        <span class="pull-right text-muted">by <span class="text-primary"><%- blog.meta.author %></span> on <span class="text-primary"><%- blog.created.format('MMM Do YYYY') %></span></span>            
+            </div>
+    </div>
+</div>
+
+<a href="/blog" class="pull-right btn btn-lg btn-link"> View the entire blog <i class="fa fa-chevron-right"></i></a>
+</div>
+<% } else { %>
+<div class="text-center text-muted">
+    <h1><i class="fa fa-cogs fa-3x"></i></h1> 
+    <span>Currently being written...</span>
+ </div>
+<% } %>
+
+<div class="clearfix"></div>
+
+<div class="page-header">
+    <a name="gettingstarted"></a>
+    <h2>Get Started</h2>
+</div>
+<div class="text-center">
+    <p>The Bootlegger API is accessible through a simple JSON REST interface. To get started, just signup for an API key, clone the examples and away you go!</p>
+
+    <a class="btn btn-lg btn-link" href="/api/signup"><i class="fa fa-key"></i> Sign-up for an API Key</a>
+</div>
+ 
+ <div class="row">
+	<div class="col-sm-4">
+		<h3><i class="fa fa-code"></i> Examples</h3>
+		<p>Clone our reference code examples or use the same open-source code we deploy in the Bootlegger mobile applications to kick start your integration.</p>
+	</div>
+	<div class="col-sm-4">
+		<h3><i class="fa fa-book"></i> Documentation</h3>
+		<p>You can get started working with the REST and Websocket API right away. Use our interactive docs to find out how to integrate and experiment with the endpoints.</p>
+	</div>
+	<div class="col-sm-4">
+		<h3><i class="fa fa-github"></i> Community</h3>
+		<p>Get involved in the community, ask questions or share your experiences to other users.</p>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		<a href="https://github.com/digitalinteraction/bootlegger-api-examples">Bootlegger Examples <i class="fa fa-chevron-right"></i></a>
+	</div>
+	<div class="col-sm-4">
+		<a href="/api/docs">Api Docs <i class="fa fa-chevron-right"></i></a>
+	</div>
+	<div class="col-sm-4">
+		<a href="https://github.com/digitalinteraction/bootlegger-server/issues"> GitHub Issues <i class="fa fa-chevron-right"></i></a>
+	</div>
+</div>
+ <div class="clearfix"></div>
+<div class="page-header">
+    <a name="indetail"></a>
+    <h2>Platform Architecture</h2>
+</div>
+ 
+<!--About the architecture and how the server generally works.
+Also about how clients integrate, media is stored etc.-->
+<!--<img src="architecture.png">    -->
+<p>
+    At a simplistic level, Bootlegger provides a structured way of requesting specific videos, agregating them from a community of contributors and then processing them.     
+</p>
+<p>
+    Bootlegger maps nicely onto the tasks in a traditional production workflow. When using the API, you can choose to integrate with any part of the process. Each provides unique features for specifying, producing and handling footage.
+</p>
+<p>
+    At the core of bootlegger is the <em>shoot template</em>. This is a heirachichal data structure which represents everything about a shoot, and is used throughout the production workflow. Detailed information on structure of the template document is <a href="/api/docs">here</a>.
+</p>
+<p>&nbsp;</p>
+<div class="row">
+    <div class="col-sm-3 text-center offset-top">
+      <img src="/images/api_profile.png" />
+    </div>
+	<div class="col-sm-9">
+        <h3>Authorisation and Profile</h3>
+        <p>Your Bootlegger API application will perform actions in the bootlegger system on behalf of other users. For them to authenticate, you need to provide a browser based login procedure (just like OAuth), which will return a valid session. Once a user is authenticated and you have obtained their session key, you do not nessesearily need any more user interaction.</p>
+        <p>We provide endpoints for:</p>
+        <ul>
+            <li>Redirection to the Login Page</li>
+            <li>Listing shoots the user can edit</li>
+            <li>Logging Out</li>
+        </ul>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-3 text-center offset-top">
+      <img src="/images/api_commission.png" />
+    </div>
+	<div class="col-sm-9">
+        <h3>Commission Design</h3>
+        <p>The bootlegger API primarly gives access to <strong>shoots</strong>. Shoots represent what shots are requested from contributors, and the meta-data to be applied. It can be edited, updated, adjusted in real-time. Seed (and community developed) templates can be used as a starting point for development.</p>
+        <p>We provide endpoints for:</p>
+        <ul>
+            <li>Obtaining the seed templates</li>
+            <li>Listing the shot overlay archive</li>
+            <li>Updating a current shoot template</li>
+        </ul>
+    </div>
+</div>
+ 
+ <div class="row">
+    <div class="col-sm-3 text-center offset-top">
+      <img style="margin-left: 19px;margin-top: 10px;" src="/images/api_manage.png" />
+    </div>
+	<div class="col-sm-9">
+        <h3>Shoot Management</h3>
+        <p>Bootlegger provides 2 direction modes: <strong>automatic</strong> and <strong>pallet</strong>. If a shoot is in automatic mode, shots are allocated to contributors in real-time depending on the paramters set in the template. In pallet mode, contributors are free to start and stop recording when they want. During the shoot, contributions can be monitored, and parameters of the shoot adjusted.</p>
+        <p>We provide endpoints for:</p>
+        <ul>
+            <li>Starting a new shoot</li>
+            <li>Pausing and Starting the auto-director</li>
+            <li>Changing the current phase of a shoot</li>
+            <li>Monitoring contributions in real-time</li>
+        </ul>
+    </div>
+ </div>
+ 
+ <div class="row">
+    <div class="col-sm-3 text-center offset-top">
+      <img src="/images/api_produce.png" style="margin-top:15px;" />
+    </div>
+	<div class="col-sm-9">
+        <h3>Media Production</h3>
+        <p>A core part of the bootlegger API is production of content. Clients list shoots a user can contribute to, then register to become a contributor. The template and associated on-screen overlay assets can then be downloaded. If the shoot is in auto-director mode, the client receives events from the server via a websocket connection. In pallet mode, the client is free to scaffold content in any way.</p>
+        <p>We provide endpoints for:</p>
+        <ul>
+            <li>Listing available shoots</li>
+            <li>Joining a shoot, obtaining assets and template</li>
+            <li>Communicating with API about current recording status</li>
+            <li>Uploading meta-data and media to the platform</li>
+        </ul>
+        <p>As well as these endpoints, messages sent from the server need to be responded to appropriately for correct operation of a shoot. The pattern and format of these messages are detailed in the <a href="/api/docs/#api-Shoot_Participation">API docs</a>.</p>
+    </div>
+ </div>
+ 
+ <div class="row">
+    <div class="col-sm-3 text-center offset-top">
+      <img src="/images/api_post.png" style="margin-left: 16px;margin-top:30px;" />
+    </div>
+	<div class="col-sm-9">
+        <h3>Post Production</h3>
+        <p>Given specific privacy settings, Bootlegger provides access to shoot footage for contributors and shoot organisers. They can create simple edits which can be shared on social media. The bootlegger platform performs concatentation and editing, providing a shortlink to share.</p>
+        <p>We provide endpoints for:</p>
+        <ul>
+            <li>Listing all footage from a shoot</li>
+            <li>Listing a user's edits</li>
+            <li>Creating a new edit</li>
+        </ul>
+    </div>
+ </div>        
+ 
+  <div class="row">
+    <div class="col-sm-3 text-center offset-top">
+      <img src="/images/api_export.png" style="margin-left:6px;" />
+    </div>
+	<div class="col-sm-9">
+        <h3>Export</h3>
+        <p>All media contributed to Bootlegger is stored in the cloud. You can export this content to use as raw media, alongside rich human-readable meta-data.</p>
+        <p>We provide endpoints for:</p>
+        <ul>
+            <li>Downloading content</li>
+        </ul>
+    </div>
+ </div> 
+
+</div>
+
+<!--<div class="text-center text-muted">
+     
+    <h1><i class="fa fa-cogs fa-3x"></i></h1> 
+        <span>Currently being written...</span>
+ </div>-->
+
+
+<div class="page-header">
+    <a name="research"></a>
+    <h2>Research Behind Bootlegger</h2>
+</div>
+
+<p class="text-center">
+    Bootlegger was started as a research project at Newcastle University, UK. <br>The continuing aim of the project is to explore how the emerging media literacy of non-professionals can be scaffolded to support rich media creation:
+</p>
+<p>&nbsp;</p>
+<div class="col-sm-6 col-sm-offset-3">
+<ul class="noli">
+    <li>
+        <i class="fa fa-file-text-o fa-4x pull-left text-muted"></i>
+        <p>
+    Bootlegger: Turning Fans into Film Crew. <br>
+    <em>Guy Schofield, Tom Bartindale, and Peter Wright.</em> <br>
+    2015, CHI '15. ACM, New York, NY, USA, 767-776<br>
+    
+    </p>
+    <p class="text-center">
+        <a href="/assets/bootlegger_chi2015.pdf" ><i class="fa fa-file-pdf-o"></i> Download pre-print PDF</a>
+    </p>
+    </li>
+</ul>
+</div>
+<div class="clearfix"></div>
+
+<div class="page-header">
+    <a name="assets"></a>
+    <h2>Branding Assets</h2>
+</div>
+<p class="text-muted text-center">'Right Click' and 'Save As' to get images</p>
+<div class="row">
+    <div class="col-sm-4">
+	   <img src="/images/brand/3d.png" style="height:120px;" class="list-group-item" />
+    </div>
+    <div class="col-sm-4">
+	   <img src="/images/brand/shadow.png" style="height:120px;" class="list-group-item" />
+    </div>
+    <div class="col-sm-4">
+	   <img src="/images/brand/black.png" style="height:120px;" class="list-group-item" />
+    </div>
+    <div class="col-sm-4">
+	   <img src="/images/brand/white.png" style="height:120px;" class="list-group-item transp" />
+    </div>
+</div>

@@ -7,7 +7,8 @@
   <link href="vendor/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="vendor/prettify.css" rel="stylesheet" media="screen">
   <link href="css/style.css" rel="stylesheet" media="screen, print">
-  <link href="img/favicon.ico" rel="icon" type="image/x-icon">
+  <link href="/favicon.ico" rel="icon" type="image/x-icon">
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'>
   <script src="vendor/polyfill.js"></script>
 </head>
 <body>
@@ -17,6 +18,8 @@
 
   <ul class="sidenav nav nav-list">
   <li><img src="img/logo.png" style="width:100%;" /></li>
+  <li></li>
+  <li style="text-align:center"><a class="reallink" href="/platform">The Bootlegger Platform</a></li>
   <li id="loggedin" style="color:red;">You are not logged in, so we cannot retrieve your API key for testing!</li>
   {{#each nav}}
     {{#if title}}
@@ -101,7 +104,7 @@
 <script id="template-article" type="text/x-handlebars-template">
   <article id="api-{{article.group}}-{{article.name}}-{{article.version}}" {{#if hidden}}class="hide"{{/if}} data-group="{{article.group}}" data-name="{{article.name}}" data-version="{{article.version}}">
     <div class="pull-left">
-      <h1>{{underscoreToSpace article.groupTitle}}{{#if article.title}} - {{article.title}}{{/if}}</h1>
+      <h1>{{#if article.title}}{{article.title}}{{/if}}</h1>
     </div>
     {{#if template.withCompare}}
     <div class="pull-right">

@@ -1,44 +1,97 @@
-<div ng-app="dashboardApp" ng-controller="dashboard" ng-cloak>
-<div class="page-header">
-<h1>My Dashboard <i class="fa fa-spin fa-spinner" ng-show="loading"></i></h1>
+<style>
+  .btn-link
+  {
+    padding: 3px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }  
+  
+.my-animation.ng-enter {
+  /* standard transition code */
+  transition: 0.5s linear all;
+  opacity:0;
+}
+.my-animation.ng-enter-stagger {
+  /* this will have a 100ms delay between each successive leave animation */
+  transition-delay: 0.05s;
+
+  /* As of 1.4.4, this must always be set: it signals ngAnimate
+    to not accidentally inherit a delay property from another CSS class */
+  transition-duration: 0s;
+}
+.my-animation.ng-enter.ng-enter-active {
+  /* standard transition styles */
+  opacity:1;
+}
+
+.no-animate {
+   -webkit-transition: none !important;
+   transition: none !important;
+}
+</style>
+
+<div ng-controller="dashboard" ng-cloak>
+<div class="progress" style="position:fixed;top:0;width:100%;left:0;height:2px;margin:0;"  ng-show="loading">
+      <div class="indeterminate"></div>
+  </div>
+
+<div ng-hide="events.length==0 && !loading" class="page-header">
+<h1>My Shoots</h1>
 </div>
 
+<div ng-show="events.length==0 && !loading" class="jumbotron text-center">
+<h1>Welcome to Bootlegger</h1>
+<h2 class="alert-info" style="background:none;">Interested in contributing to a film shoot? <br>Just download the mobile app.
+</h2>
+<a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger"><img src="/static/images/abadge.png"/></a>
 
-<div ng-repeat="event in events">
-	<div class="col-sm-6">
-	<div style="border-radius:3px;margin:auto auto; margin-bottom:10px;overflow:hidden;box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);">
-	<div style="position:relative;background:url(/images/event_back.png);background-size:cover;width:100%;height:86px;">
-          <img ng-show="event.iconbackground!=''" ng-src="{{event.iconbackground}}" style="position:absolute;width:100%;height:100%;top:0;left:0;"/>
-          <div style="background:rgba(0,0,0,0.3);position:absolute;width:100%;height:100%;top:0;left:0;"></div>
-        <img ng-show="event.icon" ng-src="{{event.icon}}" style="position:absolute;left:15px;top:15px;width:60px;height:60px;display:inline-block;margin-right:5px;"/>
-        <div ng-show="!event.icon" style="position:absolute;width:60px;height:60px;padding-top:14px;left:18px;top:10px;display:inline-block;float:left;margin-right:5px;color:white;"><i class="fa fa-calendar-o fa-3x"></i></div>
-        
-        <div class="badge" style="position:absolute;right:0;top:0;">{{event.starts}} to {{event.ends}}</div>
-        <div style="overflow:hidden;height:100%;margin-right:10px;">
-      <div style="position:absolute;color:white;font-size:14pt;left:85px;top:16px;">
-      {{event.name}}  
-      </div>
-        <div style="position:absolute;color:white;font-size:10pt;left:85px;top:38px;max-height:40px;text-overflow: ellipsis;overflow:hidden;padding-right:10px;">
-      {{event.description}}  
-      </div>
+<h2>Or you can start your first shoot right away</h2>
+<a href="/commission/new" class="btn btn-lg btn-success"><i class="fa fa-plus"></i> Start a Shoot Now</a>
+</div>
+
+<div class="row">
+<div ng-repeat="event in events" class="my-animation col-xs-12 col-sm-6 col-md-4">
+	<div >
+    <div class="panel panel-default text-center" style="min-height:370px;">
+        <div style=" margin-bottom:30px;">
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+           
+            <div style="position:relative;background:url(/images/event_back.png);background-size:cover;width:100%;height:140px;">
+            <div style="height:140px;overflow:hidden;position:absolute;width:100%;">
+                <div ng-show="event.iconbackground!=''" style="background:url('{{event.iconbackground}}');background-size:cover;position:absolute;width:100%;height:100%;top:0;left:0;">
+                </div>
+                </div>
+                 <div ng-show="event.icon" style="background:white;position:absolute;bottom:-25px;overflow:hidden;border-radius:25px;width:50px;height:50px;display:inline-block;margin-left:-25px;color:white;">
+                    <img ng-src="{{event.icon}}" style="width:50px;height:50px;display:inline-block;"/>
+                 </div>
+                <a class="btn btn-link" style="position:absolute;right:10px;top:10px;" href="/event/view/{{event.id}}"><i class="fa fa-cog fa-2x" style="color:white;"></i></a>
+                
+                 <div style="position:absolute;left:5px;top:5px;" class="addthis_toolbox" addthis:url="<%- sails.config.master_url %>/s/{{event.offlinecode}}" addthis:title="{{event.name}}">
+                <a class="addthis_button_preferred_1"></a>
+                <a class="addthis_button_preferred_2"></a>
+                <a class="addthis_button_preferred_3"></a>
+                <a class="addthis_button_preferred_4"></a>
+                <a class="addthis_button_compact"></a>
+                <a class="addthis_counter addthis_bubble_style"></a>
+            </div>
       </div>
     </div>
-    <div class="text-center">  
-    <a class="btn btn-link" href="/commission/{{event.id}}">Commission</a>
-    <a class="btn btn-link" href="/event/view/{{event.id}}">Settings</a>
-    <a class="btn btn-link" href="/shoot/{{event.id}}">View</a>
-    <a class="btn btn-link" href="/post/{{event.id}}">Export</a>
+    <div>
+        <h2 style="min-height:2.2em">{{event.name}}</h2>
+        <p><strong>{{formatDate(event.starts) | date:'d MMM yy'}}</strong> to <strong>{{formatDate(event.ends) | date:'d MMM yy'}}</strong></p>
+        <p style="margin-top:10px;text-overflow: ellipsis;word-wrap: break-word;overflow: hidden;max-height: 3.2em;line-height: 1.6em;min-height:4.2em;padding:1em;">{{event.description}}</p>
+
+    </div>
+    <div class="text-center" style="margin-bottom:10px;">
+        <a class="btn btn-link" href="/commission/{{event.id}}">Adjust</a>
+        <a class="btn btn-link" href="/shoot/{{event.id}}">Review</a>
+        <!-- <a class="btn btn-link" href="/watch/view/{{event.id}}">Editing</a> -->
+        <a class="btn btn-link" href="/watch/edits/{{event.id}}">Edits</a>
+        <a class="btn btn-link" href="/post/{{event.id}}">Export</a>
+    </div>
     </div>
 	</div>
-  
+
   </div>
 </div>
-
-<div ng-hide="events.length>0" class="text-muted text-center">
-  <h2>It looks like you're new to Bootlegger.<br>Start capturing footage by creating a new shoot.</h2>
-  <br>
-  <a href="/commission/new" class="btn btn-lg btn-success">Start a Shoot Now</a>
-</div>
-
-
 </div>

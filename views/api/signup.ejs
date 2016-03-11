@@ -1,3 +1,31 @@
+<style>
+	
+	.transp {
+  background-color: #FEFEFE;
+  background-image: -webkit-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), -webkit-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  background-image: -moz-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), -moz-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  background-image: -o-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), -o-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  background-image: -ms-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), -ms-linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  background-image: linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB), linear-gradient(45deg, #CBCBCB 25%, transparent 25%, transparent 75%, #CBCBCB 75%, #CBCBCB);
+  -webkit-background-size:30px 30px;
+  -moz-background-size:30px 30px;
+  background-size:30px 30px;
+  background-position:0 0, 15px 15px;
+}
+
+.selected
+{
+	background:#efefef;
+}
+
+
+input[type=radio]
+{
+	margin-top: 33px;
+    height: 20px;
+}
+</style>
+<div ng-app="apiApp" ng-controller="apisignup" ng-cloak>
 <h1>Developer API <small>Integrate with your App</small></h1>
 <p>Using the API, you can integrate with Bootlegger to create rich custom applications for commissioning, capture and management of media and meta-data.</p>
 <div class="well">
@@ -14,101 +42,86 @@ However, we welcome any suggestions, comments or examples of using the API which
 </li>
 </div>
 
-<button class="btn btn-lg btn-success" style="display:none;" id="doit" onclick="signup();">Signup to use the API</button>
+<i class="fa fa-spin fa-spinner" ng-show="loading"></i>
 
-<div class="input-group" id="live" style="display:none;">
+<button class="btn btn-lg btn-success" ng-show="!apikey && !loading" id="doit" ng-click="signup()">Signup to use the API</button>
+
+<div class="input-group" id="live" ng-show="apikey && !loading">
 	<div class="input-group-btn">
-		<div>
-		<button class="btn btn-lg btn-success"  disabled><i class="fa fa-check"></i> You are Signed Up!</button>
-		<button class="btn btn-lg btn-success" onclick="refresh();"><i class="fa fa-refresh"></i> Refresh Key</button>
+	<div>
+		<button class="btn btn-lg btn-danger" ng-show="apikey.apiaccess=='locked'" id="locked" disabled>Locked Out</button><button class="btn btn-lg btn-success" ng-click="refresh()" ng-hide="apikey.apiaccess=='locked'"><i class="fa fa-refresh"></i> Refresh Key</button>
 	</div>
 	</div>
-	<input type="text" disabled class="form-control input-lg" value="" id="key" />
+	<div type="text" disabled class="form-control input-lg" >{{apikey.apikey}}</div>
 </div>
-<button class="btn btn-lg btn-danger" style="display:none;" id="locked" disabled>Locked Out</button>
+
 <br>
-<a class="btn btn-lg btn-primary" href="/api/docs"><i class="fa fa-book"></i> View the API Docs</a>
 
-<a class="btn btn-lg btn-default" href="https://github.com/digitalinteraction/bootlegger-server">Bootlegger on GitHub <i class="fa fa-github"></i></a>
-
-<h2>Assets</h2>
-<p class="text-muted">'Right Click' and 'Save As' to get images</p>
-<div>
-	<img src="/images/brand/3d.png" style="height:120px;" class="list-group-item" /><br>
-	<img src="/images/brand/shadow.png" style="height:120px;" class="list-group-item" /><br>
-	<img src="/images/brand/black.png" style="height:120px;" class="list-group-item" /><br>
-	<img src="/images/brand/white.png" style="height:120px;" class="list-group-item" /><br>
+<div class="list-group" ng-show="apikey && !loading">
+	<div class="list-group-item" ng-class="{selected:apikey.apitype=='redirect'}">
+		<div class="row">
+		<input type="radio" name="apitype" ng-model="apikey.apitype" value="redirect" class="col-xs-1" />
+		<div class="col-xs-11">
+		<b>Hosted Server Application</b>
+		<p>Receive the completed user login session as a callback to a specified url</p>
+		<input class="form-control" ng-model="apikey.redirecturl" placeholder="redirect url of your application" />
+		</div>
+		</div>	
+	</div>
+	
+	<div class="list-group-item" ng-class="{selected:apikey.apitype=='native'}">
+		<div class="row">
+		<input type="radio" name="apitype" ng-model="apikey.apitype" value="native" class="col-xs-1" />
+		<div class="col-xs-11">
+			<b>Native or Mobile Application</b>
+			<p>Receive the completed user login session as a url redirect to bootlegger://session</p>
+			
+		<input class="form-control" style="visibility:hidden" />
+		</div>
+		</div>	
+	</div>
+	
+	<!--<div class="list-group-item" ng-class="{selected:apikey.apitype=='jsonp'}">
+		<div class="row">
+		<input type="radio" name="apitype" ng-model="apikey.apitype" value="jsonp" class="col-xs-1" />
+		<div class="col-xs-11">
+		<b>JSONP Callback</b>
+		<p>Receive the completed user login session wrapped in a JSONP callback for parent.$callback</p>
+		<input class="form-control" ng-model="apikey.callbackfunction" placeholder="valid callback function name" />
+		</div>
+		</div>	
+	</div>-->
 </div>
-<script>
+<div class="pull-right"  ng-show="apikey && !loading"><span class="text-muted btn">{{lastsaved}}</span> <button ng-click="update()" class="btn btn-success pull-right">Update</button></div>
+<div class="clearfix"></div>
 
-$(function()
-{
-	io.socket.get('/event/me',function(data){
-		//console.log(data);
-		if (!data.apiaccess)
-		{
-			$('#doit').show();
-			return;
-		}
-		if (data.apiaccess == 'live')
-		{
-			$('#live').show();
-			$('#key').val(data.apikey);
-		}
-		if (data.apiaccess == 'locked')
-		{
-			$('#locked').show();
-		}
-	});
-});
+<div class="row">
+	<div class="col-xs-4">
+		<h2>Bootlegger Platform</h2>
+		<p>The platform opens up a variety of points of integration, from a fully functioning automatic camera-crew to an easy to use meta-data and media store.</p>
+	</div>
+	<div class="col-xs-4">
+		<h2>Dive In</h2>
+		<p>You can get started working with the REST and Websocket API right away. Use our interactive docs to find out how to integrate and experiment with the endpoints.</p>
+	</div>
+	<div class="col-xs-4">
+		<h2>Examples</h2>
+		<p>Clone our reference code examples or use the same open-source code we ddeploy in the Bootlegger mobile applications to kick start your integration.</p>
+		
+	</div>
+</div>
 
-function refresh()
-{
-	io.socket.get('/api/newkey',function(data)
-	{
-		io.socket.get('/event/me',function(data){
-		if (!data.apiaccess)
-		{
-			$('#doit').show();
-			return;
-		}
-		if (data.apiaccess == 'live')
-		{
-			$('#live').show();
-			$('#locked').hide();
-			$('#doit').hide();
-			$('#key').val(data.apikey);
-		}
-		if (data.apiaccess == 'locked')
-		{
-			$('#locked').show();
-		}
-	});
-	});
-}
-
-function signup()
-{
-	io.socket.get('/api/activate',function(data)
-	{
-		io.socket.get('/event/me',function(data){
-		if (!data.apiaccess)
-		{
-			$('#doit').show();
-			return;
-		}
-		if (data.apiaccess == 'live')
-		{
-			$('#live').show();
-			$('#locked').hide();
-			$('#doit').hide();
-			$('#key').val(data.apikey);
-		}
-		if (data.apiaccess == 'locked')
-		{
-			$('#locked').show();
-		}
-	});
-	});
-}
-</script>
+<div class="row">
+	<div class="col-xs-4">
+		
+		<a href="/platform"><i class="fa fa-cube"></i> About the Bootlegger Platform</a>
+	</div>
+	<div class="col-xs-4">
+		
+		<a href="/api/docs"><i class="fa fa-book"></i> Api Docs</a>
+	</div>
+	<div class="col-xs-4">
+		
+		<a href="https://github.com/digitalinteraction/bootlegger-api-examples"><i class="fa fa-github"></i> Bootlegger Examples</a>
+	</div>
+</div>

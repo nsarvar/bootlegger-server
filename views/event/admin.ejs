@@ -34,10 +34,46 @@
 
 <div ng-app="adminApp" ng-controller="admin" ng-cloak>
 
-<h2>Server Administration</h2>
+<div class="progress" style="position:fixed;top:0;width:100%;left:0;height:2px;margin:0;"  ng-show="loading_edits || loading_shoots || loading_users">
+      <div class="indeterminate"></div>
+  </div>
+
+<div class="page-header">
+    <h1>Administration</h1>
+</div>
 
 <tabset>
-    <tab heading="Shoots">
+	<tab select="showedits()" heading="Edits">
+		<div class="list-group">
+				<a class="list-group-item" href="#"><input type="text" placeholder="search..." ng-model="searchedits.$" class="form-control input-lg" /></a>
+				  	<div dir-paginate="edit in edits | filter:searchedits | itemsPerPage:20" pagination-id="edits" class="list-group-item">
+						  <div class="label label-danger pull-right" ng-show="edit.failed">FAILED</div>
+							<div class="label label-success pull-right" ng-show="edit.path">COMPLETE</div>
+							<div class="label label-warning pull-right" ng-show="edit.progress < 99 && !edit.path && !edit.failed">PENDING</div>
+							<div class="text-danger" ng-show="edit.failreason">{{edit.failreason}}</div>
+							<div><strong>{{edit.title}} | {{edit.code}}</strong></div>
+							<div><em>{{edit.description}}</em></div>
+							<div class="text-muted"> Created at {{edit.createdAt | date}}</div>
+							<div class="text-primary">{{edit.user.profile.displayName}}</div>
+							<a href="/v/{{edit.shortlink}}" ng-show="edit.path">View Complete</a>
+							<div>
+								<span class="pull-left">{{edit.media.length}} videos</span>								
+								<img style="float:left;" ng-repeat="m in edit.media" ng-src="/media/thumbnail/{{m.id}}?apikey=<%- apikey%>&s=50" />
+							</div>
+							
+							<div class="clearfix"></div>
+							<div>
+								<progressbar max="100" ng-show="edit.progress && edit.progress<99" value="edit.progress"><span style="color:white; white-space:nowrap;">{{edit.progress}}
+								%</span></progressbar>
+								</div>
+							<a ng-click="restart(edit.id)" ng-show="!edit.path" class="btn btn-sm btn-danger pull-right">Restart</a>
+					<div class="clearfix"></div>
+				</div>
+                <dir-pagination-controls pagination-id="edits"></dir-pagination-controls>
+			</div>
+	</tab>
+	
+    <tab select="showshoots()" heading="Shoots">
 			<span class="text-muted">Order By:</span>
 			<a href="" ng-click="ordere('name')">Name</a><span class="sortorder" ng-show="predicatee === 'name'" ng-class="{reverse:reversee}"></span> |
 			<a href="" ng-click="ordere('createdAt')">Joined</a><span class="sortorder" ng-show="predicatee === 'createdAt'" ng-class="{reverse:reversee}"></span> |
@@ -48,11 +84,9 @@
 
 			<div class="list-group">
 				<a class="list-group-item" href="#"><input type="text" placeholder="search..." ng-model="search.$" class="form-control input-lg" /></a>
-				<div class="text-center fa fa-spinner fa-spin fa-3x" style="width:100%;" ng-show="loading_shoots"></div>
-
 				<div ng-repeat="(server,events) in events">
 						<div  class="list-group-item text-muted">On {{server}}</div>
-				  	<div ng-repeat="event in events | filter:search | orderBy:predicatee:reversee" class="list-group-item">
+				  	<div dir-paginate="event in events | filter:search | orderBy:predicatee:reversee | itemsPerPage:20" pagination-id="shoots" class="list-group-item">
 					  			<a href="/event/view/{{event.id}}"><strong>{{event.name}}</strong></a>
 									<br>
 									{{event.starts}} at {{event.starts_time}} to {{event.ends}} at {{event.ends_time}}
@@ -60,17 +94,18 @@
 									last touched at <span class="label label-default">{{event.lasttouched}}</span>, <span class="label label-default">{{event.totalmedia}}</span> total clips, <span class="label label-default">{{event.participants}}</span> participants, <span class="label label-default">{{event.totalfilesize}}</span> MB files<br>
 									<a href="#" ng-click="search.$=user.profile.displayName" ng-repeat="user in event.users track by $index">{{user.profile.displayName}}, </a><br>
 					    		<div class="pull-right">
-										<a ng-href="/event/kill/{{event.id}}" onclick="return confirm('Really Kill Event?')" class="btn btn-sm btn-danger">Kill Event</a>
-										<a ng-href="/media/transcode/{{event.id}}" class="btn btn-sm btn-default">Transcode</a>
-										<a ng-href="/log/view/{{event.id}}" class="btn btn-sm btn-default">Logs</a>
+										<a ng-href="/event/kill/{{event.id}}?apikey=<%-apikey%>" onclick="return confirm('Really Kill Event?')" class="btn btn-sm btn-danger">Kill Event</a>
+										<a ng-href="/media/transcode/{{event.id}}?apikey=<%-apikey%>" class="btn btn-sm btn-default">Transcode</a>
+										<a ng-href="/log/view/{{event.id}}?apikey=<%-apikey%>" class="btn btn-sm btn-default">Logs</a>
 					    		</div>
 									<div class="clearfix"></div>
 					</div>
-</div>
+                </div>
+                <dir-pagination-controls pagination-id="shoots"></dir-pagination-controls>
 			</div>
 
 		</tab>
-		<tab heading="Users">
+		<tab select="showusers()" heading="Users">
 			<span class="text-muted">Order By:</span>
 			<a href="" ng-click="order('profile.name.familyName')">Name</a><span class="sortorder" ng-show="predicate === 'profile.name.familyName'" ng-class="{reverse:reverse}"></span> |
 			<a href="" ng-click="order('createdAt')">Joined</a><span class="sortorder" ng-show="predicate === 'createdAt'" ng-class="{reverse:reverse}"></span> |
@@ -81,8 +116,7 @@
 
 			<div class="list-group">
 				<a class="list-group-item" href="#"><input type="text" placeholder="search..." ng-model="search_users" class="form-control input-lg" /></a>
-				<div style="width:100%;" class="fa fa-spinner fa-spin fa-3x" ng-show="loading_users"></div>
-				<div ng-repeat="user in users | filter:search_users | orderBy:predicate:reverse"  class="list-group-item">
+				<div dir-paginate="user in users | filter:search_users | orderBy:predicate:reverse | itemsPerPage:20" pagination-id="users"  class="list-group-item">
 					<strong>{{user.profile.displayName}}</strong> <em>{{user.profile.emails[0].value}}</em><br>
 					joined {{user.createdAt}},
 					owns {{user.owned}} shoots,
@@ -90,11 +124,15 @@
 					{{user.created}} clips produced,
 					<span ng-show="user.apiaccess"> api {{user.apiaccess}},</span>
 					{{user.edits}} edits
-					<a ng-show="!user.deleted" href="/event/removeuser/{{user.id}}" onclick="return confirm('Really Remove User?')"  class="btn btn-danger btn-sm pull-right">Remove</a>
-					<a ng-show="user.apiaccess && user.apiaccess=='live'" href="/api/revokeapi/{{user.id}}" class="btn btn-danger btn-sm pull-right">Revoke API</a>
-					<a ng-show="user.apiaccess && user.apiaccess=='locked'" href="/api/unrevokeapi/{{user.id}}" class="btn btn-primary btn-sm pull-right">Un-Revoke API</a>
+					<a ng-show="!user.deleted" href="/event/removeuser/{{user.id}}?apikey=<%-apikey%>" onclick="return confirm('Really Remove User?')"  class="btn btn-danger btn-sm pull-right">Remove</a>
+					<a ng-show="user.apikey.apiaccess && user.apikey.apiaccess=='live'" href="/api/revokeapi/{{user.id}}?apikey=<%-apikey%>" class="btn btn-danger btn-sm pull-right">Revoke API</a>
+					<a ng-show="user.apikey.apiaccess && user.apikey.apiaccess=='locked'" href="/api/unrevokeapi/{{user.id}}?apikey=<%-apikey%>" class="btn btn-primary btn-sm pull-right">Un-Revoke API</a>
+					
+					<a ng-show="!user.nolimit" href="/event/removelimit/{{user.id}}?apikey=<%-apikey%>" class="btn btn-primary btn-sm pull-right">Remove Limit</a>
+					<a ng-show="user.nolimit" href="/event/restorelimit/{{user.id}}?apikey=<%-apikey%>" class="btn btn-primary btn-sm pull-right">Restore Limit</a>
 					<div class="clearfix"></div>
 				</div>
+                <dir-pagination-controls pagination-id="users"></dir-pagination-controls>
 			</div>
 
 		</tab>
@@ -120,7 +158,7 @@
 					Add Shot
 				</div>
 				<div class="panel-body"> -->
-			  <form action="/commission/addshot/" method="post" enctype="multipart/form-data">
+			  <form action="/commission/addshot/?apikey=<%- apikey %>" method="post" enctype="multipart/form-data">
 					<div class="row">
 						<div class="col-sm-8">
 			<input type="text" class="form-control input-lg" name="name" required placeholder="Shot Title"/>
@@ -144,7 +182,7 @@
 			</div>
 				<div class="clearfix"></div>
 				<input type="submit" value="Add Shot" class="btn btn-lg btn-primary pull-right"/>
-				<div>
+				</div>
 
 			</form>
 			<!-- </div> -->
@@ -153,3 +191,4 @@
 		</tab>
 </tabset>
 </div>
+<div class="clearfix"></div>

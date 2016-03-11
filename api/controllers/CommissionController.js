@@ -1,20 +1,25 @@
-var path = require('path');
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ var path = require('path');
 var lwip = require('lwip');
 
 module.exports = {
 
 	index:function(req,res)
 	{
-		var lookupid = req.session.event || req.session.passport.user.currentevent;
+		//var lookupid = req.session.event;
 		//console.log(lookupid);
 
 		//if event is explicitally set in GET
-		if (req.params.id)
-		{
-			lookupid = req.params.id;
-		}
+		//if (req.params.id)
+		//{
+		var lookupid = req.params.id;
+		//}
 
-		req.session.event = lookupid;
+		//req.session.event = lookupid;
 
 		//event config screen -- module selection for the event
 		//console.log(lookupid);
@@ -28,7 +33,7 @@ module.exports = {
 			}
 			//console.log(event);
 			event.calcphases();
-			res.view({event:event});
+			res.view({event:event,pagetitle:'Adjust'});
 		});
 	},
 
@@ -202,7 +207,7 @@ module.exports = {
 
 	info:function(req,res)
 	{
-		var lookupid = req.session.event || req.session.passport.user.currentevent;
+		var lookupid = req.session.event;
 		//console.log(lookupid);
 
 		//if event is explicitally set in GET
@@ -294,66 +299,48 @@ module.exports = {
 			res.locals.firstlogin = false;
 		}
 
-	//	console.log(req.session.passport.user.profile);
-
-		if (req.session.passport.user.nolimit || _.contains(sails.config.admin_email,req.session.passport.user.profile.emails[0].value))
-	    {
-		      //do nothing
-		      var tys = EventTemplate.find({or:[{user_id:req.session.passport.user.id}, {user_id:null}, {community:true}]}).sort({'user_id':-1,'name':1}).exec(function(err,data){
-
-				//lookup events this user has participated in:
-		//			Media.find({created_by:req.session.passport.user.id}).exec(function(err,media)
-		//			{
-		//				var events = _.pluck(media,'event_id');
-
-					//	Event.find(events).exec(function(err,all)
-					//	{
-							res.view({types:data});
-				//		});
-
-		//			});
-				});
-	    }
-	    else
-	    {
-	      //console.log(req.session.passport.user.id);
-	      //results: { $elemMatch: { $gte: 80, $lt: 85 } }
-	      Event.find({}).exec(function (err,evs){
-
-	        var has = _.map(evs,function(ev){
-	          //console.log(ev.ownedby);
-	          if (_.contains(ev.ownedby,req.session.passport.user.id))
-	            return ev;
-	        });
-
-	        has = _.compact(has);
-
-	        //console.log(has.length);
-
-	        if (has.length > 3)
-	        {
-	          //console.log("ok to continue");
-	          req.session.flash = {msg:'You can create up to 3 shoots simultaneously using Bootlegger, delete an old shoot to continue.'};
-	      	}
-
-	      	var tys = EventTemplate.find({or:[{user_id:req.session.passport.user.id}, {user_id:null}, {community:true}]}).sort({'user_id':-1,'name':1}).exec(function(err,data){
-
-						//lookup events this user has participated in:
-						// Media.find({created_by:req.session.passport.user.id}).exec(function(err,media)
-						// {
-						// 	var events = _.pluck(media,'event_id');
-						//
-						// 	Event.find(events).exec(function(err,all)
-						// 	{
-								res.view({types:data});
-							//});
-
-						//});
-	      });
-	      });
-	    }
-
-
+		var tys = EventTemplate.find({or:[{user_id:req.session.passport.user.id}, {user_id:null}, {community:true}]}).sort({'user_id':-1,'name':1}).exec(function(err,data){
+			res.view({types:data});
+		});
+	},
+	
+	
+	/**
+	 * @api {get} /api/commission/seedtemplates Get List of Seed Templates
+	 * @apiName seedtemplates
+	 * @apiGroup Commission
+	 * @apiVersion 0.0.2
+	 *
+	 *
+	 * @apiSuccess {String} msg Returns list of templates (own, public and community) to use as starting points for template design.
+	 */
+	seedtemplates:function(req,res){
+		var tys = EventTemplate.find({or:[{user_id:req.session.passport.user.id}, {user_id:null}, {community:true}]}).sort({'user_id':-1,'name':1}).exec(function(err,data){
+			
+			var results = _.map(data,function(e){
+				return {id:e.id,name:e.name,description:e.description};
+			});
+			
+			res.json(data);
+		});
+	},
+	
+	/**
+	 * @api {get} /api/commission/getseedtemplate/:id Get Specific Seed Template
+	 * @apiName getseedtemplate
+	 * @apiGroup Commission
+	 * @apiVersion 0.0.2
+	 *
+	 *
+	 * @apiSuccess {String} msg Returns list of templates (own, public and community) to use as starting points for template design.
+	 */
+	getseedtemplate:function(req,res){
+		var tys = EventTemplate.findOne(req.params.id).exec(function(err,data){
+			if (data)
+				res.json(data);
+			else
+				res.json({msg:'Template not found',status:403},403);
+		});
 	},
 
 	/**
@@ -377,6 +364,8 @@ module.exports = {
 		});
 	},
 
+
+	
 	allmodules:function(req,res)
 	{
 		var result = {};
@@ -436,33 +425,5 @@ module.exports = {
 		{
 			res.json({msg:'no event specified'},500);
 		}
-	},
-
-	// live:function(req,res)
-	// {
-	// 	var lookupid = req.session.event || req.session.passport.user.currentevent;
-	// 	//console.log(lookupid);
-	//
-	// 	//if event is explicitally set in GET
-	// 	if (req.params.id)
-	// 	{
-	// 		lookupid = req.params.id;
-	// 	}
-	//
-	// 	req.session.event = lookupid;
-	//
-	// 	//event config screen -- module selection for the event
-	// 	//console.log(lookupid);
-	// 	Event.findOne(lookupid).exec(function(err,event){
-	// 		if (event == undefined)
-	// 		{
-	// 			console.log("no event found view page "+lookupid);
-	// 			//req.session.flash = {err:"Event not found"};
-	// 			return res.redirect('/commission/new');
-	// 		}
-	// 		//console.log(event);
-	// 		event.calcphases();
-	// 		res.view({event:event});
-	// 	});
-	// }
+	}
 };

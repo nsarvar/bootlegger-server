@@ -247,17 +247,14 @@ video
 }
 
 </style>
-<div ng-app="liveApp" ng-controller="Live" ng-cloak>
-<div class="page-header">
-  <h1 style="display:inline-block">Shoot Monitor <small>Realtime updates from your shoot</small>  </h1> <i ng-show="loading" class="fa fa-spinner fa-spin"></i>
+<div ng-controller="Live" ng-cloak>
+
+<div class="progress" style="height:2px;width:auto;position:absolute;top:38px;" >
+      <div class="indeterminate"></div>
 </div>
-
-<!-- <div style="position:absolute;width:100%;height:100%;z-index:100;background:rgba(255,255,255,0.6);" class="text-center" ng-show="loading">
-  <i class="fa fa-spinner fa-4x fa-spin" style="margin-top:20%;"></i>
-</div> -->
-
+  
 <% if (_.contains(sails.config.admin_email,user.profile.emails[0].value)) { %>
-<a href="/shoot/liveedit" class="btn btn-lg btn-primary">Live Editing</a> <a href="/shoot/preedit" class="btn btn-lg btn-primary">Pre-Editing</a>
+<a href="/shoot/liveedit/<%- event.id%>" class="btn btn-lg btn-primary">Live Editing</a> <a href="/shoot/preedit/<%- event.id%>" class="btn btn-lg btn-primary">Pre-Editing</a>
 <hr>
 <% } %>
 
@@ -523,7 +520,7 @@ video
         <div ui-slider="{range:true}"
           ng-click="log('filterlength',{min:lengthfilter[0],max:lengthfilter[1]});"
           min="0"
-          max="50"
+          max="1200"
           ng-model="lengthfilter"></div>
         </div>
       </div>
@@ -548,7 +545,7 @@ video
 </div>
 
 <div class="alert alert-danger" ng-show="candelete">
-  You are in delete mode - clicking <i style="color:red;" class="fa fa-trash-o"></i> will permenantly remove all media associated with the clip!
+  You are in delete mode - clicking <i style="color:red;" class="fa fa-trash-o"></i> will permanently remove all media associated with the clip!
 </div>
     <div class="mediaitem col-sm-6" dir-paginate="m in filteredmedia = (media | hasVideoFilter:hasvideo | hasEditTag:edit_tag | rangeFilter:lengthfilter | timeFilter:{from:timefilterfrom, to:timefilterto} | checkFilter:{scope:this,name:'meta.role_ex.name', value:rolefilter} | checkFilter:{scope:this,name:'meta.shot_ex.name', value:shotfilter} | checkFilter:{scope:this,name:'meta.coverage_class_ex.name', value:coveragefilter} | areaFilter:{circle:circlefilter,filterbylocation:filterbylocation} | checkFilter:{scope:this,name:'meta.meta_phase.name', value:phasefilter} | filter:mapfilter) | itemsPerPage: 20" style="float:left;">
       <div style="float:left;margin-bottom:10px;overflow:hidden" class="col-sm-6">

@@ -5,11 +5,11 @@ define([
   var initDynamic = function() {
 
     //get the apikey if you have one:
-    console.log("getting key");
+    //console.log("getting key");
       $.get('/api/getkey').done(function(data)
       {
-        if (data.key)
-          theapikey = data.key;
+        if (data.apikey)
+          theapikey = data.apikey;
         $('#loggedin').hide();
       }).fail(function()
       {

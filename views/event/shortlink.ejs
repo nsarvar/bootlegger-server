@@ -1,0 +1,43 @@
+<div class="text-center row">
+    <div class="col-xs-12">
+        <% if (publicevent.closed) { %>
+        <div class="alert alert-warning">This shoot is now closed.</div>
+        <% } %>
+        <% if (publicevent.iconbackground) { %>
+        <img style="width:100%;" src="<%- publicevent.iconbackground %>" />
+        <% } %>
+
+        <% if (publicevent.icon) { %>
+        <img style="border-radius:50px;width:100px;height:100px;margin-top:-50px;margin-bottom:-30px;" src="<%- publicevent.icon %>" />
+        <% } %>
+    </div>
+</div>
+
+<div class="row">
+    <% if (publicevent.user) { %>
+    <div class="col-xs-6 text-left"><img style="border-radius:12px;width:24px;height:24px;" src="<%- publicevent.user.profile._json.picture %>" /> <%- publicevent.user.profile.displayName %></div>
+    <% } %>
+    <div class="col-xs-6 text-right"><%-publicevent.usercount%> <i class="fa fa-user"></i> <%-publicevent.mediacount%> <i class="fa fa-video-camera"></i></div>
+</div>
+<div class="row">
+    <div class="col-xs-12 text-center">
+<h1><%- publicevent.name %></h1>
+<strong><%- publicevent.datetext %></strong>
+<br><br>
+<p class="text-muted"><%- publicevent.eventtype.description %></p>
+<br>
+
+
+
+<% if (!publicevent.closed) {%>
+<hr>
+<div class="text-center">
+<a class="btn btn-lg btn-success" href="/getapp">Get the App to contribute</a>
+<% if (mobile.phone() || mobile.tablet()) { %>
+<a class="btn btn-lg btn-success" href="bootlegger://joinshoot?eventid=<%- publicevent.id %>">Join Now!</a>
+<% } %>
+</div>
+<% } %>
+</div>
+</div>
+</div>

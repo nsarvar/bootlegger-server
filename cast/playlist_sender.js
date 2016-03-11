@@ -55,7 +55,7 @@ window['__onGCastApiAvailable'] = function(loaded, errorInfo) {
  */
 function initializeCastApi() {
   var applicationID = '823ACE8C';
-  var sessionRequest = new chrome.cast.SessionRequest(applicationID);
+  var sessionRequest = new chrome.cast.SessionRequest(chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID);
   var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
     sessionListener,
     receiverListener);
@@ -217,7 +217,7 @@ function stopApp() {
 function loadMedia() {
 
   //load media
-  socket.get('/media/castlist/'+mastereventid,function(data)
+  io.socket.get('/media/castlist/'+mastereventid,function(data)
   {
     masterplaylist = data;
  

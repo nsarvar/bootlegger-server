@@ -59,17 +59,6 @@
 }
 </style>
 
-<% if(firstlogin){  %>
-<div class="jumbotron text-center">
-<h1>Welcome to Bootlegger</h1>
-<h2 class="alert-info" style="background:none;">Interested in contributing to a film shoot? <br>Just download the mobile app.
-</h2>
-<a href="https://play.google.com/store/apps/details?id=uk.ac.ncl.di.bootlegger"><img src="/static/images/abadge.png"/></a>
-
-<h2>Or, if you are looking at commissioning, start your first shoot right away...</h2>
-</div>
-<% } %>
-
 <h1 >Bootlegger film shoots start with a template <br><small>Choose an existing one or create your own from one of ours</small></h1>
 <form class="form-horizontal" role="form" method="post" action="/event/addevent?apikey=<%- apikey %>">
 <input type="hidden" name="eventtype" value="-1" id="evtyp" />
@@ -102,7 +91,7 @@
     <i class="label label-success" ><i class="fa fa-users"></i> <span class="sp">Created by Me</span></i>
     <% } %>
     <br>
-    <% if (types[i].updatedAt) { %>
+     <% if (types[i].updatedAt && types[i].community) { %>
      <div class="text-muted" style="float:right;"><span class="sp"><%= moment(types[i].updatedAt).format('MMMM Do YYYY') %></span></div>
      <% } %>
 </div>
@@ -139,7 +128,7 @@
       <div class="form-group">
           <label for="inputEmail3" class="col-sm-2 control-label">Shoot Name</label>
           <div class="col-sm-10">
-            <input type="text" name="name" class="form-control input-lg" id="inputEmail3" placeholder="name" required pattern=".{5,}"  title="Name more than 5 characters long">
+            <input type="text" name="name" class="form-control input-lg" id="inputEmail3" placeholder="name" required="required" pattern=".{5,}"  title="Name more than 5 characters long">
           </div>
         </div>
 
@@ -147,7 +136,7 @@
     <label for="inputEmail2" class="col-sm-2 control-label">Shoot Starts on</label>
     <div class="col-sm-3">
       <div class="input-group input-group-lg col-xs-12" id="dp3" >
-            <input name="starts" class="col-sm-2 form-control datepicker" style="background:white;" size="16" type="text" data-date-format="dd-mm-yyyy" readonly required>
+            <input name="starts" class="col-sm-2 form-control datepicker" style="background:white;" size="16" type="text" data-date-format="dd-mm-yyyy" readonly required="required">
            <!--  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
           </div>
 
@@ -157,7 +146,7 @@
       <label class="control-label"> at </label>
     </div>
     <div class="col-sm-2">
-          <input name="starts_time" class="input-lg col-sm-2 form-control" size="5" type="text" value="8pm" placeholder="hh(am|pm)"   required pattern="\d{1,2}([apAP][mM]){1}">
+          <input name="starts_time" class="input-lg col-sm-2 form-control" size="5" type="text" value="8pm" placeholder="hh(am|pm)"   required="required" pattern="\d{1,2}([apAP][mM]){1}">
         </div>
 </div>
 
@@ -166,7 +155,7 @@
     <label for="inputEmail4" class="col-sm-2 control-label">Shoot Finishes on</label>
     <div class="col-sm-3">
       <div class="input-group input-group-lg col-xs-12" id="dp4">
-            <input name="ends" class="col-sm-2 form-control datepicker" size="16" style="background:white;" type="text" data-date-format="dd-mm-yyyy" readonly required>
+            <input name="ends" class="col-sm-2 form-control datepicker" size="16" style="background:white;" type="text" data-date-format="dd-mm-yyyy" readonly required="required">
             <!-- <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> -->
           </div>
     </div>
@@ -174,13 +163,13 @@
       <label class="control-label"> at </label>
     </div>
     <div class="col-sm-2">
-          <input name="ends_time" class="input-lg col-sm-2 form-control" size="5" type="text" placeholder="hh(am|pm)" value="11pm" required pattern="\d{1,2}([apAP][mM]){1}">
+          <input name="ends_time" class="input-lg col-sm-2 form-control" size="5" type="text" placeholder="hh(am|pm)" value="11pm" required="required" pattern="\d{1,2}([apAP][mM]){1}">
         </div>
   </div>
 
 <div class="row">
   <div class="col-xs-12 col-sm-offset-2">
-  <label><input type="checkbox" name="agree" required/> I agree to the <a href="/terms">Terms and Conditions</a> of using Bootlegger.</label>
+  <label><input type="checkbox" name="agree" required="required"/> I agree to the <a target="_blank" href="/terms">Terms and Conditions</a> of using Bootlegger.</label>
 </div>
 </div>
 <div class="row">&nbsp;</div>
@@ -195,7 +184,7 @@
       <button type="submit" class="btn btn-info btn-lg " name="adjust" value="1">Adjust this Template First <i class="fa fa-cog"></i></button>
       <!-- <a class="btn btn-info btn-lg" href="/commissioning/create/" id="adjust"> Adjust this Template First <i class="fa fa-cog"></i></a> -->
     
-      <button type="submit" class="btn btn-success btn-lg ">Start this Shoot <i class="fa fa-chevron-right"></i></button>
+      <button type="submit" class="btn btn-success btn-lg " style="padding-right:25px;">Start this Shoot <i class="fa fa-chevron-right"></i> </button>
     </div>
   </div>
   

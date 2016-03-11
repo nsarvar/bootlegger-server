@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * ShootController
  *
  * @module		:: Controller
@@ -12,16 +17,16 @@ module.exports = {
    */
   index: function (req,res) {
 
-    var lookupid = req.session.event || req.session.passport.user.currentevent;
+    //var lookupid = req.session.event;
       //console.log(lookupid);
 
       //if event is explicitally set in GET
-      if (req.params.id)
-      {
-        lookupid = req.params.id;
-      }
+      //if (req.params.id)
+      //{
+      var  lookupid = req.params.id;
+      //}
 
-      req.session.event = lookupid;
+      //req.session.event = lookupid;
     //event config screen -- module selection for the event
     //console.log(lookupid);
 
@@ -33,21 +38,21 @@ module.exports = {
       }
       //console.log(event);
       event.calcphases();
-      res.view({event:event});
+      res.view({event:event,pagetitle:'Review'});
     });
   },
   
   liveedit:function(req,res){
-    var lookupid = req.session.event || req.session.passport.user.currentevent;
+    //var lookupid = req.session.event;
       //console.log(lookupid);
 
       //if event is explicitally set in GET
-      if (req.params.id)
-      {
-        lookupid = req.params.id;
-      }
+      //if (req.params.id)
+      //{
+        var lookupid = req.params.id;
+      //}
 
-      req.session.event = lookupid;
+     // req.session.event = lookupid;
     //event config screen -- module selection for the event
     //console.log(lookupid);
 
@@ -64,16 +69,16 @@ module.exports = {
   },
   
   preedit:function(req,res){
-    var lookupid = req.session.event || req.session.passport.user.currentevent;
+    //var lookupid = req.session.event;
       //console.log(lookupid);
 
       //if event is explicitally set in GET
-      if (req.params.id)
-      {
-        lookupid = req.params.id;
-      }
+     // if (req.params.id)
+    //  {
+     var lookupid = req.params.id;
+  //    }
 
-      req.session.event = lookupid;
+      //req.session.event = lookupid;
     //event config screen -- module selection for the event
     //console.log(lookupid);
 
@@ -89,6 +94,51 @@ module.exports = {
     });
   },
 
+updatetimeline:function(req,res)
+{
+    var lookupid = req.params.id;
+    console.log(lookupid);
+    Event.findOne(lookupid).exec(function(err,event){
+      if (event)
+      {
+        event.timeline = req.param('tracks');
+        event.save(function(err,ev)
+        {
+          console.log(err);
+          return res.json({msg:'ok'});
+         });
+      }
+      else
+      {
+       return res.json({msg:'fail'});  
+      }
+      
+      //console.log(event);
+    });
+},
+
+sendindividualmessage:function(req,res)
+{
+  if (req.param('message') && req.param('userid'))
+  {
+      User.findOne({id:req.param('userid')}).exec(function(err,users)
+      {
+          if (u.pushcode)
+          {
+            Gcm.sendMessage(u.platform,u.pushcode,"Bootlegger Message",req.param('message'),null);
+            return res.json({msg:"Message Sent!"});
+          }
+          else{
+            return res.json({msg:"No app details available"});            
+          }
+      });
+  }
+  else
+  {
+    return res.json({msg:"No Message Given!"},403);
+  }
+},
+
 sendmessage:function(req,res){
   if (req.param('message'))
   {
@@ -103,10 +153,8 @@ sendmessage:function(req,res){
       if (!_.contains(users,m.created_by))
         users.push(m.created_by);
     });
-    //console.log(users);
 
     //anyone who's participated:
-
         User.find({id:users}).exec(function(err,users)
         {
           _.each(users,function(u){
@@ -116,7 +164,7 @@ sendmessage:function(req,res){
             }
           });
           req.session.flash = {msg:"Message Sent!"};
-          res.redirect('/shoot');
+          res.redirect('/shoot/'+req.param('id'));
         });
       });
     });
@@ -124,14 +172,14 @@ sendmessage:function(req,res){
   else
   {
     req.session.flash = {msg:"No Message Given!"};
-    res.redirect('/shoot');
+    res.redirect('/shoot/'+req.param('id'));
   }
 },
 
 
 shootdemo: function (req,res) {
 
-  var lookupid = req.session.event || req.session.passport.user.currentevent;
+  var lookupid = req.session.event;
         //console.log(lookupid);
 
         //if event is explicitally set in GET

@@ -1,10 +1,15 @@
-var _ = require('lodash');
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ var _ = require('lodash');
 var path = require('path');
 var uploaddir = "/upload/";
 var fs = require('fs-extra');
 var FFmpeg = require('fluent-ffmpeg');
 var moment = require('moment');
-var framerate = 29.9;
+var framerate = 29.97;
 var uuid = require('node-uuid');
 
 function genedl(req,event,callback)
@@ -113,7 +118,8 @@ function genedl(req,event,callback)
 					  data = data.replace(/%%sequencename%%/gi,ev.name);
 
 					  var mediafortrack = "";
-					  var audiofortracks = "";
+					  var audiofortracks_l = "";
+					  var audiofortracks_r = "";
 					  //var audios = "";
 					  var trackmaster = fs.readFileSync('assets/apple_xml/VideoTrack_FCP.xml', 'utf8');
 					  var audiomaster = fs.readFileSync('assets/apple_xml/AudioTrack_FCP.xml', 'utf8');
@@ -127,43 +133,119 @@ function genedl(req,event,callback)
 
 					  //for each track / media
 					  
-					  var j = 0;
-				  	_.each(grouped,function(clips,group)
+					  var liveeditfilter = _.filter(sorted,function(s){
+						 return s.media.edits; 
+					  });
+					  
+					  /**
+					   * CHECKING FOR LIVE EDIT TRACK
+					   */
+					 
+					  var editedclips = [];
+					  _.each(liveeditfilter,function(l)
+					  {
+						 _.each(l.media.edits,function(edit){
+							 var clip = _.clone(l,true);
+							 clip.inpoint = edit.inpoint;
+							 clip.outpoint = edit.outpoint;
+							 editedclips.push(clip);
+						 }) 
+					  });
+					  
+					  grouped['LIVE EDIT'] = editedclips;
+					  
+					  /**
+					   * CHECKING FOR PRE_EDIT TRACK
+					   */
+					   
+					  //console.log(sorted);
+					  
+					  //TEMP::
+					  
+					  //grouped = {};
+					   
+					  if (ev.timeline)
+					  {
+						  _.each(ev.timeline,function(track){
+							var thetrack = [];	 
+							 
+							 _.each(track.items,function(i)
+							 {
+								var clip = _.find(sorted,function(r){
+									return r.media.id == i.id;
+								});
+								if (clip)
+								{
+									var c = _.clone(clip,true);
+									c.offset = i.offset;
+									thetrack.push(c);
+								}
+							 });
+							 
+							 grouped[track.name] = thetrack; 
+						  });					  
+					  }
+					  
+					  var clipitemid = 1;
+					  var trackindex = 1;
+					  
+				  	  _.each(grouped,function(clips,group)
 					  {
 					  		mediafortrack = "";
+						    audiofortracks_l = "";
+							audiofortracks_r = "";
+							var clipindex = 1;
 					  		//audiotracks = "";
 						  	_.each(clips,function(m,p) //each clip in track
 						  	{
 							  	if (m.media.meta.static_meta.clip_length && m.offset!=undefined)
 							  	{
-								  	var t = clipmaster;
-								  	t = t.replace(/%%id%%/gi,j + "-" + p);
-								  	t = t.replace(/%%path%%/gi,'file:///'+(m.path + '/' + m.local));
-								  	t = t.replace(/%%name%%/gi,m.local);
-								  	t = t.replace(/%%start%%/gi,(m.offset)*framerate);
-								  	t = t.replace(/%%end%%/gi,(m.offset + m.duration)*framerate);
-									t = t.replace(/%%inpoint%%/gi,(m.inpoint)?(m.inpoint*framerate):0); 
-								  	t = t.replace(/%%outpoint%%/gi,((m.outpoint)?m.outpoint:m.duration)*framerate);
-									t = t.replace(/%%duration%%/gi,m.duration*framerate);
-								  	t = t.replace(/%%audioid%%/gi,j + "-a-" + p);
-								  	t = t.replace(/%%trackindex%%/gi,j+1);
-								  	mediafortrack += t;
+								  	var t = clipmaster;									
+									// console.log(m.inpoint);
+									
+									var start = (((m.inpoint)?(m.offset + m.inpoint):m.offset) * framerate);
+									var end = (((m.outpoint)?(m.offset + m.outpoint):(m.offset+m.duration)) * framerate);
+									var inp = (((m.inpoint)?m.inpoint:0)*framerate);
+									var out = (((m.outpoint)?m.outpoint:m.duration)*framerate);
+									var duration = start-end;
+									  
+									// console.log('start: '+start);
+									// console.log('end: '+end);
+									// console.log('in: '+inp);
+									// console.log('out: '+out);
+									  
+									var t = '<clipitem id="clipitem-v-'+clipitemid+'" frameBlend="FALSE"><masterclipid>'+m.masterclipid+'</masterclipid><name>'+m.local+'</name><enabled>TRUE</enabled><duration>'+duration+'</duration><rate><timebase>29.97</timebase><ntsc>TRUE</ntsc></rate><start>'+start+'</start><end>'+end+'</end><in>'+inp+'</in><out>'+out+'</out><alphatype>black</alphatype>';
+									t+='<file id="'+m.fileid+'"/>';	
+									t+='<link><linkclipref>clipitem-v-'+clipitemid+'</linkclipref><mediatype>video</mediatype><trackindex>'+trackindex+'</trackindex><clipindex>'+clipindex+'</clipindex></link>';
+									t+='<link><linkclipref>clipitem-a-'+clipitemid+'</linkclipref><mediatype>audio</mediatype><trackindex>'+trackindex+'</trackindex><clipindex>'+clipindex+'</clipindex><groupindex>1</groupindex></link>';
+									//t+='<link><linkclipref>clipitem-b-'+clipitemid+'</linkclipref><mediatype>audio</mediatype><trackindex>2</trackindex><clipindex>1</clipindex><groupindex>1</groupindex></link>';
+									t+='</clipitem>'; 
+									  
+									mediafortrack += t;
 
-								  	var a = audioclipmaster;
-								  	a = a.replace(/%%id%%/gi,j + "-" + p);
-								  	a = a.replace(/%%audioid%%/gi,j + "-a-" + p);
-								  	a = a.replace(/%%path%%/gi,'file:///'+(m.path + '/' + m.local));
-								  	a = a.replace(/%%out%%/gi,m.duration*framerate);
-								  	a = a.replace(/%%name%%/gi,m.local);
-								  	a = a.replace(/%%start%%/gi,(m.offset*framerate));
-								  	a = a.replace(/%%end%%/gi,(m.offset + m.duration)*framerate);
-									a = a.replace(/%%inpoint%%/gi,(m.inpoint)?(m.inpoint*framerate):0); 
-								  	a = a.replace(/%%outpoint%%/gi,((m.outpoint)?m.outpoint:m.duration)*framerate);
-									a = a.replace(/%%duration%%/gi,m.duration*framerate);
-								  	a = a.replace(/%%trackindex%%/gi,j+1);
-								  	audiofortracks += a;
 
+									var t = '<clipitem id="clipitem-a-'+clipitemid+'" frameBlend="FALSE" premiereChannelType="stereo"><masterclipid>'+m.masterclipid+'</masterclipid><name>'+m.local+'</name><enabled>TRUE</enabled><duration>'+duration+'</duration><rate><timebase>29.97</timebase><ntsc>TRUE</ntsc></rate><start>'+start+'</start><end>'+end+'</end><in>'+inp+'</in><out>'+out+'</out>';
+									t+='<file id="'+m.fileid+'"/>';
+									t+='<sourcetrack><mediatype>audio</mediatype><trackindex>'+trackindex+'</trackindex></sourcetrack>';
+									t+= '<link><linkclipref>clipitem-v-'+clipitemid+'</linkclipref><mediatype>video</mediatype><trackindex>'+trackindex+'</trackindex><clipindex>'+clipindex+'</clipindex></link>';
+									t+='<link><linkclipref>clipitem-a-'+clipitemid+'</linkclipref><mediatype>audio</mediatype><trackindex>'+trackindex+'</trackindex><clipindex>'+clipindex+'</clipindex><groupindex>1</groupindex></link>';
+									// t+='<link><linkclipref>clipitem-b-'+clipitemid+'</linkclipref><mediatype>audio</mediatype><trackindex>2</trackindex><clipindex>1</clipindex><groupindex>1</groupindex></link>';
+									t+='</clipitem>';
+
+									
+									audiofortracks_l+=t;
+									
+									// var t = '<clipitem id="clipitem-b-'+clipitemid+'"><masterclipid>'+m.masterclipid+'</masterclipid><name>'+m.local+'</name><enabled>TRUE</enabled><duration>'+(m.duration*framerate)+'</duration><rate><timebase>29.97</timebase><ntsc>TRUE</ntsc></rate><start>'+(m.offset * framerate)+'</start><end>'+((m.duration + m.offset) * framerate)+'</end><in>0</in><out>'+(m.duration*framerate)+'</out><file id="'+m.fileid+'"/>';
+									// t+='<sourcetrack><mediatype>audio</mediatype><trackindex>2</trackindex></sourcetrack>';
+									// // t+= '<link><linkclipref>clipitem-v-'+clipitemid+'</linkclipref><mediatype>video</mediatype><trackindex>1</trackindex><clipindex>1</clipindex></link>';
+									// // t+='<link><linkclipref>clipitem-a-'+clipitemid+'</linkclipref><mediatype>audio</mediatype><trackindex>1</trackindex><clipindex>1</clipindex><groupindex>1</groupindex></link>';
+									// // t+='<link><linkclipref>clipitem-b-'+clipitemid+'</linkclipref><mediatype>audio</mediatype><trackindex>2</trackindex><clipindex>1</clipindex><groupindex>1</groupindex></link>';
+									// t+='</clipitem>'; 
+									
+									// audiofortracks_r+=t;
 								  	totalduration = Math.max(m.offset + m.duration, totalduration);
+									clipitemid++;
+									clipindex ++;
 								  }
 							  });//end of each clip in track
 
@@ -180,87 +262,19 @@ function genedl(req,event,callback)
 					  	  	thistrack = thistrack.replace(/%%trackname%%/gi,user.profile.displayName);
 					  	  }
 
-					  	  alltracks += thistrack;//add track to file
-						  thisaudiotrack = audiomaster;
-					  	  thisaudiotrack = thisaudiotrack.replace(/%%track%%/gi,audiofortracks);
+					  	  alltracks += thistrack;//add video track to file
+							
+						  var thisaudiotrack = audiomaster;
+					  	  thisaudiotrack = thisaudiotrack.replace(/%%track%%/gi,audiofortracks_l);
+						  thisaudiotrack = thisaudiotrack.replace(/%%channelindex%%/gi,1);
 					  	  allaudiotracks += thisaudiotrack;//add audio track to file
-					  	  j++;
-					  });//each grouped track (user)
-
-					  var liveeditfilter = _.filter(sorted,function(s){
-						 return s.media.edits; 
-					  });
-					  
-					  //check for an edit track...
-					  
-					  //map edits and 
-					  
-					  //sort edits by created_at					  
-					  
-					  var editedclips = [];
-					  _.each(liveeditfilter,function(l)
-					  {
-						 _.each(l.media.edits,function(edit){
-							 var clip = l;
-							 clip.inpoint = edit.inpoint;
-							 clip.outpoint = edit.outpoint;
-							 editedclips.push(clip);
-						 }) 
-					  });
-					  
-					  //console.log(editedclips);
-					  
-					  if (liveeditfilter.length>0)
-					  {
-						    //TODO -- add track with clips that have been edited (in/out points from live edit)
-							mediafortrack = "";
-							audiofortracks = "";
-					  		//audiotracks = "";
-						  	_.each(editedclips,function(m,p) //each clip in track
-						  	{
-							  	if (m.media.meta.static_meta.clip_length && m.offset!=undefined)
-							  	{
-								  	var t = clipmaster;
-								  	t = t.replace(/%%id%%/gi,j + "-" + p);
-								  	t = t.replace(/%%path%%/gi,'file:///'+(m.path + '/' + m.local));
-								  	t = t.replace(/%%name%%/gi,m.local);
-								  	t = t.replace(/%%start%%/gi,(m.offset)*framerate + (m.inpoint*framerate));
-								  	t = t.replace(/%%end%%/gi,(m.offset + m.duration)*framerate);
-									t = t.replace(/%%inpoint%%/gi,(m.inpoint)?(m.inpoint*framerate):0); 
-								  	t = t.replace(/%%outpoint%%/gi,(m.offset + m.duration + m.inpoint - m.outpoint)*framerate);
-									t = t.replace(/%%duration%%/gi,m.duration*framerate);
-								  	t = t.replace(/%%audioid%%/gi,j + "-a-" + p);
-								  	t = t.replace(/%%trackindex%%/gi,j+1);
-								  	mediafortrack += t;
-
-								  	var a = audioclipmaster;
-								  	a = a.replace(/%%id%%/gi,j + "-" + p);
-								  	a = a.replace(/%%audioid%%/gi,j + "-a-" + p);
-								  	a = a.replace(/%%path%%/gi,'file:///'+(m.path + '/' + m.local));
-								  	a = a.replace(/%%out%%/gi,m.duration*framerate);
-								  	a = a.replace(/%%name%%/gi,m.local);
-								  	a = a.replace(/%%start%%/gi,(m.offset*framerate));
-								  	a = a.replace(/%%end%%/gi,(m.offset + m.duration + m.inpoint - m.outpoint)*framerate);
-									a = a.replace(/%%inpoint%%/gi,m.inpoint*framerate); 
-								  	a = a.replace(/%%outpoint%%/gi,m.outpoint*framerate);
-									a = a.replace(/%%duration%%/gi,m.duration*framerate);
-								  	a = a.replace(/%%trackindex%%/gi,j+1);
-								  	audiofortracks += a;
-
-								  	totalduration = Math.max(m.offset + m.duration, totalduration);
-								  }
-							  });//end of each clip in track
-
-					  	  thistrack = trackmaster;
-					  	  thistrack = thistrack.replace(/%%track%%/gi,mediafortrack);
-					  	  thistrack = thistrack.replace(/%%trackname%%/gi,'Live-to-Tape Edit');
-
-					  	  //alltracks += thistrack;//add track to file
-						  thisaudiotrack = audiomaster;
-					  	  thisaudiotrack = thisaudiotrack.replace(/%%track%%/gi,audiofortracks);
+							
+						  // thisaudiotrack = audiomaster;
+					  	  // thisaudiotrack = thisaudiotrack.replace(/%%track%%/gi,audiofortracks_r);
+						  // thisaudiotrack = thisaudiotrack.replace(/%%channelindex%%/gi,2);
 					  	  //allaudiotracks += thisaudiotrack;//add audio track to file
-					  	  j++;
-					  }
+					  	  trackindex++;
+					  });//each grouped track (user)
 					  
 					  //WRAPPING IT UP:
 					  var uuid = require('node-uuid');
@@ -306,19 +320,7 @@ function genbins(data)
 	_.each(data,function(e,k){
 		if (e.local)
 		{
-			// output+="<clip>";
-				// output+="<name>" + e.path + '/' + e.local + "</name>";
-				// output+= "<masterclipid>masterclip-1</masterclipid>";
-				// output+= "<ismasterclip>TRUE</ismasterclip>";
-				// output+="<duration>" + (e.duration * framerate) + "</duration>";
-				// output+="<rate>"+framerate+"</rate>";
-				// output+="<file>";
-				// 	output+="<duration>" + (e.duration * framerate) + "</duration>";
-				// 	output+="<rate>"+framerate+"</rate>";
-				// 	output+="<pathurl>file:///" + e.path + '/' + e.local + "</pathurl>";					
-				// output+="</file>";	
-			// output+="</clip>";
-			output+='<clip id="'+e.masterclipid+'" explodedTracks="true" frameBlend="FALSE">						<uuid>'+e.uuid+'</uuid>						<masterclipid>'+e.masterclipid+'</masterclipid>						<ismasterclip>TRUE</ismasterclip>						<duration>'+(e.duration*framerate)+'</duration>						<rate>							<timebase>29.9</timebase>							<ntsc>TRUE</ntsc>						</rate>						<in>0</in>						<out>'+(e.duration*framerate)+'</out>						<name>'+e.local+'</name>						<media>							<video>								<track>									<clipitem id="'+e.clipitemid+'" frameBlend="FALSE">										<masterclipid>'+e.masterclipid+'</masterclipid>										<name>'+e.local+'</name>										<rate>											<timebase>29.9</timebase>											<ntsc>FALSE</ntsc>										</rate>										<alphatype>straight</alphatype>										<pixelaspectratio>square</pixelaspectratio>										<anamorphic>FALSE</anamorphic>										<file id="'+e.fileid+'">											<name>'+e.local+'</name>											<pathurl>file://localhost/'+e.path + '/' + e.local+'</pathurl>											<rate>												<timebase>29.9</timebase>												<ntsc>FALSE</ntsc>											</rate>											<timecode>												<rate>													<timebase>29.9</timebase>													<ntsc>FALSE</ntsc>												</rate>												<string>00;00;00;00</string>												<frame>0</frame>												<displayformat>DF</displayformat>											</timecode>											<media>												<video>													<samplecharacteristics>														<rate>															<timebase>29.9</timebase>															<ntsc>FALSE</ntsc>														</rate>														<width>1920</width>														<height>1080</height>														<anamorphic>FALSE</anamorphic>														<pixelaspectratio>square</pixelaspectratio>														<fielddominance>none</fielddominance>													</samplecharacteristics>												</video>											</media>										</file>									</clipitem>								</track>							</video>						</media>						<logginginfo>							<description></description>							<scene></scene>							<shottake></shottake>							<lognote></lognote>						</logginginfo>						<labels>							<label2>Lavender</label2>						</labels>					</clip>';
+			output+='<clip id="'+e.masterclipid+'" explodedTracks="true" frameBlend="FALSE"><uuid>'+e.uuid+'</uuid><masterclipid>'+e.masterclipid+'</masterclipid><ismasterclip>TRUE</ismasterclip><duration>'+(e.duration*framerate)+'</duration><rate><timebase>29.97</timebase><ntsc>TRUE</ntsc></rate><in>0</in><out>'+(e.duration*framerate)+'</out><name>'+e.local+'</name><media><video><track><clipitem id="'+e.clipitemid+'" frameBlend="FALSE"><masterclipid>'+e.masterclipid+'</masterclipid><name>'+e.local+'</name><rate><timebase>29.97</timebase><ntsc>FALSE</ntsc></rate><alphatype>straight</alphatype><pixelaspectratio>square</pixelaspectratio><anamorphic>FALSE</anamorphic><file id="'+e.fileid+'"><name>'+e.local+'</name><pathurl>file://localhost/'+e.path + '/' + e.local+'</pathurl><rate><timebase>29.97</timebase><ntsc>FALSE</ntsc></rate><timecode><rate><timebase>29.97</timebase><ntsc>FALSE</ntsc></rate><string>00;00;00;00</string><frame>0</frame><displayformat>DF</displayformat></timecode><media><video><samplecharacteristics><rate><timebase>29.97</timebase><ntsc>FALSE</ntsc></rate><width>1920</width><height>1080</height><anamorphic>FALSE</anamorphic><pixelaspectratio>square</pixelaspectratio><fielddominance>none</fielddominance></samplecharacteristics></video><audio><samplecharacteristics><depth>16</depth><samplerate>48000</samplerate></samplecharacteristics><channelcount>2</channelcount><layout>mono</layout><audiochannel><sourcechannel>1</sourcechannel><channellabel>discrete</channellabel></audiochannel></audio></media></file></clipitem></track></video></media></clip>';
 			
 		}
 		else

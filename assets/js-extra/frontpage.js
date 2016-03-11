@@ -89,7 +89,7 @@ $(document).ready(function() {
 // Configure nav bar layout and styles
 function configureNav() {
 
-	var scroll_position = $('body').scrollTop();
+	var scroll_position = $(window).scrollTop();
 
 	if ((scroll_position > 65) || ($('body').width() < 768)) {
 

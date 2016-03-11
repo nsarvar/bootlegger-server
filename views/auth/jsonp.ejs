@@ -1,0 +1,9 @@
+<html>
+	<body>
+		<script>
+			window.opener.<%- callback %>({session:'<%- session%>'});
+		</script>
+		
+		If you see this message, login was a success but we have failed to notify the parent of a completed login.
+	</body>
+</html>

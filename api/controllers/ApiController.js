@@ -1,4 +1,9 @@
-var path = require('path');
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ var path = require('path');
 var uuid = require('node-uuid');
 
 module.exports = {
@@ -12,9 +17,9 @@ module.exports = {
 	{
 		User.findOne(req.session.passport.user.id).exec(function(err,u)
 		{
-			if (u.apiaccess == 'live')
+			if (u.apikey)
 			{
-				return res.json({key:u.apikey});
+				return res.json(u.apikey);
 			}
 			else
 			{
@@ -23,18 +28,41 @@ module.exports = {
 
 		});
 	},
+	
 	signup:function(req,res)
 	{
 		return res.view();
 	},
+	
 	newkey:function(req,res)
 	{
 		User.findOne(req.session.passport.user.id).exec(function(err,u)
 		{
-			if (u.apiaccess == 'live')
+			var apiobj = u.apikey;
+			
+			if (apiobj.apiaccess == 'live')
 			{
-				u.apikey = uuid.v4();
+				apiobj.apikey = uuid.v4();
 			}
+
+			apiobj.apitype = 'redirect';
+			
+			u.apikey = apiobj;
+
+			u.save(function(done)
+			{
+				return res.json({msg:'ok'});
+			});
+		});
+	},
+	
+	updateapi:function(req,res)
+	{
+		User.findOne(req.session.passport.user.id).exec(function(err,u)
+		{
+			u.apikey.apitype = req.param('apitype');
+			u.apikey.callbackfunction = req.param('callbackfunction');
+			u.apikey.redirecturl = req.param('redirecturl');
 
 			u.save(function(done)
 			{
@@ -47,7 +75,7 @@ module.exports = {
 	{
 		User.findOne(req.params.id).exec(function(err,user)
 		{
-			user.apiaccess = 'locked';
+			user.apikey.apiaccess = 'locked';
 			user.save(function(err,done){
 				return res.redirect('/event/admin');
 			});
@@ -58,7 +86,7 @@ module.exports = {
 	{
 		User.findOne(req.params.id).exec(function(err,user)
 		{
-			user.apiaccess = 'live';
+			user.apikey.apiaccess = 'live';
 			user.save(function(err,done){
 				return res.redirect('/event/admin');
 			});
@@ -69,11 +97,15 @@ module.exports = {
 	{
 		User.findOne(req.session.passport.user.id).exec(function(err,u)
 		{
-			if (!u.apiaccess)
+			//var apiobj = u.apikey || {apiaccess : 'live'};
+			//console.log(u);
+			if (typeof(u.apikey)=='undefined')
 			{
-				req.session.passport.user.apiaccess = 'live';
-				u.apikey = uuid.v4();
-				u.apiaccess = 'live';
+				u.apikey = {};
+				req.session.passport.user.apikey = {apiaccess: 'live'};
+				u.apikey.apikey = uuid.v4();
+				u.apikey.apiaccess = 'live';
+				u.apikey.apitype = 'redirect';
 			}
 
 			u.save(function(done)

@@ -219,7 +219,7 @@ angular.module('angularSails.io', [])
 
 
                 socket.emit(sailsEndpoint, requestCtx, tick(socket, function serverResponded(responseCtx) {
-                    console.log(responseCtx)
+                    //console.log(responseCtx)
 
                     var serverResponse = new SailsResponse(requestCtx, responseCtx);
 
@@ -368,7 +368,7 @@ angular.module('angularSails.io', [])
 
                 response.promise.success = function (fn) {
                     response.promise.then(function (response) {
-                        console.log(response)
+                        //console.log(response)
                       fn(response.data, response.statusCode, response.headers, request);
                     });
                     return response.promise;

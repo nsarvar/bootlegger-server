@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * MediaController
  *
  * @module		:: Controller
@@ -7,6 +12,7 @@
 var fs = require('fs-extra');
 var knox = require('knox');
 var path = require('path');
+var lwip = require('lwip');
 //var formidable = require('formidable');
 var uploaddir = "/upload/";
 var _ = require('lodash');
@@ -16,6 +22,17 @@ var AWS = require('aws-sdk');
 AWS.config.region = 'eu-west-1';
 var urlencode = require('urlencode');
 var ss3 = require('s3');
+var s3 = ss3.createClient({
+	s3Options: {
+		accessKeyId: sails.config.AWS_ACCESS_KEY_ID,
+		secretAccessKey: sails.config.AWS_SECRET_ACCESS_KEY,
+		region: sails.config.S3_REGION
+	},
+});
+var moment = require('moment');
+
+var cloudfront = require('aws-cloudfront-sign');
+
 var ObjectId = require('mongodb').ObjectID;
 
 Object.resolve = function(path, obj, safe) {
@@ -73,59 +90,101 @@ module.exports = {
 	{
 		Log.logmore('Media',{msg:'Transcode Event',userid:req.session.passport.user.id,eventid:req.param('id')});
 		AWS.config.update({accessKeyId: sails.config.AWS_ACCESS_KEY_ID, secretAccessKey: sails.config.AWS_SECRET_ACCESS_KEY});
+        
 		var elastictranscoder = new AWS.ElasticTranscoder();
 		Media.find({event_id:req.param('id')}).exec(function(err,media)
 		{
 			var calls = [];
 			_.each(media,function(m)
 			{
-				calls.push(function(cb){
-					elastictranscoder.createJob({
-					  PipelineId: sails.config.ELASTIC_PIPELINE,
-					  //InputKeyPrefix: '/upload',
-					  OutputKeyPrefix: 'upload/',
-					  Input: {
-					    Key: 'upload/' + m.path,
-					    FrameRate: 'auto',
-					    Resolution: 'auto',
-					    AspectRatio: 'auto',
-					    Interlaced: 'auto',
-					    Container: 'auto' },
-					  Output: {
-					    Key: m.path,
-					    //ThumbnailPattern: 'thumbs-{count}',
-					    PresetId: '1351620000001-000020', // specifies the output video format
-					    Rotate: 'auto' }
-					  }, function(error, data) {
-					    // handle callback
-					    //console.log(error);
-					    //console.log(data);
-					    // console.log('transcode submitted');
-					    process.nextTick(cb);
-					});
-				});
+                if (m.path)
+                {
+                    //remove file first...
+                    calls.push(function(cb){
+                       var params = {
+                            Delete: { /* required */
+                                Objects: [ /* required */
+                                {
+                                    Key: "upload/preview_"+m.path,
+                                },
+                                /* more items */
+                                ],
+                                Quiet: true
+                            },
+                            Bucket: sails.config.S3_BUCKET_TRANSCODE
+                        };
+                        var downloader = s3.deleteObjects(params);
+                        // downloader.on('data', function(data) {
+                        //     //console.log(data);
+                        //     //cb();
+                        // });
+                        downloader.on('error', function(err) {
+                            console.log(err);
+                            cb();
+                        });
+                        downloader.on('end', function() {
+                            console.log("preview_" + m.path + " removed");
+                            cb();
+                        });
+                    });
+                    //transcode file
+                    calls.push(function(cb){
+                        elastictranscoder.createJob({
+                        PipelineId: sails.config.ELASTIC_PIPELINE,
+                        //InputKeyPrefix: '/upload',
+                        OutputKeyPrefix: 'upload/',
+                        Input: {
+                            Key: 'upload/' + m.path,
+                            FrameRate: 'auto',
+                            Resolution: 'auto',
+                            AspectRatio: 'auto',
+                            Interlaced: 'auto',
+                            Container: 'auto' },
+                        Output: {
+                            Key: 'preview_'+m.path,
+                            //ThumbnailPattern: 'thumbs-{count}',
+                            PresetId: sails.config.PREVIEW_PRESET, // specifies the output video format
+                            Rotate: 'auto' }
+                        }, function(error, data) {
+                            // handle callback
+                            //console.log(error);
+                            //console.log(data);
+                            // console.log('transcode submitted');
+                            process.nextTick(cb);
+                        });
+                    });
+                }
 			});
 			async.series(calls,function(err)
 			{
-
 				req.session.flash = {msg:'Transcode Submitted'};
 				res.redirect('/event/admin');
 			});
 		});
 	},
 
+	
+    /**
+    * @api {get} /api/media/remove/:id Remove Media
+    * @apiDescription Indicate media has been removed by the user
+    * @apiName removemedia
+    * @apiGroup Media
+    * @apiVersion 0.0.2
+    *
+    * @apiParam {String} id Media ID
+    *
+    * @apiSuccess {String} ok 
+    */
   remove:function(req,res)
   {
     var mid = req.param('id');
     Media.findOne(mid).exec(function(err,m){
+		if (err)
+			return res.json({msg:err},500);
+			
       var path = m.path;
       var thumb = m.thumb;
-      //delete m.path;
-      //delete m.thumb;
-      //m.deleted = new Date();
-
-      // console.log(m.id);
-
+	  
       Media.native(function(err, collection) {
           collection.findAndModify(
               {_id: new ObjectId(m.id)},
@@ -133,17 +192,7 @@ module.exports = {
               {$unset: {path: "",thumb:""},$set:{deleted:new Date()}},
               {update: true},
               function (err, object) {
-                 // Continue...
-                // console.log(err);
-                // console.log(object);
-
-            //console.log(m);
-            //console.log(m.meta.static_meta);
-            //m.save(function(done,saved)
-            //{
-
-              //console.log(done);
-
+				  
               //console.log(saved);
               res.json({msg:'ok'});
               //submit request to remove from s3 and from thumbnail and from transcode
@@ -237,7 +286,7 @@ module.exports = {
     });
   },
 
-  add_tag:function(req,res)
+  	add_tag:function(req,res)
 	{
 		var mid = req.param('id');
 		var field = req.param('field');
@@ -329,9 +378,9 @@ module.exports = {
 					    Interlaced: 'auto',
 					    Container: 'auto' },
 					  Output: {
-					    Key: filename,
+					    Key: 'preview_'+m.path,
 					    //ThumbnailPattern: 'thumbs-{count}',
-					    PresetId: '1351620000001-000020', // specifies the output video format
+					    PresetId: sails.config.PREVIEW_PRESET, // specifies the output video format
 					    Rotate: 'auto' }
 					  }, function(error, data) {
 					    // handle callback
@@ -351,6 +400,183 @@ module.exports = {
 			}
 		});
 	},
+
+	/**
+	 * @api {get} /api/media/preview/:id Preview video for media
+	 * @apiDescription Get preview video for media
+	 * @apiName preview
+	 * @apiGroup Media
+	 * @apiVersion 0.0.2
+	 *
+	 * @apiParam {String} id Id of media
+	 *
+	 */
+	preview:function(req,res)
+	{
+		var id = req.param('id');
+		Media.findOne(id,function(err, m){	
+            if (m.meta.static_meta.media_type == 'VIDEO')
+            {
+                var options = {
+                    keypairId: sails.config.CLOUDFRONT_KEY, 
+                    privateKeyPath: sails.config.CLOUDFRONT_KEYFILE,
+                    expireTime: moment().add(1, 'day')
+                }
+                var signedUrl = cloudfront.getSignedUrl(sails.config.S3_TRANSCODE_URL + 'preview_' + m.path, options);
+                //console.log(signedUrl);
+                return res.redirect(signedUrl);
+            }
+            else if (m.meta.static_meta.media_type == 'AUDIO')
+            {
+                var options = {
+                    keypairId: sails.config.CLOUDFRONT_KEY, 
+                    privateKeyPath: sails.config.CLOUDFRONT_KEYFILE,
+                    expireTime: moment().add(1, 'day')
+                }
+                var signedUrl = cloudfront.getSignedUrl(sails.config.S3_CLOUD_URL + m.path, options);
+                //console.log(signedUrl);
+                return res.redirect(signedUrl);
+            }
+            else{
+                return res.notFound();
+            }
+		});
+	},
+	
+	/**
+	 * @api {get} /api/media/full/:id Full video for media
+	 * @apiDescription Get full video for specific media
+	 * @apiName full
+	 * @apiGroup Media
+	 * @apiVersion 0.0.2
+	 *
+	 * @apiParam {String} id Id of media
+	 *
+	 */
+	full:function(req,res)
+	{
+		var id = req.param('id');
+		Media.findOne(id,function(err, m){	
+			var options = {
+				keypairId: sails.config.CLOUDFRONT_KEY, 
+				privateKeyPath: sails.config.CLOUDFRONT_KEYFILE,
+				expireTime: moment().add(1, 'day')
+			}
+			var signedUrl = cloudfront.getSignedUrl(sails.config.S3_CLOUD_URL + m.path , options);
+			//console.log(signedUrl);
+			return res.redirect(signedUrl);
+		});
+	},
+	
+	/**
+	 * @api {get} /api/media/homog/:id Transcoded video for media
+	 * @apiDescription Get homogeonized and transcoded video for specific media
+	 * @apiName homog
+	 * @apiGroup Media
+	 * @apiVersion 0.0.2
+	 *
+	 * @apiParam {String} id Id of media
+	 *
+	 */
+	homog:function(req,res)
+	{
+		var id = req.param('id');
+		Media.findOne(id,function(err, m){	
+			var options = {
+				keypairId: sails.config.CLOUDFRONT_KEY, 
+				privateKeyPath: sails.config.CLOUDFRONT_KEYFILE,
+				expireTime: moment().add(1, 'day')
+			}
+			var signedUrl = cloudfront.getSignedUrl(sails.config.S3_CLOUD_URL + m.path + '_homog.mp4', options);
+			//console.log(signedUrl);
+			return res.redirect(signedUrl);
+		});
+	},
+
+	/**
+	 * @api {get} /api/media/thumbnail/:id Thumbnail for media
+	 * @apiDescription Get thumbnail for specific media
+	 * @apiName thumbnail
+	 * @apiGroup Media
+	 * @apiVersion 0.0.2
+	 *
+	 * @apiParam {String} id Id of media
+	 *
+	 */
+	thumbnail:function(req,res)
+	{
+		//upload map file for an event role:
+		var mediaid = req.params.id;
+		var size = req.param('s') || 260;
+		//TEST FUNCTION FOR DOING IMAGE THUMBNAILS TO SPEED UP APPs
+		Media.findOne(mediaid).exec(function(err,media){
+			
+			if (err || !media)
+			{
+                res.type('image/png');
+				fs.readFile(path.normalize(__dirname+'/../../assets/images/notfound.png'), function (err,data) {
+					   return res.send(data);
+                    });
+			}
+			
+			//search for the media in the cache
+			var tmp = path.normalize(__dirname + "/../../.tmp/cache/"+size + "_" + media.thumb);
+			fs.access(tmp,fs.R_OK | fs.W_OK,function(err){
+				if (!err)
+				{
+					return res.sendfile(tmp);
+				}
+				else
+				{
+					//generate media
+					var params = {
+						localFile: tmp,
+						s3Params: {
+							Bucket: sails.config.S3_BUCKET,
+							Key: "upload/"+media.thumb 
+						},
+					};
+					var downloader = s3.downloadFile(params);
+					downloader.on('error', function(err) {
+					   //console.error("unable to download:", err.stack);
+                       res.type('image/png');
+                       fs.readFile(path.normalize(__dirname+'/../../assets/images/notfound.png'), function (err,data) {
+                            return res.send(data);
+                        });
+						// return res.notFound();
+					});
+					downloader.on('progress', function() {
+						//console.log("progress", downloader.progressAmount, downloader.progressTotal);
+					});
+					downloader.on('end', function() {
+						try
+						{
+							lwip.open(tmp, function(err, image) {
+								if (err)
+								{
+									return res.serverError();
+								}
+									image.cover(parseInt(size),parseInt(size)*0.5625,function(err, image){
+										image.toBuffer('png',function(err,data){
+											fs.writeFile(tmp,data,function(){
+												res.type('image/png');
+											return res.send(data);	
+											});
+										});
+									});
+							});
+						}
+						catch (e)
+						{
+							//console.log(e);
+							return res.serverError();
+						}
+					});
+				}
+			});
+		});					
+	},
+
 
 	/**
 	 * @api {post} /api/media/uploadthumbcomplete/:id Notify on Thumb
@@ -399,7 +625,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /api/media/signuploadthumb/:id Get Thumb Upload Url
+	 * @api {post} /api/media/signuploadthumb/ Get Thumb Upload Url
 	 * @apiDescription Retrieve an S3 PUT url to upload the thumbnail to
 	 * @apiName signuploadthumb
 	 * @apiGroup Media
@@ -421,7 +647,7 @@ module.exports = {
 	    //AWS.config.loadFromPath('./awscreds.json');
 	    AWS.config.update({accessKeyId: sails.config.AWS_ACCESS_KEY_ID, secretAccessKey: sails.config.AWS_SECRET_ACCESS_KEY});
 	    var s3 = new AWS.S3({computeChecksums: true}); // this is the default setting
-		var params = {Bucket: sails.config.S3_BUCKET, Key: 'upload/'+filename, ACL: "public-read"};
+		var params = {Bucket: sails.config.S3_BUCKET, Key: 'upload/'+filename};
 		var url = s3.getSignedUrl('putObject', params);
 		//console.log("The URL is", url);
 		var credentials = {
@@ -431,7 +657,7 @@ module.exports = {
 	},
 
 	/**
-	 * @api {post} /api/media/signupload/:id Get Upload Url
+	 * @api {post} /api/media/signupload/ Get Upload Url
 	 * @apiDescription Retrieve an S3 PUT url to upload the media to
 	 * @apiName signupload
 	 * @apiGroup Media
@@ -453,7 +679,7 @@ module.exports = {
 	    //AWS.config.loadFromPath('./awscreds.json');
 	    AWS.config.update({accessKeyId: sails.config.AWS_ACCESS_KEY_ID, secretAccessKey: sails.config.AWS_SECRET_ACCESS_KEY});
 	    var s3 = new AWS.S3({computeChecksums: true}); // this is the default setting
-		var params = {Bucket: sails.config.S3_BUCKET, Key: 'upload/'+filename, ACL: "public-read", ContentType: "video/mp4"};
+		var params = {Bucket: sails.config.S3_BUCKET, Key: 'upload/'+filename, ContentType: "video/mp4"};
 		var url = s3.getSignedUrl('putObject', params);
 		//console.log("The URL is", url);
 		var credentials = {
@@ -516,242 +742,7 @@ module.exports = {
 			res.json({msg:'no media provided'},500)
 		}
 	},
-
-	// uploadthumb:function(req,res)
-	// {
-	// 	var knox_params = {
-	// 	    key: sails.config.AWS_ACCESS_KEY_ID,
-	// 	    secret: sails.config.AWS_SECRET_ACCESS_KEY,
-	// 	    bucket: sails.config.S3_BUCKET
-	// 	  }
-
-	// 	var tmpdir = path.normalize(path.dirname(require.main.filename) + uploaddir);
-
-	// 	//console.log(req.files);
-	// 	var mid = req.param('id');
-
-	// 	if (req.file('thumbnail') != null)
-	// 	{
-	// 		req.file('thumbnail').upload(function(err, tt)
-	// 		{
-	// 			//console.log("uploading thumb");
-	// 			//console.log(tt[0]);
-	// 			var thefile = tt[0];
-
-	// 			//check upstream
-	// 			var canupload = false;
-	// 			//var request = require('request');
-
-	// 			var client = knox.createClient(knox_params);
-	// 			var tmp = thefile.fd;
-	// 			//console.log(req.files.thumbnail);
-	// 			if (req.param('sync'))
-	// 				var filename = thefile.filename;
-	// 			else
-	// 				var filename = (new Date().getTime()) + '_tb_' + urlencode(thefile.filename);
-
-
-	// 	    	//console.log('screenshots were saved')
-	// 	    	if (!sails.localmode)
-	// 	    	{
-	// 	    		if (req.param('sync'))
-	// 	    			var tpng = filename.replace('/upload/','');
-	// 	    		else
-	// 	    			var tpng = filename+'.png';
-
-	// 				client.putFile(tmp, 'upload/' + tpng, {'x-amz-acl': 'public-read'},
-	// 		    		function(err, result) {
-	// 		    			//done uploading
-	// 		    			if (err)
-	// 		    				console.log("s3 upload error: "+err);
-
-	// 		    			console.log("uploaded thumb " + tpng + " to s3");
-
-	// 		    			fs.unlink(tmp, function (err) {
-	// 		    				//console.log(err);
-	// 		    			});
-
-	// 		    			Media.findOne(mid).exec(function(err,m){
-	// 							if (!err && m!=undefined)
-	// 							{
-	// 								m.thumb = tpng;
-	// 								m.save(function(err){
-	// 									Log.logmore('Media',{msg:'thumb',userid:req.session.passport.user.id,media:mid});
-	// 									res.json({msg:'upload successful'},200);
-	// 									m.thumb = sails.config.S3_CLOUD_URL + m.thumb;
-	// 									m.nicify(function(){
-	// 										Event.publishUpdate(m.event_id,{update:true,media:m});
-	// 									});
-	// 									//Event.publishUpdate(m.event_id,{update:true,media:m});
-	// 									sails.eventmanager.checkstatus(m.event_id);
-	// 								});
-	// 							}
-	// 							else
-	// 							{
-	// 								console.log(err);
-	// 								res.json({msg:'upload fail'},500);
-	// 							}
-	// 						});
-	// 		    		});
-	// 			}
-	// 			else
-	// 			{
-	// 				//save locally
-	// 				fs.copySync(tmp,tmpdir + filename + '.png');
-	// 				Media.findOne(mid).exec(function(err,m){
-	// 					if (!err && m!=undefined)
-	// 					{
-	// 						m.thumb = '/upload/'+filename+'.png';
-	// 						m.save(function(err){
-	// 							res.json({msg:'upload successful'},200);
-	// 							console.log('notify thumb: '+m.event_id);
-	// 							m.nicify(function(){
-	// 								Event.publishUpdate(m.event_id,{update:true,media:m});
-	// 							});
-	// 							//Event.publishUpdate(m.event_id,{update:true,media:m});
-	// 						});
-	// 					}
-	// 					else
-	// 					{
-	// 						console.log(err);
-	// 						res.json({msg:'upload fail'},500);
-	// 					}
-	// 				});
-	// 			}
-	// 		});
-	// 	}
-	// 	else
-	// 	{
-	// 		res.json({msg:"No File Given"},500);
-	// 	}
-	// },
-
-	// upload:function(req,res)
-	// {
-
-	// 	var knox_params = {
-	// 	    key: sails.config.AWS_ACCESS_KEY_ID,
-	// 	    secret: sails.config.AWS_SECRET_ACCESS_KEY,
-	// 	    bucket: sails.config.AWS_S3_BUCKET
-	// 	  }
-
-	// 	var tmpdir = path.normalize(path.dirname(require.main.filename) + uploaddir);
-
-	// 	//return res.json({msg:'debug'});
-	// 	if (req.files.thefile != null)
-	// 	{
-	// 		process.nextTick(function(){
-	// 			//check upstream
-	// 			var canupload = false;
-	// 			var request = require('request');
-
-	// 			var client = knox.createClient(knox_params);
-
-	// 			var tmp = req.files.thefile.path;
-
-	// 			//upload a new file:
-	// 			if (!req.param('sync'))
-	//     			var filename = (new Date().getTime()) + '_' + req.files.thefile.name + '.mp4';
-	//     		else
-	//     			var filename = req.files.thefile.name;
-
-	// 			//console.log('snapshot saved to snapshot.png (200x125) with a frame at 00:00:22');
-	// 			if (!sails.localmode)
-	// 			{
-	// 				//notify user NOW, so they dont hang
-	// 				console.log("staring s3 upload");
-	// 				client.putFile(tmp, 'upload/' + filename, {'Content-Type': req.files.thefile.type,'x-amz-acl': 'public-read'},
-	// 			    function(err, result) {
-	// 			      if (err) {
-	// 			        //res.json({msg:"Upload transfer failed"},500);
-	// 			        return;
-	// 			      } else {
-	// 			        if (200 == result.statusCode) {
-	// 			          console.log('Uploaded to Amazon S3!');
-
-	// 			          fs.unlink(tmp, function (err) {
-	// 			            if (err) throw err;
-	// 			            	console.log('successfully deleted temp file '+req.files.thefile.path);
-	// 			            //CHANGE TO UPDATE MEDIA THAT ALREADY EXISTS
-
-	// 			            var mid = req.param('id');
-	// 			            console.log("media id: "+mid);
-	// 						Media.findOne(mid).exec(function(err,m){
-	// 							if (!err && m!=undefined)
-	// 							{
-	// 								//console.log("updating: "+m);
-
-	// 								m.path = filename;
-	// 								m.save(function(err){
-	// 									//console.log(m);
-	// 									sails.eventmanager.process(req, m);
-	// 									//Event.publishUpdate(m[0].event_id,{media:m[0]});
-	// 									//Media.publishUpdate(m.id,m);
-	// 									m.nicify(function(){
-	// 										Event.publishUpdate(m.event_id,{update:true,media:m});
-	// 									});
-	// 									//Event.publishUpdate(m.event_id,{update:true,media:m});
-	// 									// res.json({msg:'upload successful'},200);
-	// 								});
-	// 							}
-	// 							else
-	// 							{
-	// 								console.log(err);
-	// 								//res.json({msg:'upload save faild'},500);
-	// 								//console.log(m);
-	// 							}
-	// 						});
-	// 			          });
-	// 			        } else {
-	// 			          //res.json({msg:"Upload transfer failed"},500);
-	// 			        }
-
-	// 			      }
-	// 			  });
-
-	// 				return res.json({msg:'upload successful'},200);
-	// 			}
-	// 			else
-	// 			{
-	// 				//copy file locally
-	// 				var mid = req.param('id');
-	// 				fs.copySync(tmp,tmpdir + filename);
-	// 				Media.findOne(mid).exec(function(err,m){
-	// 					if (!err && m!=undefined)
-	// 					{
-	// 						console.log("updating locally: "+m.id);
-
-	// 						m.localpath = filename;
-	// 						m.save(function(err){
-	// 							//console.log(m);
-	// 							console.log('done local update');
-	// 							sails.eventmanager.process(req,m);
-	// 							//Event.publishUpdate(m[0].event_id,{media:m[0]});
-	// 							//Media.publishUpdate(m.id,m);
-	// 							m.nicify(function(){
-	// 								Event.publishUpdate(m.event_id,{update:true,media:m});
-	// 							});
-	// 							//Event.publishUpdate(m.event_id,{update:true,media:m});
-	// 							return res.json({msg:'upload to local successful'},200);
-	// 							console.log("saved");
-	// 						});
-	// 					}
-	// 					else
-	// 					{
-	// 						console.log(err);
-	// 						return res.json({msg:'local upload error'},500);
-	// 						//console.log(m);
-	// 					}
-	// 				});
-	// 			}
-	// 		});
-	// 	}
-	// 	else
-	// 	{
-	// 		return res.json({msg:"No File Given"},500);
-	// 	}
-	// },
-
+	
 	/**
 	 * @api {socket.io get} /api/media/update/:id Update Meta-Data
 	 * @apiDescription Update the meta-data of the give media
@@ -814,95 +805,6 @@ module.exports = {
 		});
 	},
 
-	// event:function(req,res)
-	// {
-	// 	Event.findOne(req.params.id, function(err,ev)
-	// 	{
-	// 		User.find({}).exec(function(err,users)
-  //   		{
-	// 			//console.log(req.params.id);
-	// 			//gets media for event
-	// 			var criteria = {'event_id':req.params.id};
-	// 		  	if (req.param('limit'))
-	// 			  	criteria.limit = req.param('limit');
-  //
-	// 		      if (req.param('skip'))
-	// 			  	criteria.skip = req.param('skip');
-  //
-	// 			Media.find(criteria).sort('createdAt DESC').exec(function(err,data)
-	// 			{
-	// 				_.each(data,function(m)
-	// 				{
-	// 					//for each media, set nice name;
-  //
-  //
-	// 					 if (m.meta.static_meta.role)
-	// 		              {
-	// 		            	  m.meta.static_meta.role_ex = ev.eventtype.roles[m.meta.static_meta.role];
-	// 		          		}
-	// 		          		else
-	// 		          		{
-	// 		          			m.meta.static_meta.role_ex = {name:'Unknown'};
-	// 		          		}
-  //
-	// 			         m.user = _.findWhere(users, {id: m.created_by});
-	// 			          //console.log(m.meta.static_meta.shot);
-	// 			          //console.log(_.findWhere(ev.eventtype.shot_types,{id:m.meta.static_meta.shot}));
-	// 			         m.meta.static_meta.shot_ex = ev.eventtype.shot_types[m.meta.static_meta.shot];
-	// 			          if (!m.meta.static_meta.shot_ex)
-	// 			            m.meta.static_meta.shot_ex = {name:'Unknown'};
-  //
-	// 			          //console.log(ev.coverage_classes);
-  //
-	// 			          m.meta.static_meta.coverage_class_ex = ev.coverage_classes[m.meta.static_meta.coverage_class];
-	// 			          if (m.meta.static_meta.coverage_class_ex==undefined)
-	// 			          {
-	// 			            m.meta.static_meta.coverage_class_ex = {name:"Unknown"};
-	// 			          }
-  //
-	// 			          if (m.meta.static_meta.meta_phase && ev.phases)
-	// 			          {
-	// 				          m.meta.static_meta.meta_phase = ev.phases[m.meta.static_meta.meta_phase];
-	// 				          if (m.meta.static_meta.meta_phase==undefined)
-	// 				          {
-	// 				            m.meta.static_meta.meta_phase;
-	// 				          }
-	// 		      		  }
-  //
-	// 			  		var timestamp = m.meta.static_meta.captured_at.split(' ');
-	// 			  		var uu = "unknown";
-	// 			  		if (m.user)
-	// 			  			uu = m.user.profile.displayName;
-  //
-	// 			  		//m.meta.static_meta.nicepath = urlencode(timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.static_meta.role_ex.name + '_' + m.meta.static_meta.shot_ex.name + '_' + m.meta.static_meta.coverage_class_ex.name + '_' + uu + path.extname(m.path));
-	// 			  		m.meta.static_meta.nicepath = urlencode((timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.static_meta.role_ex.name + '_' + m.meta.static_meta.shot_ex.name + '_' + m.meta.static_meta.coverage_class_ex.name + '_' + uu + path.extname(m.path)).replace(/ /g,'_'));
-  //
-  //
-	// 			  		delete m.meta.static_meta.coverage_class;
-	// 			  		delete m.meta.static_meta.role;
-	// 			  		delete m.meta.static_meta.shot;
-  //
-  //
-	// 			  		if (m.path)
-	// 			  		{
-	// 			  			m.originalpath = sails.config.S3_CLOUD_URL + m.path;
-  //         			m.path = sails.config.S3_TRANSCODE_URL + m.path;
-  //         		}
-  //         		if (m.thumb)
-  //         		{
-  //         			m.originalthumb = m.thumb;
-  //         			m.thumb = sails.config.S3_CLOUD_URL + m.thumb;
-  //         		}
-	// 			  	});
-  //
-  //
-	// 				//console.log(data);
-	// 				return res.json(data);
-	// 			});
-	// 		});
-	// 	});
-	// },
-
 	totals:function(req,res)
 	{
 		var eventid = req.param('id');
@@ -918,17 +820,8 @@ module.exports = {
 	      {
 	        if (d.path)
 	          files.push(d);
-	        // else
-	        //   missing.push(d);
-
-	        //console.log(d);
-
-	        // if (d.meta.static_meta.filesize)
-	        // {
-	        //   filesize+=parseFloat(d.meta.static_meta.filesize);
-	        // }
 	      });
-	      //emit status:
+
 
 	      var users = _.unique(_.pluck(data, 'created_by')).length;
 	      var mins = _.reduce(data, function(sum, m) {
@@ -947,25 +840,9 @@ module.exports = {
 
 	      var mine = _.filter(data, {created_by:req.session.passport.user.id}).length;
 
-	      //var usersmissing = _.pluck(missing, 'created_by')).length;
-	      //console.log(usersmissing);
+	  
 
-	        // User.find({}).exec(function(err,allusers)
-	        // {
-	        //     var usersmissing = _.countBy(missing, function(num) {
-	        //       var x = _.findWhere(allusers, {id: num.created_by});
-	        //       if (x)
-	        //         return x.profile.displayName;
-	        //       else
-	        //         return 'Anon';
-	        //        });
-
-	            // var missingfrom = _.reduce(usersmissing,function(prev,next,val){
-	            //   return prev + val + " (" + next + "), ";
-	            // },"");
-
-	            res.json({mine:mine,total:files.length,people:users,mins:+parseFloat(mins/60).toFixed(1)});
-//	        });
+			res.json({mine:mine,total:files.length,people:users,mins:+parseFloat(mins/60).toFixed(1)});
 	    });
 	},
 
@@ -1042,15 +919,6 @@ module.exports = {
 
 			res.json(output);
 		});
-
-		//var request = require('request');
-		//request('http://'+sails.config.hostname+':'+sails.config.port+'/post/document/'+eventid,
-	        // function(err,resp,doc)
-	        // {
-
-	        // });
-			//group things together:
-
 	},
 
 	directorystructure:function(req,res)
@@ -1163,6 +1031,52 @@ module.exports = {
 		});
 	},
 
+
+	mediacount:function(req,res)
+	{
+		if (!req.param('id'))
+		{
+			return res.json({msg:'no id given'},500);
+		}
+		var eventid = req.param('id');
+		Media.getnicejson(req,res,eventid,function(data)
+		{
+            var output = _.filter(data,function(m){
+				return !m.deleted;
+			});
+			return res.json({count:output.length});
+		});
+	},
+	
+	/**
+	 * @api {get} /api/media/mymedia/:id List User's Own Media for a Shoot
+	 * @apiDescription List all the media from a given shoot shot by the current user
+	 * @apiName usermedia
+	 * @apiGroup Media
+	 * @apiVersion 0.0.2
+	 * @apiPermission viewonly
+	 *
+	 * @apiParam {String} id Shoot ID
+	 *
+	 * @apiSuccess {Array} result List of media
+	 */
+	mymedia:function(req,res)
+	{
+		if (!req.param('id'))
+		{
+			return res.json({msg:'no id given'},500);
+		}
+		var eventid = req.param('id');
+		Media.getnicejson(req,res,eventid,function(data)
+		{
+			var output = _.filter(data,function(m){
+				return m.created_by == req.session.passport.user.id;
+			});
+			return res.json(output);
+		});
+	},
+
+
 	castlist:function(req,res)
 	{
 		Event.findOne(req.params.id, function(err,ev)
@@ -1183,8 +1097,6 @@ module.exports = {
 				         m.meta.shot_ex = ev.eventtype.shot_types[m.meta.static_meta.shot];
 				          if (!m.meta.shot_ex)
 				            m.meta.shot_ex = {name:'Unknown'};
-
-				          //console.log(ev.coverage_classes);
 
 				          m.meta.coverage_class_ex = ev.coverage_classes[m.meta.static_meta.coverage_class];
 				          if (m.meta.coverage_class_ex==undefined)

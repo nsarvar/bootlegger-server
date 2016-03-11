@@ -40,10 +40,12 @@ npm-debug.log
 nbproject
 .idea
 .Thumbnails
+.vagrant
 
 ########################
 # local config
 ########################
 config/local.js
+config/local_pc.js
 
 doc/*

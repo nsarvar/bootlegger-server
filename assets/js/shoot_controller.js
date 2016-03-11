@@ -2,7 +2,7 @@
 
 var minutesOfDay = function(m){
   return m.minutes() + m.hours() * 60;
-}
+};
 
 function getProperty(obj, prop) {
     var parts = prop.split('.'),
@@ -21,25 +21,27 @@ function getProperty(obj, prop) {
     }
 }
 
-var liveApp = angular.module('liveApp', [
-      "ngSanitize",
-      'ngLoadingSpinner',
-      'ngAnimate',
-      'angularSails.io',
-      'uiGmapgoogle-maps',
-      'ui.slider',
-      'ui.bootstrap',
-      'checklist-model',
-      "com.2fdevs.videogular",
-      'angularUtils.directives.dirPagination',
-      'ui.knob'
-    ]);
+// var liveApp = angular.module('liveApp', [
+//       "ngSanitize",
+//       'ngLoadingSpinner',
+//       'ngAnimate',
+//       'angularSails.io',
+//       'uiGmapgoogle-maps',
+//       'ui.slider',
+//       'ui.bootstrap',
+//       'checklist-model',
+//       "com.2fdevs.videogular",
+//       'angularUtils.directives.dirPagination',
+//       'ui.knob',
+//       'ngDragDrop',
+//       'ui.sortable'
+//     ]);
 
-liveApp.config(['paginationTemplateProvider', function(paginationTemplateProvider) {
+bootleggerApp.config(['paginationTemplateProvider', function(paginationTemplateProvider) {
     paginationTemplateProvider.setPath('/dirPagination.tpl.html');
 }]);
 
-liveApp.config(['uiGmapGoogleMapApiProvider',function(uiGmapGoogleMapApiProvider) {
+bootleggerApp.config(['uiGmapGoogleMapApiProvider',function(uiGmapGoogleMapApiProvider) {
     uiGmapGoogleMapApiProvider.configure({
         //    key: 'your api key',
         v: '3.17',
@@ -47,11 +49,11 @@ liveApp.config(['uiGmapGoogleMapApiProvider',function(uiGmapGoogleMapApiProvider
     });
 }]);
 
-liveApp.factory('socket',['$sailsSocket', function($sailsSocket){
-      return $sailsSocket();
-  }]);
+// liveApp.factory('socket',['$sailsSocket', function($sailsSocket){
+//       return $sailsSocket();
+//   }]);
 
-liveApp.filter('rangeFilter', function() {
+bootleggerApp.filter('rangeFilter', function() {
     return function( items, rangeInfo ) {
         var filtered = [];
         if (rangeInfo == undefined)
@@ -64,10 +66,13 @@ liveApp.filter('rangeFilter', function() {
           {
               var lena = item.meta.static_meta.clip_length.split(':');
               var time = (parseInt(lena[0])*3600) + (parseInt(lena[1])*60) + (parseFloat(lena[2]));
-              //console.log(lena);
+              //console.log(time);
                 if( time >= min && time <= max ) {
                     filtered.push(item);
                 }
+                
+                if (isNaN(time))
+                  filtered.push(item);
           }
           catch (e)
           {
@@ -78,7 +83,7 @@ liveApp.filter('rangeFilter', function() {
     };
 });
 
-liveApp.filter('timeFilter', function() {
+bootleggerApp.filter('timeFilter', function() {
     return function( items, times ) {
         var filtered = [];
         if (times.from == undefined || times.to == undefined)
@@ -99,7 +104,7 @@ liveApp.filter('timeFilter', function() {
     };
 });
 
-liveApp.filter('checkFilter', function() {
+bootleggerApp.filter('checkFilter', function() {
     return function( items, params ) {
         var filtered = [];
         if (params.value == undefined || params.value.length == 0)
@@ -113,7 +118,7 @@ liveApp.filter('checkFilter', function() {
     };
 });
 
-liveApp.filter('areaFilter', function() {
+bootleggerApp.filter('areaFilter', function() {
     return function( items, params ) {
         var filtered = [];
         if (params.circle == undefined || params.filterbylocation == false)
@@ -128,7 +133,7 @@ liveApp.filter('areaFilter', function() {
     };
 });
 
-liveApp.filter('hasVideoFilter', function() {
+bootleggerApp.filter('hasVideoFilter', function() {
     return function( items, params ) {
         var filtered = [];
         // If time is with the range
@@ -140,7 +145,7 @@ liveApp.filter('hasVideoFilter', function() {
     };
 });
 
-liveApp.filter('hasEditTag', function() {
+bootleggerApp.filter('hasEditTag', function() {
     return function( items, params ) {
         var filtered = [];
         // If time is with the range
@@ -152,11 +157,129 @@ liveApp.filter('hasEditTag', function() {
     };
 });
 
-liveApp.controller('Live',['$scope','socket','uiGmapGoogleMapApi','$timeout','$sce','usSpinnerService','$interval','uiGmapIsReady','$window', function ($scope,socket,uiGmapGoogleMapApi,$timeout,$sce,usSpinnerService,$interval,uiGmapIsReady,$window) {
+// 1.3.0-beta.19+
+bootleggerApp.filter("as", function($parse) {
+  return function(value, context, path) {
+    return $parse(path).assign(context, value);
+  };
+});
+
+bootleggerApp.controller('Live',['$scope','socket','uiGmapGoogleMapApi','$timeout','$sce','usSpinnerService','$interval','uiGmapIsReady','$window', function ($scope,socket,uiGmapGoogleMapApi,$timeout,$sce,usSpinnerService,$interval,uiGmapIsReady,$window) {
   //var controller = this;
   $scope.API = null;
   $scope.candelete = false;
   $scope.edit_tag =false;
+
+
+  $scope.tracks = [];
+  
+  $scope.tracks.push({name:'track 1',items:[]});
+  $scope.tracks.push({name:'track 2',items:[]});
+  $scope.tracks.push({name:'track 3',items:[]});
+  $scope.tracks.push({name:'track 4',items:[]});
+  $scope.masterpix = 5;
+
+  $scope.dirtyflag = false;
+
+  $scope.lastsaved = new Date();
+  $scope.getClipLength = function(clip)
+  {
+    var lena = clip.meta.static_meta.clip_length.split(':');
+    var time = (parseInt(lena[0])*3600) + (parseInt(lena[1])*60) + (parseFloat(lena[2]));
+    return time;
+  }
+
+  $scope.saveTimeline = function()
+  {
+    //save tracks to the shoot, with only media and offset information...
+    var data = _.clone($scope.tracks,true);
+    _.each(data,function(d){
+      d.items = _.map(d.items,function(i){
+        var nm = {
+          offset:i.offset,
+          track:i.track,
+          id:i.id
+        };
+        return nm;
+      });
+    });
+    
+     socket.get('/shoot/updatetimeline/'+mastereventid,{tracks:data}).then(function(resp){
+       $scope.dirtyflag = false;
+        $scope.lastsaved = new Date();
+     });
+    
+  }
+
+$scope.currentm = null;
+$scope.isdragging = false;
+
+
+
+
+  $scope.dothisondrop = function(event,ui)
+  {
+    $scope.isdragging = false;    
+    
+    if (typeof($(ui.draggable[0]).data('track')) != 'undefined')
+    {
+      //console.log($(ui).scope());
+      var t = $(ui.draggable[0]).data('track');
+      var i = $(ui.draggable[0]).data('index');
+      
+      var obj = $scope.tracks[t].items[i];
+      
+      
+      
+      var target = $(event.toElement).data('index');
+      if (t != target && $scope.tracks[target]){
+         $scope.tracks[t].items.splice(i,1);
+          obj.left = ui.position.left; 
+          obj.offset = ui.position.left / $scope.masterpix;
+          obj.track = t;
+          //console.log(obj.left);
+          $scope.tracks[target].items.push(obj);
+             
+          //put in target track...
+      }
+      else{
+        //remove from timeline...
+         $scope.tracks[t].items.splice(i,1);
+         var obj = _.find($scope.media,{id:$(ui.draggable[0]).data("media-id")});
+         $scope.tag(obj);
+      }
+    }
+    else if (typeof($(ui.draggable[0]).data('masterindex')) !='undefined' )
+    {
+      var target = $(event.target).data('index');
+      var id = $(ui.draggable[0]).data('id');
+      
+      var obj = _.clone(_.find($scope.media,{id:id}));
+      
+      $scope.tag(obj);
+      
+      obj.left = ui.position.left;
+      obj.track = t;
+      obj.offset = ui.position.left / $scope.masterpix;
+      $scope.tracks[target].items.push(obj);
+    }
+    
+    $scope.saveTimeline();
+    $scope.dirtyflag = true;
+  }
+  
+  $scope.dothisondrag = function(event,ui)
+  {
+     $scope.isdragging = true;
+    //console.log(event);
+     var t = $(ui.helper[0]).data('track');
+     var i = $(ui.helper[0]).data('index');  
+     var obj = $scope.tracks[t].items[i];
+     obj.offset = ui.position.left / $scope.masterpix;
+     obj.track = t;
+  }
+
+
 
   $scope.filteredmedia = [];
 
@@ -210,7 +333,9 @@ liveApp.controller('Live',['$scope','socket','uiGmapGoogleMapApi','$timeout','$s
   };
 
   $scope.playThis = function(vid) {
-      $scope.sources = [{src: $sce.trustAsResourceUrl(vid.path), type: "video/mp4"}];
+    if (!$scope.isdragging)
+    {
+      $scope.sources = [{src: $sce.trustAsResourceUrl(vid.lowres), type: "video/mp4"}];
       //$scope.isplaying = vid;
       $('#playAll').on('hide.bs.modal', function (e) {
         //var vid = $('#playAll').contents().detach();
@@ -229,6 +354,7 @@ liveApp.controller('Live',['$scope','socket','uiGmapGoogleMapApi','$timeout','$s
       $timeout($scope.API.play.bind($scope.API), 100);
 
       $scope.log('play',{media:vid.id});
+    }
       //console.log($scope.playlist);
     };
 
@@ -296,7 +422,7 @@ liveApp.controller('Live',['$scope','socket','uiGmapGoogleMapApi','$timeout','$s
   $scope.runonce = false;
 
   $scope.mapfilter = {};
-  $scope.lengthfilter =  [0,50];
+  $scope.lengthfilter =  [0,1200];
   $scope.rolefilter= [];
   $scope.shotfilter=[];
   $scope.phasefilter=[];
@@ -335,7 +461,8 @@ liveApp.controller('Live',['$scope','socket','uiGmapGoogleMapApi','$timeout','$s
     $scope.shotfilter=[];
     $scope.phasefilter=[];
     $scope.coveragefilter=[];
-    $scope.lengthfilter = [0,50];
+    $scope.lengthfilter = [0,1200];
+    $scope.searchterm.$ = '';
     delete $scope.timefilterfrom;
     delete $scope.timefilterto;
     $scope.hasvideo = false;
@@ -378,13 +505,48 @@ liveApp.controller('Live',['$scope','socket','uiGmapGoogleMapApi','$timeout','$s
         }
     } };
 
-socket.connect().then(function(sock){
-    console.log('connected',sock)
-},function(err){
-    console.log('connection error',err)
-},function(not){
-    console.log('connection update',not)
+// socket.connect().then(function(sock){
+//     console.log('connected',sock)
+// },function(err){
+//     console.log('connection error',err)
+// },function(not){
+//     console.log('connection update',not)
+// });
+
+$scope.$watch('masterpix', function(newValue, oldValue) {
+  _.each($scope.tracks,function(t){
+    _.each(t.items,function(i){
+       i.left = i.offset * $scope.masterpix;
+    });
+  });
 });
+
+ $scope.importtimeline = function()
+  {
+    if (!$scope.timelineimported && $scope.event && $scope.fullyloaded)
+    {
+      $scope.timelineimported = true;
+      if ($scope.event.timeline)
+       {
+         var newtimeline = $scope.event.timeline;
+         _.each($scope.event.timeline,function(t)
+           {
+             var newitems = [];
+             _.each(t.items,function(i)
+               {
+                 var item = _.clone(_.find($scope.media,{id:i.id}));
+                 item.offset = i.offset;
+                 item.left = item.offset * $scope.masterpix;
+                 newitems.push(item);
+               });
+               t.items = newitems;
+           });
+           
+          $scope.tracks = newtimeline;
+       }
+    }
+  }
+
 
 $scope.updateFilters = function()
 {
@@ -464,6 +626,8 @@ $scope.fixMap = function()
   },500);
 }
 
+
+
 $scope.fit = function()
 {
   if ($scope.mapready)
@@ -540,11 +704,13 @@ $scope.fit = function()
   $scope.editlist = [];
   
   angular.element($window).on('keydown', function(e) {
-      
-      var key = e.keyCode-49;
-      var uu = _.sortBy(_.values($scope.users),'id');
-      if (uu.length > parseInt(key))
-        $scope.makeLive(uu[parseInt(key)]);
+      if ($scope.editing)
+      {
+        var key = e.keyCode-49;
+        var uu = _.sortBy(_.values($scope.users),'id');
+        if (uu.length > parseInt(key))
+          $scope.makeLive(uu[parseInt(key)]);
+      }
   });
   
   $scope.calculateEdit = function(edit)
@@ -659,10 +825,10 @@ $scope.fit = function()
       {
       var returns = _.find($scope.shots, function(s){
         return s.id == user.shot;
-      }).image;
-        if (user.shot==false && user.shot!=0)
-          return '/static/images/blank.png';
-        return '/static/data/icons/'+returns;
+      });
+          if ((user.shot==false && user.shot!=0) || !returns)
+            return '/static/images/blank.png';
+        return '/static/data/icons/'+returns.image;
       }
       else{
         return '/static/images/blank.png';
@@ -692,6 +858,7 @@ $scope.fit = function()
 
   $scope.loading = true;
   $scope.mapready = false;
+  $scope.fullyloaded = false;
 
   $scope.mapobject = null;
 
@@ -702,7 +869,9 @@ $scope.fit = function()
         $scope.mapready = true;
       });
   });
+  $scope.timelineimported = false;
 
+ 
 
   (function () {
     //usSpinnerService.spin('spinner-1');
@@ -719,6 +888,8 @@ $scope.fit = function()
       socket.get('/commission/templateinfo/'+mastereventid)
             .then(function(resp){
                $scope.event = resp.data;
+               
+               $scope.importtimeline();
             });
 
       $scope.media = [];
@@ -747,7 +918,11 @@ $scope.fit = function()
                $scope.loading = false;
                start++;
                if (resp.data.length < limit)
+               {
                  $interval.cancel(stopTime);
+                 $scope.fullyloaded = true;
+                 $scope.importtimeline();
+               }
 
                loading = false;
             });

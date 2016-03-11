@@ -19,7 +19,7 @@ module.exports.policies = {
   //'*': true,
 
     //'*': ['flash','authenticated'],
-    '*': ['flash','authenticated','apikeygen','apiauth'],
+    '*': ['flash','authenticated','apiauth'],
 
     'api':
     {
@@ -35,14 +35,17 @@ module.exports.policies = {
 
     'event':
     {
-    	'view':['authenticated','hasevents','isowner','flash','apikeygen'],
-    	'update':['authenticated','isowner','flash','apiauth'],
-    	'addcode':['authenticated','isowner','flash','apiauth'],
+      'featured':true,
+      'search':['superadmin','apiauth'],
+      'info':['authenticated','flash','apiauth'],
+      'view':['authenticated','hasevents','isowner','flash','apikeygen'],
+      'update':['authenticated','isowner','flash','apiauth'],
+      'addcode':['authenticated','isowner','flash','apiauth'],
       'remcode':['authenticated','isowner','flash','apiauth'],
       'resendcode':['authenticated','isowner','flash','apiauth'],
-    	'makedefault':['authenticated','isowner','flash','apiauth'],
-    	'updatecoverage':['authenticated','isowner','flash','apiauth'],
-    	'edit':['authenticated','isowner','flash','apiauth'],
+      'makedefault':['authenticated','isowner','flash','apiauth'],
+      'updatecoverage':['authenticated','isowner','flash','apiauth'],
+      'edit':['authenticated','isowner','flash','apiauth'],
       'admins':['authenticated','isowner','apiauth'],
       'remove':['authenticated','isowner','apiauth'],
       'coverage':['authenticated','isowner','apiauth'],
@@ -70,17 +73,27 @@ module.exports.policies = {
       'admin_events':['superadmin','flash','apiauth'],
       'removeuser':['superadmin','apiauth'],
       'removeadmin':['authenticated','isowner','apiauth'],
-      'dashboard':['authenticated','apikeygen','flash']
+      'dashboard':['authenticated','flash','apikeygen'],
+      'shortlink':['flash','apikeygen'],
+      'removelimit':['superadmin','flash','apiauth']
     },
 
     'watch':
     {
         'view':['authenticated','viewonly','flash','apikeygen'],
+        //'view':false,
         'shortlink':true,
-        'index':['authenticated','apikeygen','flash'],
-        'newedit':['authenticated','viewonly','apiauth'],
+        'index':['authenticated','isowner','apikeygen','flash'],
+        'saveedit':['authenticated','apiauth'],
+        'newedit':['authenticated','apiauth'],
+        'deleteedit':['authenticated','apiauth'],
         'list':['authenticated','flash','apikeygen'],
-        'mymedia':['authenticated','apiauth']
+        'mymedia':['authenticated','apiauth'],
+        'editupdates':['authenticated','apiauth'],
+        'canceleditupdates':['authenticated','apiauth'],
+        'getvideo':['shortlink'],
+        'edits':['authenticated','isowner','apikeygen','flash'],
+        'alledits':['authenticated','isowner','apiauth'],        
     },
 
     'shoot':
@@ -88,14 +101,16 @@ module.exports.policies = {
         'index':['flash','authenticated','hasevents','isowner','apikeygen'],
         'liveedit':['flash','authenticated','hasevents','isowner','apikeygen'],
         'preedit':['flash','authenticated','hasevents','isowner','apikeygen'],
-        'sendmessage':['authenticated','isowner','apiauth']
+        'sendmessage':['authenticated','isowner','apiauth'],
+        'updatetimeline':['authenticated','isowner','apiauth'],
+        'sendindividualmessage':['authenticated','isowner','apiauth']
     },
 
     'commission':
     {
         '*':['flash','authenticated','isowner','apiauth'],
         'example':['authenticated'],
-        'new':['flash','authenticated','apikeygen'],
+        'new':['flash','authenticated','apikeygen','eventlimit'],
         'index':['flash','authenticated','hasevents','isowner','apikeygen'],
         'savetooriginal':['flash','authenticated','superadmin','apiauth'],
         'addshot':['authenticated','superadmin','apiauth']
@@ -113,13 +128,19 @@ module.exports.policies = {
     'media':
     {
         'nicejson':['authenticated','viewonly','apiauth'],
+        'mediacount':['authenticated','viewonly','apiauth'],
+        'mymedia':['authenticated','apiauth'],
         'directorystructure':['authenticated','isowner','apiauth'],
-        'remove':['authenticated','isowner','apiauth'],
+        'remove':['authenticated','ismediaowner','apiauth'],
         'rm_tag':['authenticated','isowner','apiauth'],
         'add_tag':['authenticated','isowner','apiauth'],
         'transcode':['superadmin'],
         'availableoutputs':['authenticated','isowner','apiauth'],
-        'transcodefile':['authenticated','apiauth']
+        'transcodefile':['authenticated','apiauth'],
+        'thumbnail':['checkmedia'],
+        'preview':['checkmedia'],
+        'full':['checkmedia_full'],
+        'homog':['checkmedia_full']
     },
 
     'log':
@@ -128,20 +149,25 @@ module.exports.policies = {
         'all':['superadmin','flash','apikeygen'],
         'view':['authenticated','flash','isowner','apikeygen']
     },
-	// whitelist the auth controller
 
-	'auth':
-	{
-		'*': ['flash',true],
-    'terms':['flash','apikeygen',true],
-    'privacy':['flash','apikeygen',true],
-    'join':['flash','apikeygen',true],
-    'joincomplete':['flash','apikeygen',true],
-    'changename':['authenticated'],
-		'localcode':'authenticated',
-    'dropbox':'authenticated',
-    'setprivacy':'authenticated',
-    'apilogin':'apiauth',
-    'howtobootleg':['apikeygen','flash',true]
-	}
+    'auth':
+    {
+      '*': ['flash',true],
+      'login':['apikeygen','flash',true],
+      'join':['flash','apikeygen',true],
+      'joincomplete':['flash','apikeygen',true],
+      'changename':['authenticated'],
+      'localcode':'authenticated',
+      'dropbox':'authenticated',
+      'setprivacy':'authenticated',
+      'apilogin':['apiauth','apikeygen','flash'],
+      'howtobootleg':['apikeygen','flash',true],
+      'sessionkey':['authenticated'],
+      
+    },
+    
+    'static':
+    {
+      '*': ['apikeygen','flash',true],
+    }
 };

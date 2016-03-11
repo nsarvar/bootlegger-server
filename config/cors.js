@@ -22,12 +22,6 @@
  * 
  */
 
-
-/*
-TODO -- need to configure this so that CORS checks are only carried out on everything apart from the /api/* routes -- i.e. stops access to everything not from the same domain on these routes? -- this will also have to work for the app too...
-
-*/
-
 module.exports.cors = {
 
 	// Allow CORS on all routes by default?  If not, you must enable CORS on a 

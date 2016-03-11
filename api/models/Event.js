@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * Event
  *
  * @module      :: Model
@@ -18,7 +23,6 @@ module.exports = {
 	name: {
 	    type: 'string',
 	    required:true,
-	    maxLength: 40,
 	    minLength: 5
 	  },
 	starts: {

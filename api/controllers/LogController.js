@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * LogController
  *
  * @module		:: Controller
@@ -41,7 +46,7 @@ module.exports = {
 	view:function(req,res)
 	{
 		//live log:
-		var lookupid = req.session.event || req.session.passport.user.currentevent;
+		var lookupid = req.session.event;
 		//console.log(lookupid);
 
 		//if event is explicitally set in GET

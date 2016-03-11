@@ -1,4 +1,9 @@
-var _ = require('lodash');
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ var _ = require('lodash');
 var moment = require('moment');
 
 var redis = require("redis"), redisclient = redis.createClient(sails.config.session.port,sails.config.session.host);
@@ -562,6 +567,11 @@ module.exports = {
 		// catch (e){
 
 		// }
+	},
+
+	notready:function(event,user)
+	{
+
 	},
 
 	unselectrole:function(event, user)

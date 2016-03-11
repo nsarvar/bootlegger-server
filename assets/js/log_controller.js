@@ -1,23 +1,46 @@
 'use strict';
 
-var logApp = angular.module('logApp', [
-      "ngSanitize",
-      'ngLoadingSpinner',
-      'ngAnimate',
-      'ui.grid',
-      'ui.grid.pagination',
-      'ui.grid.moveColumns',
-      'ui.grid.resizeColumns',
-      'angularUtils.directives.dirPagination',
-      'ui.bootstrap',
-      'angularSails.io',
-    ]);
+// var logApp = angular.module('logApp', [
+//       "ngSanitize",
+//       'ngLoadingSpinner',
+//       'ngAnimate',
+//       'ui.grid',
+//       'ui.grid.pagination',
+//       'ui.grid.moveColumns',
+//       'ui.grid.resizeColumns',
+//       'angularUtils.directives.dirPagination',
+//       'ui.bootstrap',
+//       'angularSails.io',
+//     ]);
 
-logApp.factory('socket',['$sailsSocket', function($sailsSocket){
-      return $sailsSocket();
-  }]);
+// logApp.factory('socket',['$sailsSocket', function($sailsSocket){
+//       return $sailsSocket();
+//   }]);
+  
+bootleggerApp.filter('testFilter', function() {
+    return function( items, params ) {
+        var filtered = [];
+        if (params.val == undefined || params.val.length == 0)
+          return items;
+        // If time is with the range
+        var terms = params.val.split(',');
+        
+        angular.forEach(items, function(item) {
+          var str = JSON.stringify(item).toLowerCase();
+          var push = true;
+          _.each(terms,function(t){
+            if (_.contains(str,t.trim()))
+              push = false;  
+           })
+           if (push)
+            filtered.push(item);
+        });
+        return filtered;
+    };
+});
 
-logApp.controller('Log',['$scope','$http','uiGridConstants','socket','$interval', function ($scope, $http, uiGridConstants,socket,$interval) {
+
+bootleggerApp.controller('Log',['$scope','$http','uiGridConstants','socket','$interval', function ($scope, $http, uiGridConstants,socket,$interval) {
 
 // $scope.gridOptions = {
 //     paginationPageSizes: [50, 100, 200],
@@ -35,10 +58,12 @@ logApp.controller('Log',['$scope','$http','uiGridConstants','socket','$interval'
 //   };
 
   $scope.filterObject = {};
+  $scope.filterObjectNeg = {};
   $scope.orderObject = '-timestamp';
   var stopTime = -1;
   var start = 0;
   var limit = 400;
+  $scope.backlog = 10000;
   $scope.alldata = [];
 
   $scope.remfilter = function(key)
@@ -64,13 +89,13 @@ logApp.controller('Log',['$scope','$http','uiGridConstants','socket','$interval'
       //   });
       // }
 
-    socket.connect().then(function(sock){
-     console.log('connected',sock)
-    },function(err){
-       console.log('connection error',err)
-    },function(not){
-       console.log('connection update',not)
-    });
+    // socket.connect().then(function(sock){
+    //  console.log('connected',sock)
+    // },function(err){
+    //    console.log('connection error',err)
+    // },function(not){
+    //    console.log('connection update',not)
+    // });
 
     (function () {
 
@@ -94,7 +119,7 @@ logApp.controller('Log',['$scope','$http','uiGridConstants','socket','$interval'
               $scope.alldata = $scope.alldata.concat(resp.data);
               doing = false;
               start++;
-              if (resp.data.length < limit)
+              if (resp.data.length < limit || $scope.alldata.length >   $scope.backlog)
               {
                 $scope.loading = false;
                 $interval.cancel(stopTime);
@@ -108,7 +133,7 @@ logApp.controller('Log',['$scope','$http','uiGridConstants','socket','$interval'
               $scope.alldata = $scope.alldata.concat(resp.data);
               doing = false;
               start++;
-              if (resp.data.length < limit)
+              if (resp.data.length < limit || $scope.alldata.length >   $scope.backlog)
               {
                 $scope.loading = false;
                 $interval.cancel(stopTime);

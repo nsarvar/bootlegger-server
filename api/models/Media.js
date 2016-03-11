@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * Media
  *
  * @module      :: Model
@@ -29,6 +34,11 @@ module.exports = {
 
     	      if (req.param('skip'))
       		  	criteria.skip = req.param('skip');
+                    
+              if (req.param('criteria'))
+                _.merge(criteria,req.param('criteria'));
+                
+                //console.log(criteria);
 
 
             Media.find(criteria).sort('createdAt').exec(function(err,data)
@@ -38,7 +48,7 @@ module.exports = {
               _.each(data,function(m)
               {
                 //role, shot coverage class
-                if (m.meta.static_meta.meta_phase)
+                if (m.meta.static_meta.meta_phase && ev.phases)
                 {
                 	m.meta.phase_ex = ev.phases[m.meta.static_meta.meta_phase];
                 }
@@ -52,7 +62,8 @@ module.exports = {
                 {
   	        	      m.meta.role_ex = ev.eventtype.roles[m.meta.static_meta.role];
     	      		}
-    	      		else
+                
+    	      		if (!m.meta.role_ex)
     	      		{
     	      			m.meta.role_ex={name:'Unknown'};
     	      		}
@@ -85,6 +96,7 @@ module.exports = {
           	  {
           	    m.meta.coverage_class_ex = ev.coverage_classes[m.meta.static_meta.coverage_class];
         		  }
+              
               if (!m.meta.coverage_class_ex)
               {
                 m.meta.coverage_class_ex = {name:"Unknown"};
@@ -105,26 +117,25 @@ module.exports = {
   	  			if (m.user)
   		  			uu = m.user.profile.displayName;
 
-  			  //m.meta.static_meta.nicepath = urlencode(timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.static_meta.role_ex.name + '_' + m.meta.static_meta.shot_ex.name + '_' + m.meta.static_meta.coverage_class_ex.name + '_' + uu + path.extname(m.path))
+                var isgood = (m.meta.static_meta.edit_tag)?'_GOOD':'';
 
-            var isgood = (m.meta.static_meta.edit_tag)?'_GOOD':''; 
-
-  			       m.meta.static_meta.nicepath = urlencode((timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.role_ex.name + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_'  + uu + isgood + ext).replace(/ /g,'_'));
+                m.meta.static_meta.nicepath = urlencode((timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.role_ex.name + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_'  + uu + isgood + ext).replace(/ /g,'_'));
 
                 //m.meta.static_meta.nicepath = filename;
                 if (m.path)
                 {
-                	m.originalpath = sails.config.S3_CLOUD_URL + m.path;
-                	m.lowres = sails.config.S3_TRANSCODE_URL + m.path;
-                	m.path = sails.config.S3_CLOUD_URL + m.path;
-                	m.filename = m.path;
+                	m.originalpath = sails.config.master_url+'/media/full/'+m.id;
+                	m.lowres = sails.config.master_url+'/media/preview/'+m.id;
                 }
 
                 if (m.thumb)
                 {
                 	m.originalthumb = m.thumb;
-                  m.thumb = sails.config.S3_CLOUD_URL + escape(m.originalthumb);
-            	  }
+                    //m.thumb = sails.config.S3_CLOUD_URL + escape(m.originalthumb);
+                    m.thumb = sails.config.master_url+'/media/thumbnail/'+m.id;
+            	}
+                
+                m.deleted = (m.deleted?true:false);
             	  //console.log(m);
               });//end each
               cb(data);
@@ -149,7 +160,7 @@ module.exports = {
 	    			_ = require('lodash');
               
                 //role, shot coverage class
-                if (m.meta.static_meta.meta_phase)
+                if (m.meta.static_meta.meta_phase && ev.phases)
                 {
                 	m.meta.phase_ex = ev.phases[m.meta.static_meta.meta_phase];
                 }
@@ -163,7 +174,8 @@ module.exports = {
                 {
   	        	      m.meta.role_ex = ev.eventtype.roles[m.meta.static_meta.role];
     	      		}
-    	      		else
+                
+    	      		if (!m.meta.role_ex)
     	      		{
     	      			m.meta.role_ex={name:'Unknown'};
     	      		}
@@ -216,24 +228,25 @@ module.exports = {
   	  			if (m.user)
   		  			uu = m.user.profile.displayName;
 
-  			  //m.meta.static_meta.nicepath = urlencode(timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.static_meta.role_ex.name + '_' + m.meta.static_meta.shot_ex.name + '_' + m.meta.static_meta.coverage_class_ex.name + '_' + uu + path.extname(m.path))
-var isgood = (m.meta.static_meta.edit_tag)?'_GOOD':''; 
+            var isgood = (m.meta.static_meta.edit_tag)?'_GOOD':''; 
+            m.deleted = (m.deleted?true:false);
+
+ //FIX PARSE OF TIMESTAMP WITH MOMENT -- CRASHES IF INCORRECT TIMESTAMP!!
 
   			m.meta.static_meta.nicepath = urlencode((timestamp[1].replace(':','-').replace(':','-') + '_' + m.meta.role_ex.name + '_' + m.meta.shot_ex.name + '_' + m.meta.coverage_class_ex.name + '_' + uu + isgood + ext).replace(/ /g,'_'));
 
                 //m.meta.static_meta.nicepath = filename;
                 if (m.path)
                 {
-                	m.originalpath = sails.config.S3_CLOUD_URL + m.path;
-                	m.lowres = sails.config.S3_TRANSCODE_URL + m.path;
-                	m.path = sails.config.S3_CLOUD_URL + m.path;
-                	m.filename = m.path;
+                	m.originalpath = sails.config.master_url + '/media/full/'+m.id
+                	m.lowres = sails.config.master_url + '/media/preview/'+m.id
                 }
 
                 if (m.thumb)
                 {
                 	m.originalthumb = m.thumb;
-                  m.thumb = sails.config.S3_CLOUD_URL + escape(m.originalthumb);
+                  //m.thumb = sails.config.S3_CLOUD_URL + escape(m.originalthumb);
+                  m.thumb = sails.config.master_url + '/media/thumbnail/'+m.id;
             	  }
 			  		cb();
           });
@@ -254,6 +267,11 @@ var isgood = (m.meta.static_meta.edit_tag)?'_GOOD':'';
   	cb();
   },
 
-
+  isContributor:function(userid,cb)
+  {
+    Media.find({created_by:userid}).exec(function(err, m){
+       cb(m.length > 0);
+    });
+  }
 
 };

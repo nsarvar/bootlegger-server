@@ -17,25 +17,25 @@ function getProperty(obj, prop) {
     }
 }
 
-var commissionApp = angular.module('commissionApp', [
-      "ngSanitize",
-      'ngLoadingSpinner',
-      'ngAnimate',
-      'angularSails.io',
-      'ui.slider',
-      'ui.bootstrap',
-      'checklist-model',
-      'ui.inflector',
-      'ui.format',
-      'ui.sortable',
-      'frapontillo.bootstrap-switch'
-    ]);
+// var commissionApp = angular.module('commissionApp', [
+//       "ngSanitize",
+//       'ngLoadingSpinner',
+//       'ngAnimate',
+//       'angularSails.io',
+//       'ui.slider',
+//       'ui.bootstrap',
+//       'checklist-model',
+//       'ui.inflector',
+//       'ui.format',
+//       'ui.sortable',
+//       'frapontillo.bootstrap-switch'
+//     ]);
 
-commissionApp.factory('socket',['$sailsSocket', function($sailsSocket){
-      return $sailsSocket();
-  }]);
+// commissionApp.factory('socket',['$sailsSocket', function($sailsSocket){
+//       return $sailsSocket();
+//   }]);
 
-commissionApp.filter('shotvalue', function() {
+bootleggerApp.filter('shotvalue', function() {
   return function(input) {
     var matches = input.match(/%%(.*?)%%?/g);
     angular.forEach(matches, function(value, key) {
@@ -45,7 +45,7 @@ commissionApp.filter('shotvalue', function() {
   };
 });
 
-commissionApp.filter('filterObject', function() {
+bootleggerApp.filter('filterObject', function() {
     return function(items, search) {
         var filtered = {};
 
@@ -74,12 +74,12 @@ commissionApp.filter('filterObject', function() {
 // });
 
 
-commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSpinnerService','$interval','$filter','$rootScope', function ($scope,socket,$timeout,$sce,usSpinnerService,$interval,$filter,$rootScope) {
+bootleggerApp.controller('commission',['$scope','socket','$timeout','$sce','usSpinnerService','$interval','$filter','$rootScope', function ($scope,socket,$timeout,$sce,usSpinnerService,$interval,$filter,$rootScope) {
 
-  var showmsg = false;
+  $scope.showmsg = false;
 
   window.onbeforeunload = function(e) {
-    if (showmsg)
+    if ($scope.showmsg)
       return "Are you sure you want to leave this page? Changes are not auto-saved!";
     else
       return;
@@ -87,7 +87,7 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
 
   $scope.$watch("event", function(newValue, oldValue) {
     if (newValue!=null && oldValue!=null)
-      showmsg = true;
+      $scope.showmsg = true;
   },true);
 
 
@@ -105,8 +105,7 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
 
   $scope.selection = {currentphase: null, currentrole:null};
   $scope.tabs = {
-    tab0:true,
-    tab1:false,
+    tab1:true,
     tab2:false
   };
 
@@ -121,16 +120,28 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
 
   $scope.resetshootmodules = function(codename)
   {
+    if (codename=='autodirector')
+      $scope.event.offline = false;
+    
     angular.forEach($scope.event.shoot_modules,function(v,k)
     {
       if (codename!=k)
-        $scope.event.shoot_modules[k] = 0;
+        $scope.event.shoot_modules[k] = '0';
     });
+    
+    var alloff = 0;
+    angular.forEach($scope.event.shoot_modules,function(v,k)
+    {
+        alloff += ($scope.event.shoot_modules[k] != '0')?1:0;
+    });
+    if (alloff==0)
+      $scope.event.shoot_modules[_.first(_.without(_.keys($scope.event.shoot_modules),codename))] = "1";
+      
   }
 
   $scope.addrole = function()
   {
-    var index = parseInt(_.max(_.pluck($scope.event.roles,'id'))) + 1;
+    var index = (parseInt(_.max(_.pluck($scope.event.roles,'id'))) + 1) || 0;
     $scope.event.roles.unshift({id:index,name:'New Role',description:'',shot_ids:[],editing:true});
   }
 
@@ -416,7 +427,7 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
 
   $scope.removePhase = function(phase)
   {
-    delete $scope.event.phases[phase];
+    $scope.event.phases.splice(phase,1);
   }
 
   $scope.removeCoverage = function(c)
@@ -526,6 +537,11 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
     });
        //console.log($scope.event.shot_types);
        //$scope.$apply();
+       
+       //fix role img:
+       
+       if ($scope.event.hasroleimg==false)
+         delete $scope.event.roleimg;
   }
 
 
@@ -536,10 +552,15 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
     {
       delete r.editing;
     });
+    
+    console.log($scope.event.phases);
+    
     _.each($scope.event.phases,function(r)
     {
+      console.log(r);
       delete r.editing;
     });
+    
     _.each($scope.event.coverage_classes,function(r)
     {
       delete r.editing;
@@ -557,7 +578,8 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
     socket.post('/commission/update/'+mastereventid,{eventtype:$scope.event})
       .then(function(resp){
         $scope.success = true;
-        showmsg = false;
+        $scope.showmsg = false;
+        $scope.lastsavedat = new Date();
          setTimeout(function(){
           delete $scope.success;
         },2000);
@@ -592,7 +614,8 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
     socket.post('/commission/savetoreuse/'+mastereventid,{eventtype:$scope.event})
       .then(function(resp){
         $scope.success = true;
-        showmsg = false;
+        $scope.showmsg = false;
+        $scope.lastsavedat = new Date();
          setTimeout(function(){
           delete $scope.success;
         },2000);
@@ -627,7 +650,8 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
     socket.post('/commission/savetocommunity/'+mastereventid,{eventtype:$scope.event})
       .then(function(resp){
         $scope.success = true;
-        showmsg = false;
+        $scope.showmsg = false;
+        $scope.lastsavedat = new Date();
          setTimeout(function(){
           delete $scope.success;
         },2000);
@@ -662,20 +686,21 @@ commissionApp.controller('commission',['$scope','socket','$timeout','$sce','usSp
     socket.post('/commission/savetooriginal/'+mastereventid,{eventtype:$scope.event})
       .then(function(resp){
         $scope.success = true;
-        showmsg = false;
+        $scope.showmsg = false;
+        $scope.lastsavedat = new Date();
          setTimeout(function(){
           delete $scope.success;
         },2000);
       });
   }
 
-   socket.connect().then(function(sock){
-    console.log('connected',sock)
-  },function(err){
-      console.log('connection error',err)
-  },function(not){
-      console.log('connection update',not)
-  });
+  //  socket.connect().then(function(sock){
+  //   console.log('connected',sock)
+  // },function(err){
+  //     console.log('connection error',err)
+  // },function(not){
+  //     console.log('connection update',not)
+  // });
 
 var showmsgcount = 0;
 
@@ -728,8 +753,5 @@ var showmsgcount = 0;
          $scope.allshots = resp.data;
       });
   })();
-
-
-
 
 }]);

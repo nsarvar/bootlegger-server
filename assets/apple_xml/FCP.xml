@@ -11,11 +11,11 @@
 		</children>
 	</bin>
 	
-	<!--<sequence id="sequence-1">
+	<sequence id="sequence-1">
 		<uuid>%%uuid%%</uuid>
 		<duration>%%sequenceduration%%</duration>
 		<rate>
-			<timebase>29.9</timebase>
+			<timebase>29.97</timebase>
 			<ntsc>FALSE</ntsc>
 		</rate>
 		<name>%%sequencename%%</name>
@@ -24,7 +24,7 @@
 		        <format>
 		          <samplecharacteristics>
 		            <rate>
-		              <timebase>29.9</timebase>
+		              <timebase>29.97</timebase>
 		              <ntsc>FALSE</ntsc>
 		            </rate>
 		            <codec>
@@ -87,12 +87,12 @@
 		</media>
 		<timecode>
 			<rate>
-				<timebase>29.9</timebase>
+				<timebase>29.97</timebase>
 				<ntsc>FALSE</ntsc>
 			</rate>
 			<string>00:00:00:00</string>
 			<frame>0</frame>
 			<displayformat>NDF</displayformat>
 		</timecode>
-	</sequence>-->
+	</sequence>
 </xmeml>

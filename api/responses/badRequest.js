@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * 400 (Bad Request) Handler
  *
  * Usage:
@@ -28,6 +33,8 @@ res.locals.page = "Bad Request";
   res.locals.user = false;
   res.locals.event = false;
   res.locals.flash = false;
+    res.locals.action='error';
+      res.locals.rtl = false;
   res.locals.notonthisserver = false;
 
   // Log error to console
@@ -66,4 +73,3 @@ res.locals.page = "Bad Request";
   });
 
 };
-

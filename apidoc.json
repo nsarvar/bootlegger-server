@@ -4,11 +4,11 @@
   "description": "API for bootlegger",
   "header": {
     "title": "Getting Started",
-    "filename": "header.md"
+    "filename": "doc_defines/header.md"
   },
   "footer": {
     "title": "More Information",
-    "filename": "footer.md"
+    "filename": "doc_defines/footer.md"
   },
   "withGenerator":false,
   "sampleUrl":"https://dev.bootlegger.tv",

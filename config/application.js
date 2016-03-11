@@ -21,17 +21,6 @@ module.exports = {
 		level: 'info'
 	},
 
-  // session:
-  //   {
-  //     adapter: 'mongo',
-  //     host     : module.exports.db_host,
-  //     port     : module.exports.db_port,
-  //     username : module.exports.db_user,
-  //     password : module.exports.db_password,
-  //     db       : module.exports.db_database,
-  //     collection: 'session'
-  //   },
-
 	http: { 
         customMiddleware: function(app){
           //console.log('Express midleware for passport');

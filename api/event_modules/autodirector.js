@@ -1,4 +1,9 @@
-var _ = require('lodash');
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ var _ = require('lodash');
 var moment = require('moment');
 
 		function selectcoverage(event)
@@ -10,7 +15,7 @@ var moment = require('moment');
 			//changed to be uniform distribution weighting:#
 			var total = 0;
 			Log.verbose('autodirector','weights',module.exports.AllEvents[event.id].coverageweights);
-			
+
 			_.each(module.exports.AllEvents[event.id].coverageweights,function(c,i)
 			{
 				if (c.percentage !== undefined)
@@ -171,7 +176,7 @@ var moment = require('moment');
 					user.waitingforshotreply = true;
 					Event.publishUpdate(event.id,{users:event.users,ucount:_.size(event.users)});
 					Log.logmore('autodirector',{msg:'shot allocation',eventid:event.id,userid:user.id,shot:user.shot,meta:meta});
-					
+
 				}
 			});
 		};
@@ -508,15 +513,54 @@ module.exports = {
 								myoffset+=magicnumber;
 							}
 
+							if (i.extendedlive)
+								i.extendedcount++;
+
+							var userslive = 0;
+							_.each(event.users,function(u,k,l)
+							{
+								//if other user is live and its not me
+								if (u.status == 'live' && u.id != i.id)
+								{
+									userslive++;
+								}
+							});
+
+							//check for extended live for too long:
+
+							//if its been too long being live, kill it
+							if (i.extendedlive && i.extendedcount > 60)
+							{
+								Log.logmore('autodirector',{msg:'stopping on extended live timeout',eventid:event.id,userid:i.id});
+								canallocate = true;
+								i.extendedlive = false;
+								i.shot = false;
+								i.waitingforshot = false;
+								User.publishUpdate(i.id,{live:false});
+								i.status = 'waiting';
+							}
+
+							if (userslive > 0 && i.extendedlive == true)
+							{
+								Log.logmore('autodirector',{msg:'enough users now live, pulling from extended',eventid:event.id,userid:i.id});
+								//recalculate exteded live valid:
+								//ok to allocate
+								i.status = 'waiting';
+								i.shot = false;
+								i.waitingforshot = false;
+								i.extendedlive = false;
+								User.publishUpdate(i.id,{live:false});
+							}
+
 							//console.log(i.name + " " + myoffset);
 
-							//if role has been set for the first time (so status is still waiting) -- should not get to this case
-							if (i.status == 'waiting' && i.role==-1)
-							{
-								i.status = 'allocating';
-								Event.publishUpdate(event.id,{users:event.users,ucount:_.size(event.users)});
-								User.publishUpdate(i.id,{msg:"We are currently allocating your first role."});
-							}
+							// //if role has been set for the first time (so status is still waiting) -- should not get to this case
+							// if (i.status == 'waiting' && i.role==-1)
+							// {
+							// 	i.status = 'allocating';
+							// 	Event.publishUpdate(event.id,{users:event.users,ucount:_.size(event.users)});
+							// 	User.publishUpdate(i.id,{msg:"We are currently allocating your first role."});
+							// }
 
 							//check they have not JUST signed in (and stop throwing in the deep end)
 							//console.log("offset: "+myoffset);
@@ -542,15 +586,7 @@ module.exports = {
 											//check if you can pull them from being live:
 											if (i.status == 'live')
 											{
-												var userslive = 0;
-												_.each(event.users,function(u,k,l)
-												{
-													//if other user is live and its not me
-													if (u.status == 'live' && u.id != i.id)
-													{
-														userslive++;
-													}
-												});
+
 												//console.log(userslive);
 												//if there are no other people live, and I am not already extended live
 												if (userslive == 0 && i.extendedlive != true)
@@ -559,15 +595,9 @@ module.exports = {
 													Log.logmore('autodirector',{msg:'extended live',eventid:event.id,userid:i.id});
 													canallocate = false;
 													i.extendedlive = true;
-													User.publishUpdate(i.id,{msg:"You have to keep on a little while, as there are no other people live at the moment."});
-												}
+													i.extendedcount = 0;
 
-												if (userslive > 0 && i.extendedlive == true)
-												{
-													//recalculate exteded live valid:
-													//ok to allocate
-													canallocate = true;
-													i.extendedlive = false;
+													User.publishUpdate(i.id,{msg:"You have to keep on a little while, as there are no other people live at the moment."});
 												}
 											}
 											//console.log('extendedlive: '+i.extendedlive);
@@ -577,10 +607,10 @@ module.exports = {
 												i.extendedlive = false;
 												i.status = 'allocating';
 												//console.log(event.users);
-												User.publishUpdate(i.id,{msg:"We are currently allocating you a new shot"});
 												//stop live!!
 												Log.logmore('autodirector',{msg:'stop live',eventid:event.id,userid:i.id});
 												User.publishUpdate(i.id,{live:false});
+												User.publishUpdate(i.id,{msg:"We are currently allocating you a new shot"});
 												Event.publishUpdate(event.id,{users:event.users,ucount:_.size(event.users)});
 
 												//send a new shot allocation out if this user does not want to hold the shot:
@@ -822,7 +852,9 @@ module.exports = {
 			{
 				//reconnect user:
 				console.log('re-connect user');
-				module.exports.AllEvents[event].users[user].status = 'allocating';
+				module.exports.AllEvents[event].users[user].status = 'waiting';
+				module.exports.AllEvents[event].users[user].shot = false;
+				module.exports.AllEvents[event].users[user].waitingforshot = false;
 				User.publishUpdate(user,{msg:'Welcome back...'});
 				User.publishUpdate(user,{modechange:module.exports.AllEvents[event].currentphase});
 				User.publishUpdate(user,{eventstarted:module.exports.AllEvents[event].hasstarted});
@@ -835,7 +867,7 @@ module.exports = {
 				//if server restarted:
 				//force the user to disconnect
 				delete module.exports.AllEvents[event].users[user];
-				User.publishUpdate(user,{msg:'You need to reconnect, we lost the connection to your device'});
+				User.publishUpdate(user,{msg:'You need to reconnect, we lost the connection to your device',forcedie:true});
 				Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 			}
 		}
@@ -854,8 +886,10 @@ module.exports = {
 			{
 				var u = _.values(module.exports.AllEvents[event].users)[0];
 				User.publishUpdate(u.id,{msg: "And then there was one. You are alone on the crew, so we are pausing production until someone else joins you"});
-				u.status = 'allocating';
 				User.publishUpdate(u.id,{live:false});
+				u.shot = false;
+				u.waitingforshotreply = false; 
+				u.status = 'waiting';
 			}
 		}
 
@@ -875,6 +909,7 @@ module.exports = {
 		try
 		{
 			module.exports.AllEvents[event].users[user].status = 'lost';
+			module.exports.AllEvents[event].users[user].role=-1;
 			Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 			//check for really lost...
 			setTimeout(function()
@@ -891,7 +926,9 @@ module.exports = {
 							var u = _.values(module.exports.AllEvents[event].users)[0];
 							//console.log(u);
 							User.publishUpdate(u.id,{msg: "And then there was one. You are alone on the crew, so we are pausing production until someone else joins you"});
-							u.status = 'allocating';
+							u.status = 'waiting';
+							u.shot = false;
+							u.waitingforshotreply = false; 
 							User.publishUpdate(u.id,{live:false});
 						}
 						Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
@@ -1050,6 +1087,7 @@ module.exports = {
 		}
 		catch (e)
 		{
+			//user does not seem to exist...
 			console.log(e);
 			return res.json({status:'fail',msg:'Cant Change Role, Problem!'});
 		}
@@ -1162,14 +1200,37 @@ module.exports = {
 
 				//message this user
 				if (_.size(module.exports.AllEvents[event].users)>1)
-					User.publishUpdate(user,{msg:"Welcome, "+ _.without(_.pluck(module.exports.AllEvents[event].users, 'name'),module.exports.AllEvents[event].users[user].name) + " are on the film crew too"});
+				{
+					User.publishUpdate(user,{msg:"Hi, there are "+(_.size(module.exports.AllEvents[event].users)-1)+ " other people shooting right now!"});
+				}
 				else
+				{
 					User.publishUpdate(user,{msg:"Welcome, you are the first to join the film crew"});
+				}
 			}
 			else
 			{
 				//dont trigger starting the event if only one person is ready...
 				User.publishUpdate(user,{msg:"You are the only person available at the moment, we are waiting for others to begin"});
+			}
+		}
+		catch (e){
+
+		}
+	},
+
+	//user fires this event when they are ready to publish
+	notready:function(event, user)
+	{
+		try
+		{
+			if (_.size(module.exports.AllEvents[event].users[user]) > 1)
+			{
+				//actually ready to start allocating roles (the user knows whats going on)
+				module.exports.AllEvents[event].users[user].status = 'new';
+				module.exports.AllEvents[event].users[user].extendedlive = false;
+				Log.logmore('autodirector',{msg:'new (notready)',userid:user,eventid:event});
+				Event.publishUpdate(event,{users:module.exports.AllEvents[event].users,ucount:_.size(module.exports.AllEvents[event].users)});
 			}
 		}
 		catch (e){
@@ -1226,6 +1287,8 @@ module.exports = {
 			_.each(module.exports.AllEvents[event].users,function(u)
 			{
 				User.publishUpdate(u.id,{eventstarted:false});
+				if (u.status == 'live')
+					User.publishUpdate(u.id,{live:false});
 			});
 		}
 		catch (e) {

@@ -1,0 +1,53 @@
+<style>
+  .fa-spin-2x {
+-webkit-animation: fa-spin 1s infinite linear;
+animation: fa-spin 0.3s infinite linear;
+}
+  </style>
+
+<script>
+var mastereventid = '<%- theevent.id %>'; 
+</script> 
+
+<div ng-controller="edits">
+
+
+  <div class="progress" style="position:fixed;top:0;width:100%;left:0;height:2px;margin:0;" ng-show="loading">
+      <div class="indeterminate"></div>
+  </div>
+
+
+<div class="page-header">
+  <h1>Community Edits</h1>
+</div>
+
+<div class="text-center">
+  <p class="text-muted" ng-show="edits.length==0">Nobody has made any edits yet...</p>
+
+    <div style="display:inline-block;" ng-repeat="edit in edits | orderBy:'createdAt':true">
+    
+        <div class="panel panel-default" style="margin-bottom:10px;position:relative;width:270px;min-height:250px;overflow:hidden;display:inline-block;margin-right:10px;">
+            <a ng-href="{{ (!edit.path && !edit.failed) ? '#' : '/v/'+edit.shortlink }}">
+                <img ng-src="{{edit.media[0].thumb}}" style="width:100%;height:150px;"/>
+                <progressbar style="position:absolute;top:0;width:100%;height:8px;" class="determinate" max="100" value="edit.progress" type="info" ng-show="(edit.progress && !edit.failed && !edit.path)"></progressbar>
+                <span ng-show="edit.failed" class="text-danger">{{edit.failreason}}</span>
+                <span style="position:absolute;top:0;left:0px;width:100%;height:100%;" ng-show="edit.failed"><i class="fa fa-exclamation-triangle fa-3x" style="color:silver;padding-top:20%;"></i></span>
+                <span style="position:absolute;top:0;left:0px;width:100%;height:100%;" ng-show="!edit.path && !edit.failed"><i class="fa fa-clock-o fa-3x" style="color:silver;padding-top:20%;"></i></span>
+                
+                <div ng-if="edit.path && !edit.failed" style="position:absolute;left:5px;top:5px;" class="addthis_toolbox" addthis:url="<%- sails.config.master_url %>/v/{{edit.code}}" addthis:title="{{edit.title}}">
+                    <a class="addthis_button_preferred_1"></a>
+                    <a class="addthis_button_preferred_2"></a>
+                    <a class="addthis_button_preferred_3"></a>
+                    <a class="addthis_button_preferred_4"></a>
+                    <a class="addthis_button_compact"></a>
+                    <a class="addthis_counter addthis_bubble_style"></a>
+                </div>
+            </a>
+            
+            <h3 style="padding-left:1em;padding-right:1em;height:1.1em;text-overflow: ellipsis;white-space: nowrap;overflow:hidden;">{{edit.title}}</h3>
+            <p><strong>{{edit.createdAt | date:'ha d MMM yy'}}</strong> <br>by<br> <strong>{{edit.user_id}}</strong></p>
+            <p style="margin-top:10px;text-overflow: ellipsis;word-wrap: break-word;overflow: hidden;max-height: 3.2em;line-height: 1.6em;min-height:3.2em">{{edit.description}}</p>
+        </div>
+
+    </div>
+</div>

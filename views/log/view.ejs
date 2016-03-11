@@ -29,23 +29,28 @@
 		<div class="alert alert-info" ng-show="theid">This is the log for a specific shoot.</div>
 
 		<input class="form-control input-lg" type="text" placeholder="search..." ng-model="filterObject.$" />
+		<input class="form-control input-sm" type="text" placeholder="exclude..." ng-model="filterObjectNeg.val" />
 		<br>
+		<span style="margin-right:3px;" class="label label-warning">level is error <i class="fa fa-check" ng-click=" filterObject.level='error' "></i></span>
+		<span style="margin-right:3px;" class="label label-warning">level is info <i class="fa fa-check" ng-click=" filterObject.level='info' "></i></span>
+		<span style="margin-right:3px;" class="label label-warning">level is verbose <i class="fa fa-check" ng-click=" filterObject.level='verbose' "></i></span>
+		
   	<span us-spinner="{radius:10, width:4, length: 10}"></span>
 
 		<dir-pagination-controls template-url="/dirPagination.tpl.html" class="pull-right"></dir-pagination-controls>
 		<div class="clearfix"></div>
 		<ul class="list-group">
-		<li class="list-group-item" dir-paginate="log in alldata | filter:filterObject | orderBy:orderObject | itemsPerPage: 100">
+		<li class="list-group-item" dir-paginate="log in alldata | testFilter:filterObjectNeg | filter:filterObject  | orderBy:orderObject | itemsPerPage: 100">
 			<div class="row">
 			<div class="col-sm-2" style="padding-right:0;padding-left:4px;">
 				<i ng-show=" log.level=='error' " style="cursor: pointer;" ng-click="filterObject.level='error' " class="fa fa-fw fa-warning pull-left text-danger"></i>
 				<i ng-show=" log.level=='info' " style="cursor: pointer;" class="fa fa-info fa-fw pull-left text-info" ng-click="filterObject.level='info' "></i>
 				<i ng-show=" log.level=='verbose' " style="cursor: pointer;" class="fa fa-expand fa-fw pull-left text-info" ng-click="filterObject.level='verbose' "></i>
-				<small><span class="text-muted pull-left">{{log.timestamp | date:'medium'}}</span></small>
+				<small><span class="text-muted pull-left">{{log.timestamp | date:'h:mm:ss a MMM d, y'}}</span></small>
 
 
 			</div>
-			<div class="col-sm-6">{{log.message}}<br>
+			<div class="col-sm-6">{{log.message}} <span class="text-muted">{{log.meta.controller}} / {{log.meta.action}}</span><br>
 					<span ng-show="log.meta.user_id" ng-click="filterObject.meta.user_id=log.meta.user_id " class="label label-info" style="cursor: pointer;"><i  class="fa fa-user fa-fw" ng-click="filterObject.level='verbose' "></i>{{log.meta.user_id}}</span>
 
 			</div>
@@ -57,6 +62,9 @@
 				<span class="text-muted">{{log.msg}}</span>
 				<i class="fa fa-code pull-right" tooltip="{{log}}"></i>
 				  <span ng-click="filterObject.hostname=log.hostname" ng-hide="filterObject.hostname" class="label label-info pull-right">{{log.hostname}}</span>
+				  
+				  
+				  
 			</div>
 		</div>
 		</li>

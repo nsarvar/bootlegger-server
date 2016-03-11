@@ -1,4 +1,9 @@
-/**
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /**
  * Allow any authenticated user.
  */
 module.exports = function (req, res, ok) {
@@ -30,16 +35,16 @@ module.exports = function (req, res, ok) {
 
         //console.log(has.length);
 
-        if (evs.length < 3)
+        if (evs.length < sails.config.SHOOT_LIMIT)
         {
           //console.log("ok to continue");
           return ok();
         }
         else
         {
-          req.session.flash = {msg:'You can create up to 3 shoots simultaneously using Bootlegger, delete an old shoot to continue.'};
+          req.session.flash = {msg:'You can create up to '+sails.config.SHOOT_LIMIT+' shoots simultaneously using Bootlegger, delete an old shoot to continue.'};
           //console.log("too many events");
-          return res.redirect('/commission/new');
+          return res.redirect('/dashboard');
         }
       });
     }

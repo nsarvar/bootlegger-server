@@ -1,6 +1,16 @@
-/*
+/* Copyright (C) 2014 Newcastle University
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license. See the LICENSE file for details.
+ */
+ /*
 UI Referrer Check (or API check)
 */
+
+
+function strStartsWith(str, prefix) {
+    return str.indexOf(prefix) === 0;
+}
 
 var uuid = require('node-uuid');
 
@@ -9,12 +19,6 @@ module.exports = function (req, res, ok) {
 
 	//check api-key:
 
-	//generate system apikey
-
-	//console.log(req.param('apikey'));
-	//TEMPORARY: LET EVERYONE THROUGH AS THE MOBILE APP HAS NOT BEEN UPDATED YET:
-	//return ok();
-
 	if (!req.param('apikey'))
 	{
 		return res.json(403,{msg:'Please provide an API key'});
@@ -22,7 +26,11 @@ module.exports = function (req, res, ok) {
 	else
 	{
 		Utility.getRequestAction(req);
-		Log.verbose('apiauth','Api Call',{controller:req.options.controller,action:req.options.action,user_id:(req.session.passport)?req.session.passport.user.id:'',apikey:req.param('apikey'), params:req.allParams()});
+		Log.verbose('apiauth','Api Call',{controller:req.options.controller,action:req.options.action,user_id:(req.session.passport && req.session.passport.user)?req.session.passport.user.id:'',apikey:req.param('apikey'), params:req.allParams()});
+		
+		/**
+		 * SYSTEM API KEYS
+		 */
 		
 		//TO CHECK IF ITS THE WEBSITE
 		if (req.session.CURRENT_API_KEY == req.param('apikey'))
@@ -40,9 +48,23 @@ module.exports = function (req, res, ok) {
 
 		if (sails.config.CURRENT_SYNCTRAY_KEY == req.param('apikey'))
 			return ok();
+			
+			
+		/**
+		 * USER API KEYS
+		 */
 
-		User.findOne({apikey:req.param('apikey')}).exec(function(error, u){
+		User.findOne({'apikey.apikey':req.param('apikey')}).exec(function(error, u){
 			//rate limit allowed for api (i.e. registered and agreed to the conditions)
+			
+			//check if calling to the correct endpoint:
+			//console.log(req.path);
+			//console.log(strStartsWith(req.path,'/api'));
+			
+            if (req.path)
+			     if (!strStartsWith(req.path,'/api'))
+				    return res.json(404,{msg:'Please use endpoints pre-fixed with /api/'})
+			
 			if (!u)
 			{
 				return res.json(401,{msg:'Invalid API key'});
@@ -50,21 +72,21 @@ module.exports = function (req, res, ok) {
 
 			//console.log(req.path);
 
-			if (!req.session.passport.user && req.path!='/api/login')
+			if (!req.session.passport.user && req.path!='/api/auth/login')
 			{
 				return res.json(401,{msg:'You need a valid signed in user for the API'});
 			}
 
-			if (u.apiaccess == 'live')
+			if (u.apikey.apiaccess == 'live')
 			{
 				return ok();
 			}
 
-			else if (u.apiaccess == 'locked')
+			else if (u.apikey.apiaccess == 'locked')
 			{
 				return res.json(403,{msg:'Your API key has been disabled'});
 			}
-			else if (!u.apiaccess)
+			else if (!u.apikey.apiaccess)
 			{
 				return res.json(401,{msg:'You have not signed up for an API key. Signup at '+sails.config.master_url + '/api/signup'});
 			}

@@ -42,17 +42,22 @@ module.exports = {
 
 		//create missing zip files for events if they are not already there:
 		Log.info('eventmanager',"Generating Zip Files for Events");
-
-		Event.find({}).exec(function(err,events)
+        var totalevs = 0;
+        var progress = 0;
+		Event.find({started:[1,true,null]}).exec(function(err,events)
         {
+            totalevs = _.size(events);
 			var calls = [];
 			_.each(events,function(e)
 			{
 				calls.push(function(cbb){
 					//console.log("doing: "+e.id);
 					e.genzip(cbb);
+                    progress++;
+                    process.stdout.write("Generating Zips: " + ((progress/totalevs)*100).toString().substr(0,4) + "%\r");
 				});
 			});
+            
 			async.series(calls,function(err)
 			{
 				Log.info('eventmanager',"Event Zips Created");
@@ -351,6 +356,22 @@ module.exports = {
 				{
 					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
 						module.exports.event_modules[k].ready(eventid,user);
+				});
+			}
+		});
+	},
+
+	//user not ready to produce (phone on standby etc)
+	notready:function(eventid,user)
+	{
+		Event.findOne(eventid).exec(function (err,event) {
+			if (err || event == undefined) return;
+			if (event.shoot_modules)
+			{
+				_.each(event.shoot_modules,function(v,k,l)
+				{
+					if ((v==true || v=='1' || v==1) && module.exports.event_modules[k]!=undefined)
+						module.exports.event_modules[k].notready(eventid,user);
 				});
 			}
 		});
